@@ -28,12 +28,17 @@ const AttendanceMonitoring = () => {
     return (
         <DashboardLayout role="industry_supervisor">
             <div className="space-y-12 animate-fade-in">
-                {/* Header */}
+                {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                    <div className="space-y-2">
-                        <span className="section-label">Ops Tracking</span>
-                        <h1 className="text-4xl font-black text-white tracking-tighter">Attendance Registry</h1>
-                        <p className="text-slate-500 font-medium leading-relaxed">Daily verification logs for your assigned students.</p>
+                    <div className="flex items-center gap-6">
+                        <div className="w-20 h-20 bg-blue-600 rounded-[2rem] flex items-center justify-center shadow-2xl shadow-blue-600/30 ring-1 ring-white/20">
+                            <Clock className="text-white" size={40} />
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">Ops Tracking</span>
+                            <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Attendance <span className="text-blue-500">Registry</span></h1>
+                            <p className="text-slate-500 font-medium leading-relaxed max-w-lg">Daily verification logs, latency analysis, and presence authentication for assigned students.</p>
+                        </div>
                     </div>
                     <div className="flex space-x-4">
                         <button className="bg-white/5 text-slate-300 px-6 py-3.5 rounded-2xl border border-white/10 text-[10px] font-black uppercase tracking-widest flex items-center space-x-3 hover:bg-white/10 transition-all">

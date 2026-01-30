@@ -19,6 +19,7 @@ import LogbookUpload from './pages/student/LogbookUpload';
 import IndustryDashboard from './pages/industry/Dashboard';
 import IndustryProfile from './pages/industry/Profile';
 import AttendanceMonitoring from './pages/industry/Attendance';
+import PresenceHub from './pages/industry/PresenceHub';
 
 // University Supervisor
 import UniversityDashboard from './pages/university/Dashboard';
@@ -29,10 +30,16 @@ import AcademicAssessments from './pages/university/Assessments';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminProfile from './pages/school_admin/Profile';
 import UserDirectory from './pages/admin/Users';
+import InstitutionalAnalytics from './pages/school_admin/Analytics';
+import StudentRegistryManagement from './pages/school_admin/StudentManagement';
 
 // Super Admin
-import SuperAdminDashboard from './pages/admin/SuperAdminDashboard';
-import SuperAdminProfile from './pages/admin/Profile';
+import SuperadminLayout from './components/superadmin/SuperadminLayout';
+import SuperadminDashboard from './pages/superadmin/Dashboard';
+import SchoolManagement from './pages/superadmin/SchoolManagement';
+import UserManagement from './pages/superadmin/UserManagement';
+import AuditLogs from './pages/superadmin/AuditLogs';
+import SystemHealth from './pages/superadmin/SystemHealth';
 
 function App() {
   return (
@@ -55,6 +62,7 @@ function App() {
             {/* Industry Supervisor */}
             <Route path="/industry/dashboard" element={<PrivateRoute roles={['industry_supervisor']}><IndustryDashboard /></PrivateRoute>} />
             <Route path="/industry/profile" element={<PrivateRoute roles={['industry_supervisor']}><IndustryProfile /></PrivateRoute>} />
+            <Route path="/industry/presence" element={<PrivateRoute roles={['industry_supervisor']}><PresenceHub /></PrivateRoute>} />
             <Route path="/industry/attendance" element={<PrivateRoute roles={['industry_supervisor']}><AttendanceMonitoring /></PrivateRoute>} />
 
             {/* University Supervisor */}
@@ -66,10 +74,18 @@ function App() {
             <Route path="/school_admin/dashboard" element={<PrivateRoute roles={['school_admin']}><AdminDashboard /></PrivateRoute>} />
             <Route path="/school_admin/profile" element={<PrivateRoute roles={['school_admin']}><AdminProfile /></PrivateRoute>} />
             <Route path="/school_admin/users" element={<PrivateRoute roles={['school_admin']}><UserDirectory /></PrivateRoute>} />
+            <Route path="/school_admin/analytics" element={<PrivateRoute roles={['school_admin']}><InstitutionalAnalytics /></PrivateRoute>} />
+            <Route path="/school_admin/students" element={<PrivateRoute roles={['school_admin']}><StudentRegistryManagement /></PrivateRoute>} />
 
             {/* Super Admin Routes */}
-            <Route path="/super_admin/dashboard" element={<PrivateRoute roles={['super_admin']}><SuperAdminDashboard /></PrivateRoute>} />
-            <Route path="/super_admin/profile" element={<PrivateRoute roles={['super_admin']}><SuperAdminProfile /></PrivateRoute>} />
+            <Route path="/superadmin" element={<PrivateRoute roles={['super_admin']}><SuperadminLayout /></PrivateRoute>}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<SuperadminDashboard />} />
+              <Route path="schools" element={<SchoolManagement />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="audit-logs" element={<AuditLogs />} />
+              <Route path="system-health" element={<SystemHealth />} />
+            </Route>
 
             <Route path="*" element={<div className="flex items-center justify-center min-h-screen text-slate-500 font-black uppercase tracking-widest">404 - Terminal Failure</div>} />
           </Routes>

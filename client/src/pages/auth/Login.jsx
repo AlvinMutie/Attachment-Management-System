@@ -17,7 +17,7 @@ const Login = () => {
         'industry_supervisor': '/industry/dashboard',
         'university_supervisor': '/university/dashboard',
         'school_admin': '/school_admin/dashboard',
-        'super_admin': '/super_admin/dashboard'
+        'super_admin': '/superadmin/dashboard'
     };
 
     const handleDemoLogin = (role) => {

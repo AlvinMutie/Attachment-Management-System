@@ -14,14 +14,15 @@ import {
 import DashboardLayout from '../../components/DashboardLayout';
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
-    <div className="glass-card p-6 flex flex-col justify-between h-full bg-gradient-to-b from-white/[0.03] to-transparent">
-        <div className="flex justify-between items-center mb-4">
-            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em]">{label}</p>
-            <div className={`p-2 rounded-xl bg-white/5 ${color}`}>
-                <Icon size={18} />
+    <div className="glass-card p-8 flex flex-col justify-between h-full bg-gradient-to-br from-white/[0.04] to-transparent border-white/5 hover:border-blue-500/20 transition-all group rounded-m3-large overflow-hidden relative">
+        <div className="flex justify-between items-center mb-6 relative z-10">
+            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.25em]">{label}</p>
+            <div className={`p-3 rounded-2xl bg-white/5 ${color} shadow-inner group-hover:scale-110 transition-transform duration-500`}>
+                <Icon size={20} />
             </div>
         </div>
-        <p className="text-3xl font-black text-white tracking-tighter">{value}</p>
+        <p className="text-4xl font-black text-white tracking-tighter relative z-10">{value}</p>
+        <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-600/5 blur-xl rounded-full" />
     </div>
 );
 
@@ -29,16 +30,23 @@ const UniversitySupervisorDashboard = () => {
     return (
         <DashboardLayout role="university_supervisor">
             <div className="space-y-12 animate-fade-in">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div className="space-y-2">
-                        <span className="section-label">Academic Oversight</span>
-                        <h1 className="text-4xl font-black text-white tracking-tighter">Academic Supervisor</h1>
-                        <p className="text-slate-500 font-medium leading-relaxed">Monitoring student progress and institutional alignment.</p>
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8 bg-blue-600/5 p-10 rounded-m3-xl border border-blue-600/10 backdrop-blur-md">
+                    <div className="flex items-center gap-8">
+                        <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-600/40 ring-1 ring-white/20">
+                            <GraduationCap className="text-white" size={44} />
+                        </div>
+                        <div className="space-y-1.5">
+                            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-blue-400 opacity-70">Academic Oversight</span>
+                            <h1 className="text-4xl font-black text-white tracking-tighter uppercase leading-none">Academic <span className="text-blue-500">Supervisor</span></h1>
+                            <p className="text-slate-500 font-medium leading-relaxed max-w-md text-sm">Monitoring student progress & verifying industry compliance nodal point.</p>
+                        </div>
                     </div>
-                    <div className="flex items-center space-x-3 bg-blue-600/10 text-blue-400 px-6 py-3 rounded-2xl border border-blue-600/20 shadow-inner group cursor-pointer hover:bg-blue-600/20 transition-all">
-                        <Filter size={20} />
-                        <span className="text-sm font-black uppercase tracking-widest">Filter Schools</span>
+                    <div className="flex bg-blue-600/10 p-2 rounded-2xl border border-blue-600/20 shadow-lg">
+                        <div className="flex items-center gap-4 px-6 py-3 cursor-pointer hover:bg-white/5 transition-all rounded-xl">
+                            <Filter size={20} className="text-blue-400" />
+                            <span className="text-[11px] font-black text-white tracking-[0.2em] uppercase">Filter Peers</span>
+                        </div>
                     </div>
                 </div>
 
@@ -51,63 +59,63 @@ const UniversitySupervisorDashboard = () => {
                 </div>
 
                 {/* Main Table: Student Monitoring */}
-                <div className="glass-card overflow-hidden">
-                    <div className="p-8 border-b border-white/10 flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <GraduationCap className="text-blue-500" size={24} />
-                            <h3 className="text-xl font-black text-white tracking-tight">Active Student Cohort</h3>
+                <div className="glass-card !rounded-m3-xl overflow-hidden bg-gradient-to-br from-white/[0.02] to-transparent">
+                    <div className="p-10 border-b border-white/5 flex items-center justify-between">
+                        <div className="flex items-center space-x-5">
+                            <GraduationCap className="text-blue-500" size={28} />
+                            <h3 className="text-2xl font-black text-white tracking-tighter uppercase">Active Mentee Cohort</h3>
                         </div>
-                        <div className="px-4 py-2 bg-white/5 rounded-xl border border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500">
-                            Term: Jan - Mar 2026
+                        <div className="px-6 py-3 bg-white/5 rounded-2xl border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 shadow-inner">
+                            Term: Jan - April 2026
                         </div>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-white/[0.02]">
                                 <tr className="text-slate-500 text-[10px] uppercase font-black tracking-[0.3em]">
-                                    <th className="px-8 py-5">Mentee Name</th>
-                                    <th className="px-8 py-5">Placement Institution</th>
-                                    <th className="px-8 py-5">Attendance</th>
-                                    <th className="px-8 py-5">Visit Status</th>
-                                    <th className="px-8 py-5 text-right">Actions</th>
+                                    <th className="px-10 py-6">Mentee Identity</th>
+                                    <th className="px-10 py-6">Industry Placement</th>
+                                    <th className="px-10 py-6">Attendance Flux</th>
+                                    <th className="px-10 py-6">Site Status</th>
+                                    <th className="px-10 py-6 text-right">Review Hub</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5 font-medium">
                                 {[
-                                    { name: 'Alvin Mutie', institution: 'Safaricom PLC', attendance: 98, visit: 'Completed', color: 'bg-green-500' },
-                                    { name: 'Sarah Wilson', institution: 'KCB Bank', attendance: 85, visit: 'Pending', color: 'bg-blue-500' },
-                                    { name: 'Michael Chen', institution: 'Oracle Kenya', attendance: 72, visit: 'Scheduled', color: 'bg-orange-500' },
-                                    { name: 'Jane Doe', institution: 'Microsoft Africa', attendance: 100, visit: 'Completed', color: 'bg-green-500' },
+                                    { name: 'Alvin Mutie', institution: 'Safaricom PLC', attendance: 98, visit: 'Completed', color: 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' },
+                                    { name: 'Sarah Wilson', institution: 'KCB Bank', attendance: 85, visit: 'Pending', color: 'bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]' },
+                                    { name: 'Michael Chen', institution: 'Oracle Kenya', attendance: 72, visit: 'Scheduled', color: 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.5)]' },
+                                    { name: 'Jane Doe', institution: 'Microsoft Africa', attendance: 100, visit: 'Completed', color: 'bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]' },
                                 ].map((s, i) => (
-                                    <tr key={i} className="hover:bg-white/[0.03] transition-colors group">
-                                        <td className="px-8 py-6">
-                                            <div className="flex items-center space-x-3">
-                                                <div className="w-1.5 h-6 bg-blue-600 rounded-full group-hover:h-8 transition-all" />
-                                                <div>
-                                                    <p className="text-sm font-black text-white tracking-tight">{s.name}</p>
-                                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Comp. Science</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-8 py-6 text-slate-400 text-sm font-bold">{s.institution}</td>
-                                        <td className="px-8 py-6">
+                                    <tr key={i} className="hover:bg-white/[0.03] transition-all group cursor-pointer">
+                                        <td className="px-10 py-8">
                                             <div className="flex items-center space-x-4">
-                                                <div className="w-24 bg-white/5 h-1.5 rounded-full overflow-hidden">
-                                                    <div className={`h-full ${s.color}`} style={{ width: `${s.attendance}%` }} />
+                                                <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                                                <div>
+                                                    <p className="text-lg font-black text-white tracking-tighter group-hover:translate-x-1 transition-transform">{s.name}</p>
+                                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mt-0.5">Computing Faculty</p>
                                                 </div>
-                                                <span className="text-xs font-black text-white">{s.attendance}%</span>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-6">
-                                            <span className={`text-[10px] font-black uppercase tracking-tighter px-3 py-1 rounded-full ${s.visit === 'Completed' ? 'bg-green-600/20 text-green-400' :
-                                                    s.visit === 'Scheduled' ? 'bg-blue-600/20 text-blue-400' : 'bg-orange-600/20 text-orange-400'
+                                        <td className="px-10 py-8 text-slate-400 text-sm font-extrabold uppercase tracking-widest">{s.institution}</td>
+                                        <td className="px-10 py-8">
+                                            <div className="flex items-center space-x-5">
+                                                <div className="w-32 bg-white/5 h-2 rounded-full overflow-hidden shadow-inner">
+                                                    <div className={`h-full ${s.color} transition-all duration-1000`} style={{ width: `${s.attendance}%` }} />
+                                                </div>
+                                                <span className="text-xs font-black text-white tracking-widest">{s.attendance}%</span>
+                                            </div>
+                                        </td>
+                                        <td className="px-10 py-8">
+                                            <span className={`text-[10px] font-black uppercase tracking-[0.1em] px-4 py-1.5 rounded-full ${s.visit === 'Completed' ? 'bg-emerald-600/20 text-emerald-400 shadow-lg shadow-emerald-500/10' :
+                                                s.visit === 'Scheduled' ? 'bg-blue-600/20 text-blue-400 shadow-lg shadow-blue-500/10' : 'bg-orange-600/20 text-orange-400 shadow-lg shadow-orange-500/10'
                                                 }`}>
                                                 {s.visit}
                                             </span>
                                         </td>
-                                        <td className="px-8 py-6 text-right">
-                                            <button className="p-3 bg-white/5 text-slate-400 hover:text-white rounded-xl border border-white/5 hover:border-blue-500/30 transition-all opacity-0 group-hover:opacity-100">
-                                                <ArrowUpRight size={18} />
+                                        <td className="px-10 py-8 text-right">
+                                            <button className="p-3.5 bg-white/5 text-slate-400 hover:text-white rounded-2xl border border-white/5 hover:border-blue-500/30 transition-all opacity-0 group-hover:opacity-100 shadow-xl">
+                                                <ArrowUpRight size={20} />
                                             </button>
                                         </td>
                                     </tr>

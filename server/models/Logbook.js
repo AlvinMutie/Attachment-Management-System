@@ -39,8 +39,18 @@ const Logbook = sequelize.define('Logbook', {
         type: DataTypes.TEXT,
         allowNull: false
     },
-    attachmentUrl: {
-        type: DataTypes.STRING,
+    attachments: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: [],
+        comment: 'Array of attachment objects {url, type, name}'
+    },
+    aiRefined: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    aiDraft: {
+        type: DataTypes.TEXT,
         allowNull: true
     },
     status: {

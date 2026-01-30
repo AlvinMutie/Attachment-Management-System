@@ -25,16 +25,21 @@ const AcademicAssessments = () => {
     return (
         <DashboardLayout role="university_supervisor">
             <div className="space-y-12 animate-fade-in">
-                {/* Header */}
+                {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                    <div className="space-y-2">
-                        <span className="section-label">Grading Hub</span>
-                        <h1 className="text-4xl font-black text-white tracking-tighter">Academic Assessments</h1>
-                        <p className="text-slate-500 font-medium leading-relaxed">Evaluation of student performance and industrial compliance.</p>
+                    <div className="flex items-center gap-6">
+                        <div className="w-20 h-20 bg-blue-600 rounded-[2rem] flex items-center justify-center shadow-2xl shadow-blue-600/30 ring-1 ring-white/20">
+                            <ClipboardCheck className="text-white" size={40} />
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">Grading Hub</span>
+                            <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Academic <span className="text-blue-500">Assessments</span></h1>
+                            <p className="text-slate-500 font-medium leading-relaxed max-w-lg">Technical evaluation of student performance, workplace audits, and industrial compliance certification.</p>
+                        </div>
                     </div>
                     <button className="btn-primary px-8 py-3.5 flex items-center space-x-3 text-xs font-black uppercase tracking-widest shadow-2xl shadow-blue-900/40">
                         <Plus size={18} />
-                        <span>New Assessment</span>
+                        <span>New Report</span>
                     </button>
                 </div>
 

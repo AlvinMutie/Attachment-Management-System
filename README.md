@@ -1,112 +1,85 @@
-# ⚡ AttachPro: Attachment Management System
+# Attachment Management System (AMS)
 
-[![SaaS](https://img.shields.io/badge/Stack-SaaS%20MVP-blue)](https://attachpro.com)
-[![License](https://img.shields.io/badge/License-Institutional-green)](https://github.com)
+The Attachment Management System (AMS) is a high-performance, multi-tenant enterprise platform designed to digitize and optimize the professional internship (attachment) lifecycle. By integrating sophisticated oversight tools with automated reporting, AMS bridges the logistical gap between academic institutions, industrial partners, and students.
 
-**AttachPro** is a premium, institutional-grade SaaS platform designed to modernize the industrial attachment lifecycle. It replaces obsolete paperwork with a high-fidelity digital ecosystem that connects **Students**, **Industry Mentors**, and **Academic Supervisors** in real-time.
+## Core Capabilities
 
----
+### Institutional Multi-Tenancy
+Architected to support multiple independent organizations within a single deployment. Data isolation is enforced at the database level via institution-scoping, ensuring 100% cryptographic separation of institutional records.
 
-## 🌟 Key Functional Pillars
+### Advanced Presence Monitoring
+A secure, real-time presence tracking system utilizing dynamic QR-based verification. This provides industrial supervisors with a tamper-proof dashboard for student oversight and attendance velocity.
 
-### 📱 Secure QR Attendance
-Tamper-proof digital clocking system. Students verify presence using time-weighted QR tokens, providing institutions with irrefutable log-in data.
+### Automated Technical Reporting
+Leverages specialized processing to transform daily student activity logs into formalized technical reports. The system incorporates an AI-driven refinement engine to ensure high-fidelity documentation standards.
 
-### ✍️ Digital Logbooks
-Clean, intuitive interface for students to submit daily reflections and weekly summaries. Supports rich media and standardized reporting formats.
+### Administrative Command Center
+Comprehensive analytics dashboards for school administrators to monitor institutional performance metrics, manage student/supervisor registries, and generate audit-ready PDF summaries.
 
-### 📊 Real-Time Monitoring
-Role-matched dashboards for every stakeholder. University supervisors track progress remotely, reducing the need for physical site visits while increasing oversight quality.
+## Technical Architecture
 
-### 🛡️ Institutional Security
-Built with academic integrity in mind. Features **AES-256 Encryption**, **Role-Based Access Control (RBAC)**, and strict data isolation per institution.
+### Frontend Ecosystem
+- **Core Framework**: React.js with Vite for optimized build performance.
+- **UI Architecture**: Material 3 Design principles with customizable institutional branding.
+- **State Management**: Context API for secure, centralized authentication and global session state.
+- **Interactions**: Framer Motion for high-fidelity micro-animations and smooth UI transitions.
 
----
+### Backend Infrastructure
+- **Runtime Environment**: Node.js with Express.js.
+- **ORM & Data Layer**: Sequelize ORM managing a relational MySQL database.
+- **Security**: 
+  - JWT-based Role-Based Access Control (RBAC).
+  - Production-grade security headers via Helmet.
+  - TLS-ready environment configuration.
+- **Services**: Specialized engines for PDF generation (`pdfkit`) and CSV bulk data ingestion.
 
-## 👥 Stakeholder Value
+## Project Structure
 
-| Stakeholder | Primary Benefit | Core Feature |
-| :--- | :--- | :--- |
-| **Students** | Zero Paperwork | Digital Logbooks & QR Hub |
-| **Industry Supervisors** | Seamless Oversight | One-click Approvals & Radar View |
-| **University Admins** | Full Compliance | Automated Assessment & Tracking |
-| **Academic Staff** | Data-Driven Grading | Performance Analytics & Reports |
-
----
-
-## 🛠️ The Tech Stack
-
-### Frontend
-- **Framework**: React.js (Vite)
-- **Styling**: Tailwind CSS (Late-v4 features)
-- **Animations**: Framer Motion (Scroll reveal & interaction)
-- **Icons**: Lucide React
-
-### Backend
-- **Runtime**: Node.js (Express)
-- **ORM**: Sequelize
-- **Database**: MySQL / MariaDB (Multi-tenant structure)
-
----
-
-## 🚀 Getting Started
-
-### 1. Repository Setup
-```bash
-git clone https://github.com/your-repo/attachpro.git
-cd attachpro
+```text
+├── client/                     # Optimized React Frontend
+│   ├── src/
+│   │   ├── components/         # Standardized Atomic UI Components
+│   │   ├── context/            # Authentication & Branding Context
+│   │   ├── pages/              # Role-specific Administrative Portals
+│   │   └── utils/              # Centralized API Interface (Axios)
+├── server/                     # High-Performance Node.js API
+│   ├── config/                 # Database & Environment Configuration
+│   ├── controllers/            # Core Business Logic & Request Handlers
+│   ├── middleware/             # RBAC & Security Protocols
+│   ├── models/                 # Relational Data Schema Definitions
+│   └── services/               # Specialized AI & Reporting Services
+└── README.md                   # Technical Documentation
 ```
 
-### 2. Frontend Configuration
+## System Deployment
+
+### 1. Environment Configuration
+Clone the repository and install dependencies in both the `/client` and `/server` directories. Configure the backend `.env` file with the following parameters:
+- `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`
+- `JWT_SECRET`
+- `NODE_ENV` (development/production)
+
+### 2. Implementation & Development
+To launch the development environment:
 ```bash
-cd client
-npm install
+# In /server
+npm run dev
+
+# In /client
 npm run dev
 ```
 
-### 3. Backend Configuration
+### 3. Production Build
+To generate the optimized production assets:
 ```bash
-cd server
-npm install
-# Configure your .env with DATABASE_URL and JWT_SECRET
-npm start
+cd client
+npm run build
 ```
 
----
-
-## 📂 Project Architecture
-
-```text
-├── client/                 # React Application
-│   ├── src/
-│   │   ├── components/     # Reusable UI (Navbar, Footer, etc)
-│   │   ├── context/        # Auth & State Management
-│   │   ├── pages/          # Role-based Portal Views
-│   │   └── App.jsx         # Primary Routing Hub
-├── server/                 # Express API
-│   ├── models/             # Sequelize Data Schema
-│   ├── routes/             # RBAC Protected Endpoints
-│   └── index.js            # Server Entry Point
-└── README.md
-```
-
----
-
-## 🛡️ Compliance & Privacy
-
-AttachPro is built to respect local academic policies and international data protection standards.
-- **Data Sovereignty**: Institutions retain 100% ownership of student records.
-- **Privacy First**: No third-party tracking or data monetization.
-- **Uptime**: Architected for 99.9% operational reliability.
-
----
-
-## 📬 Contact & Support
-
-For institutional onboarding or technical inquiries, please contact:
+## Developer Information
 **Alvin Mutie**  
-📧 [mutiealvin0@gmail.com](mailto:mutiealvin0@gmail.com)  
-🌐 [AttachPro Official](http://localhost:5173)
+Professional Software Engineer  
+Email: [mutiealvin0@gmail.com](mailto:mutiealvin0@gmail.com)  
 
 ---
-*© 2026 AttachPro. Elevating Academic Standards through Technology.*
+*Copyright © 2026 AMS Project Group. All Rights Reserved.*

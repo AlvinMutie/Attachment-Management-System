@@ -35,21 +35,26 @@ const UserDirectory = () => {
     return (
         <DashboardLayout role="school_admin">
             <div className="space-y-12 animate-fade-in">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                    <div className="space-y-2">
-                        <span className="section-label">Identity Registry</span>
-                        <h1 className="text-4xl font-black text-white tracking-tighter">User Management</h1>
-                        <p className="text-slate-500 font-medium leading-relaxed">Administering 1,282 active platform accounts.</p>
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8 bg-blue-600/5 p-10 rounded-m3-xl border border-blue-600/10 backdrop-blur-md">
+                    <div className="flex items-center gap-8">
+                        <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-600/40 ring-1 ring-white/20">
+                            <Users className="text-white" size={44} />
+                        </div>
+                        <div className="space-y-1.5">
+                            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-blue-400 opacity-70">Identity Registry</span>
+                            <h1 className="text-4xl font-black text-white tracking-tighter uppercase leading-none">User <span className="text-blue-500">Registry</span></h1>
+                            <p className="text-slate-500 font-medium leading-relaxed max-w-md text-sm">Comprehensive administrative control of all active platform identities nodal point.</p>
+                        </div>
                     </div>
                     <div className="flex space-x-4">
-                        <button className="bg-white/5 text-slate-300 px-6 py-3.5 rounded-2xl border border-white/10 text-[10px] font-black uppercase tracking-widest flex items-center space-x-3 hover:bg-white/10 transition-all">
+                        <button className="bg-white/5 text-slate-300 px-6 py-4 rounded-2xl border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] flex items-center space-x-3 hover:bg-white/10 transition-all shadow-lg">
                             <Download size={18} />
-                            <span>Export CSV</span>
+                            <span>Export Registry</span>
                         </button>
-                        <button className="btn-primary px-8 py-3.5 flex items-center space-x-3 text-xs font-black uppercase tracking-widest">
+                        <button className="btn-primary px-8 py-4 flex items-center space-x-3 text-xs font-black uppercase tracking-[0.2em] !rounded-2xl">
                             <UserPlus size={18} />
-                            <span>Bulk Import</span>
+                            <span>Import Batch</span>
                         </button>
                     </div>
                 </div>
@@ -87,7 +92,7 @@ const UserDirectory = () => {
                 </div>
 
                 {/* Directory Table */}
-                <div className="glass-card overflow-hidden">
+                <div className="glass-card !rounded-m3-xl overflow-hidden border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent shadow-2xl">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-white/[0.02]">
@@ -118,7 +123,7 @@ const UserDirectory = () => {
                                             <td className="px-8 py-6 text-slate-400 text-xs font-bold">{s.supervisor}</td>
                                             <td className="px-8 py-6">
                                                 <span className={`text-[9px] font-black uppercase px-3 py-1 rounded-full ${s.status === 'Active' ? 'bg-green-600/20 text-green-400' :
-                                                        s.status === 'Pending' ? 'bg-orange-600/20 text-orange-400' : 'bg-red-600/20 text-red-400'
+                                                    s.status === 'Pending' ? 'bg-orange-600/20 text-orange-400' : 'bg-red-600/20 text-red-400'
                                                     }`}>
                                                     {s.status}
                                                 </span>
@@ -167,12 +172,12 @@ const UserDirectory = () => {
                 </div>
 
                 {/* Batch Actions footer */}
-                <div className="flex items-center justify-between px-4 py-8 bg-blue-600/5 rounded-[2.5rem] border border-blue-600/10 border-dashed animate-pulse">
-                    <p className="text-xs font-black text-blue-500 uppercase tracking-widest flex items-center space-x-3">
-                        <Shield size={16} />
+                <div className="flex items-center justify-between px-10 py-8 bg-blue-600/5 rounded-m3-xl border border-blue-600/10 border-dashed">
+                    <p className="text-xs font-black text-blue-500 uppercase tracking-[0.2em] flex items-center space-x-4">
+                        <Shield size={18} className="animate-pulse" />
                         <span>Ready for system-wide database sync...</span>
                     </p>
-                    <button className="text-blue-500 text-xs font-black uppercase tracking-widest hover:underline">Synchronize Now</button>
+                    <button className="bg-blue-600/10 text-blue-500 text-[10px] font-black uppercase tracking-[0.3em] px-6 py-3 rounded-xl hover:bg-blue-600 hover:text-white transition-all">Synchronize registry</button>
                 </div>
             </div>
         </DashboardLayout>
