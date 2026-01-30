@@ -1,3 +1,4 @@
+const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 const path = require('path');
@@ -33,7 +34,9 @@ app.use('/api/superadmin', require('./routes/superadminRoutes'));
 app.use('/api/school', require('./routes/schoolRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 app.use('/api/supervisor', require('./routes/supervisorRoutes'));
+app.use('/api/university', require('./routes/universityRoutes'));
 app.use('/api/student', require('./routes/studentRoutes'));
+app.use('/api/meetings', require('./routes/meetingRoutes'));
 
 // Basic Route
 app.get('/', (req, res) => {

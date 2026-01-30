@@ -39,6 +39,18 @@ const Logbook = sequelize.define('Logbook', {
         type: DataTypes.TEXT,
         allowNull: false
     },
+    dailyEntries: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: {
+            monday: '',
+            tuesday: '',
+            wednesday: '',
+            thursday: '',
+            friday: ''
+        },
+        comment: 'Structured daily logs {monday, tuesday, ...}'
+    },
     attachments: {
         type: DataTypes.JSON,
         allowNull: true,

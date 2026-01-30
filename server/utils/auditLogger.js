@@ -1,4 +1,4 @@
-const AuditLog = require('./AuditLog');
+const { AuditLog } = require('../models');
 
 /**
  * Create an audit log entry

@@ -2,6 +2,7 @@ import React from 'react';
 import {
     LayoutDashboard,
     BookOpen,
+    MapPin,
     UserCheck,
     Users,
     Settings,
@@ -125,6 +126,14 @@ const Sidebar = ({ isOpen, onClose }) => {
                             onClick={() => { navigate('/student/logbooks'); onClose(); }}
                         />
                     )}
+                    {role === 'student' && (
+                        <SidebarItem
+                            icon={MapPin}
+                            label="My Visits"
+                            active={location.pathname.includes('/student/visits')}
+                            onClick={() => { navigate('/student/visits'); onClose(); }}
+                        />
+                    )}
 
                     {role === 'industry_supervisor' && (
                         <>
@@ -139,6 +148,12 @@ const Sidebar = ({ isOpen, onClose }) => {
                                 label="Attendance"
                                 active={location.pathname === '/industry/attendance'}
                                 onClick={() => { navigate('/industry/attendance'); onClose(); }}
+                            />
+                            <SidebarItem
+                                icon={MapPin}
+                                label="Site Visits"
+                                active={location.pathname === '/industry/visits'}
+                                onClick={() => { navigate('/industry/visits'); onClose(); }}
                             />
                         </>
                     )}
@@ -156,6 +171,12 @@ const Sidebar = ({ isOpen, onClose }) => {
                                 label="Assessments"
                                 active={location.pathname === '/university/assessments'}
                                 onClick={() => { navigate('/university/assessments'); onClose(); }}
+                            />
+                            <SidebarItem
+                                icon={MapPin}
+                                label="Meeting Scheduler"
+                                active={location.pathname === '/university/meetings'}
+                                onClick={() => { navigate('/university/meetings'); onClose(); }}
                             />
                         </>
                     )}

@@ -23,10 +23,19 @@ const LogbookUpload = () => {
 
     const [formData, setFormData] = useState({
         weekNumber: 9,
-        startDate: '2026-01-19',
-        endDate: '2026-01-25',
-        summary: ''
+        startDate: '2026-01-26',
+        endDate: '2026-01-31',
+        summary: '',
+        dailyEntries: {
+            monday: '',
+            tuesday: '',
+            wednesday: '',
+            thursday: '',
+            friday: ''
+        }
     });
+
+    const [activeDay, setActiveDay] = useState('monday');
 
     const [refining, setRefining] = useState(false);
     const [refinedDraft, setRefinedDraft] = useState(null);
@@ -99,6 +108,7 @@ const LogbookUpload = () => {
             data.append('startDate', formData.startDate);
             data.append('endDate', formData.endDate);
             data.append('summary', formData.summary);
+            data.append('dailyEntries', JSON.stringify(formData.dailyEntries));
 
             files.forEach(file => {
                 data.append('evidenceFiles', file);
@@ -165,7 +175,46 @@ const LogbookUpload = () => {
                                         <label className="text-sm font-bold text-slate-400 uppercase tracking-widest">Submission Date</label>
                                         <div className="input-field w-full flex items-center space-x-3 opacity-50 select-none">
                                             <Calendar size={18} />
-                                            <span>Jan 26, 2026</span>
+                                            <span>Jan 30, 2026</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Daily Entries Section */}
+                                <div className="space-y-4">
+                                    <label className="text-sm font-bold text-slate-400 uppercase tracking-widest">Daily Activity Log</label>
+                                    <div className="flex bg-slate-900 p-1 rounded-xl gap-1 overflow-x-auto no-scrollbar">
+                                        {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day) => (
+                                            <button
+                                                key={day}
+                                                type="button"
+                                                onClick={() => setActiveDay(day)}
+                                                className={`flex-1 py-2 px-4 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeDay === day
+                                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
+                                                        : 'text-slate-500 hover:text-white hover:bg-white/5'
+                                                    }`}
+                                            >
+                                                {day.slice(0, 3)}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="animate-fade-in relative">
+                                        <textarea
+                                            rows={8}
+                                            value={formData.dailyEntries[activeDay]}
+                                            onChange={(e) => setFormData({
+                                                ...formData,
+                                                dailyEntries: {
+                                                    ...formData.dailyEntries,
+                                                    [activeDay]: e.target.value
+                                                }
+                                            })}
+                                            className="input-field w-full resize-none p-4"
+                                            placeholder={`Detail your technical activities for ${activeDay.charAt(0).toUpperCase() + activeDay.slice(1)}...`}
+                                        />
+                                        <div className="absolute bottom-4 right-4 text-[10px] font-black text-slate-600 uppercase tracking-widest pointer-events-none">
+                                            {activeDay}
                                         </div>
                                     </div>
                                 </div>

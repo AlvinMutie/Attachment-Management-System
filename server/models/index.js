@@ -6,6 +6,7 @@ const Logbook = require('./Logbook');
 const Attendance = require('./Attendance');
 const Assessment = require('./Assessment');
 const AuditLog = require('./AuditLog');
+const Meeting = require('./Meeting');
 const SystemSetting = require('./SystemSetting');
 
 // School - User
@@ -64,6 +65,19 @@ Assessment.belongsTo(User, { foreignKey: 'evaluatorId', as: 'evaluator' });
 User.hasMany(AuditLog, { foreignKey: 'userId', as: 'auditLogs' });
 AuditLog.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
+// Meeting Associations
+School.hasMany(Meeting, { foreignKey: 'schoolId', as: 'meetings' });
+Meeting.belongsTo(School, { foreignKey: 'schoolId', as: 'school' });
+
+User.hasMany(Meeting, { foreignKey: 'initiatorId', as: 'initiatedMeetings' });
+Meeting.belongsTo(User, { foreignKey: 'initiatorId', as: 'initiator' });
+
+Student.hasMany(Meeting, { foreignKey: 'studentId', as: 'meetings' });
+Meeting.belongsTo(Student, { foreignKey: 'student' });
+
+User.hasMany(Meeting, { foreignKey: 'industrySupervisorId', as: 'industryMeetings' });
+Meeting.belongsTo(User, { foreignKey: 'industrySupervisorId', as: 'industrySupervisor' });
+
 module.exports = {
     sequelize,
     School,
@@ -71,7 +85,9 @@ module.exports = {
     Student,
     Logbook,
     Attendance,
+    Attendance,
     Assessment,
+    Meeting,
     AuditLog,
     SystemSetting
 };
