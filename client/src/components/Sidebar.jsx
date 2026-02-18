@@ -15,7 +15,8 @@ import {
     Activity,
     History,
     FileSearch,
-    GraduationCap
+    GraduationCap,
+    MessageCircle
 } from 'lucide-react';
 
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -119,20 +120,26 @@ const Sidebar = ({ isOpen, onClose }) => {
                 <div className="py-4 border-t border-white/5">
                     <p className="px-5 text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4">Active Operations</p>
                     {role === 'student' && (
-                        <SidebarItem
-                            icon={BookOpen}
-                            label="Weekly Logs"
-                            active={location.pathname.includes('/logbooks')}
-                            onClick={() => { navigate('/student/logbooks'); onClose(); }}
-                        />
-                    )}
-                    {role === 'student' && (
-                        <SidebarItem
-                            icon={MapPin}
-                            label="My Visits"
-                            active={location.pathname.includes('/student/visits')}
-                            onClick={() => { navigate('/student/visits'); onClose(); }}
-                        />
+                        <>
+                            <SidebarItem
+                                icon={BookOpen}
+                                label="Weekly Logs"
+                                active={location.pathname.includes('/logbooks')}
+                                onClick={() => { navigate('/student/logbooks'); onClose(); }}
+                            />
+                            <SidebarItem
+                                icon={MapPin}
+                                label="My Visits"
+                                active={location.pathname.includes('/student/visits')}
+                                onClick={() => { navigate('/student/visits'); onClose(); }}
+                            />
+                            <SidebarItem
+                                icon={MessageCircle}
+                                label="Communication Hub"
+                                active={location.pathname.includes('/student/messages')}
+                                onClick={() => { navigate('/student/messages'); onClose(); }}
+                            />
+                        </>
                     )}
 
                     {role === 'industry_supervisor' && (
@@ -154,6 +161,12 @@ const Sidebar = ({ isOpen, onClose }) => {
                                 label="Site Visits"
                                 active={location.pathname === '/industry/visits'}
                                 onClick={() => { navigate('/industry/visits'); onClose(); }}
+                            />
+                            <SidebarItem
+                                icon={MessageCircle}
+                                label="Communication Hub"
+                                active={location.pathname === '/industry/messages'}
+                                onClick={() => { navigate('/industry/messages'); onClose(); }}
                             />
                         </>
                     )}
@@ -177,6 +190,12 @@ const Sidebar = ({ isOpen, onClose }) => {
                                 label="Meeting Scheduler"
                                 active={location.pathname === '/university/meetings'}
                                 onClick={() => { navigate('/university/meetings'); onClose(); }}
+                            />
+                            <SidebarItem
+                                icon={MessageCircle}
+                                label="Communication Hub"
+                                active={location.pathname === '/university/messages'}
+                                onClick={() => { navigate('/university/messages'); onClose(); }}
                             />
                         </>
                     )}

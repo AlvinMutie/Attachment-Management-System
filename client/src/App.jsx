@@ -9,6 +9,7 @@ import Signup from './pages/auth/Signup';
 import LandingPage from './pages/LandingPage';
 import Settings from './pages/Settings';
 import LegalPage from './pages/LegalPage';
+import CommunicationHub from './pages/CommunicationHub';
 
 // Student
 import StudentDashboard from './pages/student/Dashboard';
@@ -61,6 +62,7 @@ function App() {
             <Route path="/student/profile" element={<PrivateRoute roles={['student']}><StudentProfile /></PrivateRoute>} />
             <Route path="/student/logbooks" element={<PrivateRoute roles={['student']}><LogbookUpload /></PrivateRoute>} />
             <Route path="/student/visits" element={<PrivateRoute roles={['student']}><VisitPortal /></PrivateRoute>} />
+            <Route path="/student/messages" element={<PrivateRoute roles={['student']}><CommunicationHub /></PrivateRoute>} />
 
             {/* Industry Supervisor */}
             <Route path="/industry/dashboard" element={<PrivateRoute roles={['industry_supervisor']}><IndustryDashboard /></PrivateRoute>} />
@@ -68,12 +70,14 @@ function App() {
             <Route path="/industry/presence" element={<PrivateRoute roles={['industry_supervisor']}><PresenceHub /></PrivateRoute>} />
             <Route path="/industry/attendance" element={<PrivateRoute roles={['industry_supervisor']}><AttendanceMonitoring /></PrivateRoute>} />
             <Route path="/industry/visits" element={<PrivateRoute roles={['industry_supervisor']}><VisitPortal /></PrivateRoute>} />
+            <Route path="/industry/messages" element={<PrivateRoute roles={['industry_supervisor']}><CommunicationHub /></PrivateRoute>} />
 
             {/* University Supervisor */}
             <Route path="/university/dashboard" element={<PrivateRoute roles={['university_supervisor']}><UniversityDashboard /></PrivateRoute>} />
             <Route path="/university/profile" element={<PrivateRoute roles={['university_supervisor']}><UniversityProfile /></PrivateRoute>} />
             <Route path="/university/assessments" element={<PrivateRoute roles={['university_supervisor']}><AcademicAssessments /></PrivateRoute>} />
             <Route path="/university/meetings" element={<PrivateRoute roles={['university_supervisor']}><MeetingScheduler /></PrivateRoute>} />
+            <Route path="/university/messages" element={<PrivateRoute roles={['university_supervisor']}><CommunicationHub /></PrivateRoute>} />
 
             {/* School Admin Routes */}
             <Route path="/school_admin/dashboard" element={<PrivateRoute roles={['school_admin']}><AdminDashboard /></PrivateRoute>} />

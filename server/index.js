@@ -37,6 +37,7 @@ app.use('/api/supervisor', require('./routes/supervisorRoutes'));
 app.use('/api/university', require('./routes/universityRoutes'));
 app.use('/api/student', require('./routes/studentRoutes'));
 app.use('/api/meetings', require('./routes/meetingRoutes'));
+app.use('/api/messages', require('./routes/messageRoutes'));
 
 // Basic Route
 app.get('/', (req, res) => {

@@ -8,6 +8,7 @@ const Assessment = require('./Assessment');
 const AuditLog = require('./AuditLog');
 const Meeting = require('./Meeting');
 const SystemSetting = require('./SystemSetting');
+const Message = require('./Message');
 
 // School - User
 School.hasMany(User, { foreignKey: 'schoolId', as: 'users' });
@@ -75,8 +76,18 @@ Meeting.belongsTo(User, { foreignKey: 'initiatorId', as: 'initiator' });
 Student.hasMany(Meeting, { foreignKey: 'studentId', as: 'meetings' });
 Meeting.belongsTo(Student, { foreignKey: 'student' });
 
-User.hasMany(Meeting, { foreignKey: 'industrySupervisorId', as: 'industryMeetings' });
+User.hasMany(Meeting, { foreignKey: 'industrySupervisorId', as: 'industrySupervisor' });
 Meeting.belongsTo(User, { foreignKey: 'industrySupervisorId', as: 'industrySupervisor' });
+
+// Message Associations
+School.hasMany(Message, { foreignKey: 'schoolId', as: 'messages' });
+Message.belongsTo(School, { foreignKey: 'schoolId', as: 'school' });
+
+User.hasMany(Message, { foreignKey: 'senderId', as: 'sentMessages' });
+Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
+
+User.hasMany(Message, { foreignKey: 'receiverId', as: 'receivedMessages' });
+Message.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });
 
 module.exports = {
     sequelize,
@@ -89,5 +100,7 @@ module.exports = {
     Assessment,
     Meeting,
     AuditLog,
-    SystemSetting
+    AuditLog,
+    SystemSetting,
+    Message
 };

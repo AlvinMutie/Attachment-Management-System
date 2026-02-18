@@ -1,102 +1,187 @@
-# Attachment Management System (AMS)
+# 📋 Attachment Management System (AMS)
 
-The Attachment Management System (AMS) is a high-performance, multi-tenant enterprise platform designed to digitize and optimize the professional internship (attachment) lifecycle. By integrating sophisticated oversight tools with automated reporting, AMS bridges the logistical gap between academic institutions, industrial partners, and students.
+A full-stack web platform that digitizes and streamlines the entire student industrial attachment (internship) process — connecting students, industry supervisors, university supervisors, and school administrators in one place.
 
+---
 
-## Strategic Value Proposition
+## 🧩 The Problem It Solves
 
-### The Problem
-Traditional industrial attachment programs suffer from critical operational inefficiencies:
-- **Fragmented Oversight**: Universities lack real-time visibility into student attendance and progress, relying on periodic physical visits.
-- **Manual Data Silos**: Physical logbooks are prone to damage, loss, and falsification, making historical data verification impossible.
-- **Coordination Friction**: Scheduling assessments between students, industry supervisors, and academic staff is often chaotic and inefficient.
-- **Lack of Standardized Metrics**: Evaluating student performance across diverse industries is difficult without a unified framework.
+Managing student industrial attachments is traditionally a mess of paperwork, physical logbooks, phone calls, and manual sign-offs. Key pain points include:
 
-### The Solution
-AMS replaces these outdated manual processes with a centralized, data-driven ecosystem:
-- **Real-Time Verification**: GPS-enabled attendance and digital logbooks ensure 100% data integrity and accountability.
-- **Unified Stakeholder Loop**: Seamlessly connects Students, Industry Supervisors, and University Staff in a single collaborative environment.
-- **Automated Compliance**: Enforces standardized reporting intervals and assessment criteria, ensuring all regulatory requirements are met automatically.
-- **Actionable Intelligence**: Transforms raw activity data into comprehensive performance analytics for institutional decision-making.
+- **No real-time visibility** — Universities can't track student attendance or progress without physical visits.
+- **Paper logbooks** — Easily lost, damaged, or falsified. No way to verify entries after the fact.
+- **Scattered communication** — Students, industry supervisors, and university staff coordinate through emails and calls with no central record.
+- **Inconsistent assessments** — No standardized way to evaluate students across different industries.
+- **Manual admin overhead** — School administrators spend hours managing student placements, generating reports, and chasing updates.
 
-## Core Capabilities
+---
 
-### Institutional Multi-Tenancy
-Architected to support multiple independent organizations within a single deployment. Data isolation is enforced at the database level via institution-scoping, ensuring 100% cryptographic separation of institutional records.
+## ✅ How AMS Solves It
 
-### Advanced Presence Monitoring
-A secure, real-time presence tracking system utilizing dynamic QR-based verification. This provides industrial supervisors with a tamper-proof dashboard for student oversight and attendance velocity.
+AMS replaces the entire manual workflow with a centralized digital platform:
 
-### Automated Technical Reporting
-Leverages specialized processing to transform daily student activity logs into formalized technical reports. The system incorporates an AI-driven refinement engine to ensure high-fidelity documentation standards.
+| Feature | What It Does |
+|---|---|
+| **Digital Logbooks** | Students submit daily work logs online; supervisors review and approve them digitally. |
+| **QR Attendance** | Students check in/out via QR code scan, giving supervisors a tamper-proof attendance record. |
+| **Assessments** | University and industry supervisors conduct structured evaluations directly on the platform. |
+| **Meeting Scheduler** | University supervisors can schedule and manage visits/meetings with their assigned students. |
+| **Communication Hub** | Built-in messaging between students and supervisors — no need for external apps. |
+| **School Admin Dashboard** | Admins manage student registrations, school profiles, and generate PDF reports. |
+| **Super Admin Panel** | Platform-wide oversight: manage all schools, users, system settings, and audit logs. |
+| **AI-Assisted Reports** | Student logbook entries can be refined into formal technical reports automatically. |
+| **Student ID Cards** | Generate printable student ID cards with school branding and student details. |
 
-### Administrative Command Center
-Comprehensive analytics dashboards for school administrators to monitor institutional performance metrics, manage student/supervisor registries, and generate audit-ready PDF summaries.
+---
 
-## Technical Architecture
+## 👥 User Roles
 
-### Frontend Ecosystem
-- **Core Framework**: React.js with Vite for optimized build performance.
-- **UI Architecture**: Material 3 Design principles with customizable institutional branding.
-- **State Management**: Context API for secure, centralized authentication and global session state.
-- **Interactions**: Framer Motion for high-fidelity micro-animations and smooth UI transitions.
+The system supports **6 distinct roles**, each with their own dashboard and permissions:
 
-### Backend Infrastructure
-- **Runtime Environment**: Node.js with Express.js.
-- **ORM & Data Layer**: Sequelize ORM managing a relational MySQL database.
-- **Security**: 
-  - JWT-based Role-Based Access Control (RBAC).
-  - Production-grade security headers via Helmet.
-  - TLS-ready environment configuration.
-- **Services**: Specialized engines for PDF generation (`pdfkit`) and CSV bulk data ingestion.
+| Role | Access |
+|---|---|
+| **Student** | Submit logbooks, view attendance, check assessments, message supervisors |
+| **Industry Supervisor** | Mark attendance, review/approve logbooks, assess students, message students |
+| **University Supervisor** | Assess students, schedule meetings, view assigned students' progress |
+| **School Admin** | Manage students & supervisors for their school, generate reports |
+| **Super Admin** | Manage all schools, users, system settings, and view audit logs |
 
-## Project Structure
+---
 
-```text
-├── client/                     # Optimized React Frontend
-│   ├── src/
-│   │   ├── components/         # Standardized Atomic UI Components
-│   │   ├── context/            # Authentication & Branding Context
-│   │   ├── pages/              # Role-specific Administrative Portals
-│   │   └── utils/              # Centralized API Interface (Axios)
-├── server/                     # High-Performance Node.js API
-│   ├── config/                 # Database & Environment Configuration
-│   ├── controllers/            # Core Business Logic & Request Handlers
-│   ├── middleware/             # RBAC & Security Protocols
-│   ├── models/                 # Relational Data Schema Definitions
-│   └── services/               # Specialized AI & Reporting Services
-└── README.md                   # Technical Documentation
+## 🛠️ Tech Stack
+
+### Frontend
+- **React.js** (Vite) — Fast, component-based UI
+- **Material 3 Design** — Clean, modern interface with school branding support
+- **Framer Motion** — Smooth animations and page transitions
+- **Context API** — Global auth and session state management
+
+### Backend
+- **Node.js + Express.js** — RESTful API server
+- **Sequelize ORM + MySQL** — Relational database with structured data models
+- **JWT Authentication** — Secure, role-based access control
+- **Helmet.js** — Security headers for production hardening
+- **PDFKit** — Server-side PDF generation for reports and ID cards
+- **Multer** — File upload handling (photos, documents)
+
+---
+
+## 📁 Project Structure
+
+```
+AMS/
+├── client/                   # React frontend (Vite)
+│   └── src/
+│       ├── pages/            # Role-specific dashboards & pages
+│       │   ├── student/
+│       │   ├── industry/
+│       │   ├── university/
+│       │   ├── school_admin/
+│       │   ├── admin/
+│       │   └── superadmin/
+│       ├── components/       # Reusable UI components
+│       ├── context/          # Auth & branding context
+│       └── utils/            # Axios API helpers
+│
+├── server/                   # Node.js + Express backend
+│   ├── controllers/          # Business logic & request handlers
+│   ├── models/               # Sequelize data models
+│   │   ├── User.js
+│   │   ├── Student.js
+│   │   ├── School.js
+│   │   ├── Logbook.js
+│   │   ├── Attendance.js
+│   │   ├── Assessment.js
+│   │   ├── Meeting.js
+│   │   ├── Message.js
+│   │   └── AuditLog.js
+│   ├── routes/               # API route definitions
+│   ├── middleware/           # Auth & role-based access middleware
+│   ├── services/             # PDF generation, AI report refinement
+│   └── utils/                # Shared utilities
+│
+├── DEPLOYMENT_GUIDE.md
+├── RUN_GUIDE.md
+└── README.md
 ```
 
-## System Deployment
+---
 
-### 1. Environment Configuration
-Clone the repository and install dependencies in both the `/client` and `/server` directories. Configure the backend `.env` file with the following parameters:
-- `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`
-- `JWT_SECRET`
-- `NODE_ENV` (development/production)
+## 🚀 Getting Started
 
-### 2. Implementation & Development
-To launch the development environment:
+### Prerequisites
+- Node.js (v18+)
+- MySQL database
+- npm
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/AlvinMutie/AM-System.git
+cd AM-System
+```
+
+### 2. Configure the backend
+Create a `.env` file in the `/server` directory:
+```env
+DB_HOST=localhost
+DB_USER=your_db_user
+DB_PASS=your_db_password
+DB_NAME=ams_db
+JWT_SECRET=your_jwt_secret
+NODE_ENV=development
+PORT=5000
+```
+
+### 3. Install dependencies
+```bash
+# Backend
+cd server
+npm install
+
+# Frontend
+cd ../client
+npm install
+```
+
+### 4. Run the development servers
 ```bash
 # In /server
 npm run dev
 
-# In /client
+# In /client (separate terminal)
 npm run dev
 ```
 
-### 3. Production Build
-To generate the optimized production assets:
-```bash
-cd client
-npm run build
-```
+The frontend will be available at `http://localhost:5173` and the API at `http://localhost:5000`.
 
-## Developer Information
-**Alvin Mutie**  
-Professional Software Engineer  
-Email: [mutiealvin0@gmail.com](mailto:mutiealvin0@gmail.com)  
+> For full deployment instructions, see [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md).  
+> For a quick local run walkthrough, see [RUN_GUIDE.md](./RUN_GUIDE.md).
 
 ---
-*Copyright © 2026 AMS Project Group. All Rights Reserved.*
+
+## 🔐 Default Login Credentials
+
+After seeding the database, you can log in with the following test accounts:
+
+| Role | Email | Password |
+|---|---|---|
+| Super Admin | `superadmin@ams.com` | `password123` |
+| School Admin | `schooladmin@ams.com` | `password123` |
+| Student | `student@ams.com` | `password123` |
+| Industry Supervisor | `industry@ams.com` | `password123` |
+| University Supervisor | `university@ams.com` | `password123` |
+
+> ⚠️ Change all default passwords before deploying to production.
+
+---
+
+## 👨‍💻 Developer
+
+**Alvin Mutie**  
+Software Engineer  
+📧 [mutiealvin0@gmail.com](mailto:mutiealvin0@gmail.com)  
+🐙 [github.com/AlvinMutie](https://github.com/AlvinMutie)
+
+---
+
+*© 2026 AMS Project. All Rights Reserved.*
