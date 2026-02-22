@@ -15,7 +15,10 @@ const getDashboardAnalytics = async (req, res) => {
             totalUsers,
             totalStudents,
             activeAttachments,
-            recentActivity
+            recentActivity,
+            totalApprovedLogbooks,
+            totalLogbooks,
+            totalIndustrySupervisors
         ] = await Promise.all([
             School.count(),
             User.count(),
@@ -41,8 +44,15 @@ const getDashboardAnalytics = async (req, res) => {
                     as: 'user',
                     attributes: ['name', 'email', 'role']
                 }]
-            })
+            }),
+            Logbook.count({ where: { status: 'approved' } }),
+            Logbook.count(),
+            User.count({ where: { role: 'industry_supervisor' } })
         ]);
+
+        const globalApprovalRate = totalLogbooks > 0
+            ? Math.round((totalApprovedLogbooks / totalLogbooks) * 100)
+            : 0;
 
         // Get school distribution by status
         const schoolsByStatus = await School.findAll({
@@ -69,7 +79,9 @@ const getDashboardAnalytics = async (req, res) => {
                     totalSchools,
                     totalUsers,
                     totalStudents,
-                    activeAttachments
+                    activeAttachments,
+                    globalApprovalRate,
+                    totalIndustrySupervisors
                 },
                 schoolsByStatus,
                 usersByRole,
@@ -106,19 +118,41 @@ const getAllSchools = async (req, res) => {
             limit: parseInt(limit),
             offset: parseInt(offset),
             order: [['createdAt', 'DESC']],
-            include: [{
-                model: User,
-                as: 'users',
-                attributes: ['id'],
-                separate: true
-            }]
+            include: [
+                {
+                    model: User,
+                    as: 'users',
+                    attributes: ['id'],
+                    separate: true
+                },
+                {
+                    model: Student,
+                    as: 'students',
+                    attributes: ['id'],
+                    separate: true
+                },
+                {
+                    model: Logbook,
+                    as: 'logbooks',
+                    attributes: ['id', 'status'],
+                    separate: true
+                }
+            ]
         });
 
-        // Add user count to each school
-        const schoolsWithCounts = schools.map(school => ({
-            ...school.toJSON(),
-            userCount: school.users.length
-        }));
+        // Add metrics to each school
+        const schoolsWithCounts = schools.map(school => {
+            const schoolData = school.toJSON();
+            return {
+                ...schoolData,
+                userCount: schoolData.users.length,
+                studentCount: schoolData.students.length,
+                logbookCount: schoolData.logbooks.length,
+                approvalRate: schoolData.logbooks.length > 0
+                    ? Math.round((schoolData.logbooks.filter(l => l.status === 'approved').length / schoolData.logbooks.length) * 100)
+                    : 0
+            };
+        });
 
         res.json({
             success: true,
@@ -143,9 +177,6 @@ const getAllSchools = async (req, res) => {
  */
 const createSchool = async (req, res) => {
     try {
-        console.log('--- CREATE SCHOOL DEBUG ---');
-        console.log('req.body:', JSON.stringify(req.body, null, 2));
-        console.log('req.file:', req.file ? req.file.filename : 'No file');
 
         const { name, logo, address, contactEmail, primaryColor, adminName, adminEmail, adminPassword } = req.body;
         let finalLogo = logo;
@@ -466,6 +497,48 @@ const resetUserPassword = async (req, res) => {
 };
 
 /**
+ * Reset user password directly (Super Admin authority)
+ */
+const resetPasswordDirect = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { newPassword } = req.body;
+
+        if (!newPassword || newPassword.length < 6) {
+            return res.status(400).json({ success: false, message: 'Password must be at least 6 characters long' });
+        }
+
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Direct password update (hooks in User model will hash it)
+        user.password = newPassword;
+        await user.save();
+
+        // Log audit
+        await logAudit({
+            userId: req.user.id,
+            action: 'DIRECT_PASSWORD_RESET',
+            targetType: 'User',
+            targetId: user.id,
+            metadata: { userEmail: user.email, actionBy: 'super_admin' },
+            ipAddress: req.ip,
+            userAgent: req.get('user-agent')
+        });
+
+        res.json({
+            success: true,
+            message: `Password for ${user.email} has been updated directly.`
+        });
+    } catch (error) {
+        console.error('Direct reset password error:', error);
+        res.status(500).json({ success: false, message: 'Failed to update password directly' });
+    }
+};
+
+/**
  * Reset root admin password for a specific school
  */
 const resetSchoolAdminPassword = async (req, res) => {
@@ -745,6 +818,7 @@ module.exports = {
     resetUserPassword,
     resetSchoolAdminPassword,
     toggleUserLock,
+    resetPasswordDirect,
     getAuditLogs,
     getSystemHealth,
     impersonateUser

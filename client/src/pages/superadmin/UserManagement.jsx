@@ -1,9 +1,23 @@
 import { useEffect, useState } from 'react';
-import { Search, Lock, Unlock, RotateCcw, UserCog, Shield, Globe, Mail, User, Users, VenetianMask } from 'lucide-react';
-import { getUsers, updateUserRole, resetPassword, lockUser, impersonateUser } from '../../utils/superadminApi';
+import { Search, Lock, Unlock, RotateCcw, UserCog, Shield, Globe, Mail, User, Users, VenetianMask, Key } from 'lucide-react';
+import { getUsers, updateUserRole, resetPassword, lockUser, impersonateUser, resetPasswordDirect } from '../../utils/superadminApi';
 import { useNavigate } from 'react-router-dom';
 
 const UserManagement = () => {
+
+    const handleDirectReset = async (user) => {
+        const newPassword = prompt(`Enter new direct password for ${user.email} (min 6 chars):`);
+        if (newPassword && newPassword.length >= 6) {
+            try {
+                await resetPasswordDirect(user.id, newPassword);
+                alert('Password updated successfully');
+            } catch (error) {
+                alert(error.response?.data?.message || 'Failed to update password');
+            }
+        } else if (newPassword) {
+            alert('Password too short');
+        }
+    };
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -246,9 +260,16 @@ const UserManagement = () => {
                                                     <button
                                                         onClick={() => handleResetPassword(user)}
                                                         className="p-2 rounded-lg bg-blue-600/10 text-blue-400 hover:bg-blue-600 hover:text-white transition-all border border-blue-500/20"
-                                                        title="Reset Password"
+                                                        title="Send Reset Email"
                                                     >
                                                         <RotateCcw size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDirectReset(user)}
+                                                        className="p-2 rounded-lg bg-emerald-600/10 text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all border border-emerald-500/20"
+                                                        title="Direct Password Override"
+                                                    >
+                                                        <Key size={16} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleImpersonateUser(user)}

@@ -132,7 +132,8 @@ const SchoolManagement = () => {
                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">School</th>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Contact Details</th>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Status</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Users</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Population</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Performance</th>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Actions</th>
                                 </tr>
                             </thead>
@@ -168,17 +169,29 @@ const SchoolManagement = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
-                                            {getStatusBadge(school.status)}
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex items-center gap-2">
+                                                    <UsersIcon size={12} className="text-indigo-400" />
+                                                    <span className="text-xs font-bold text-white">{school.studentCount || 0} Students</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Shield size={12} className="text-blue-400" />
+                                                    <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">{school.userCount || 0} Total Staff</span>
+                                                </div>
+                                            </div>
                                         </td>
                                         <td className="px-6 py-5">
-                                            <div className="flex items-center gap-2">
-                                                <div className="flex -space-x-2">
-                                                    <div className="w-7 h-7 rounded-full bg-indigo-600 border-2 border-slate-900 flex items-center justify-center z-10">
-                                                        <UsersIcon size={12} className="text-white" />
-                                                    </div>
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
+                                                    <span className="text-slate-500">Approval Rate</span>
+                                                    <span className={school.approvalRate > 70 ? 'text-emerald-400' : 'text-amber-400'}>{school.approvalRate}%</span>
                                                 </div>
-                                                <span className="text-sm font-bold text-white tracking-tight">{school.userCount || 0}</span>
-                                                <span className="text-[10px] text-slate-500 uppercase font-black">Active</span>
+                                                <div className="h-1 w-24 bg-white/5 rounded-full overflow-hidden">
+                                                    <div
+                                                        className={`h-full rounded-full transition-all duration-1000 ${school.approvalRate > 70 ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                                                        style={{ width: `${school.approvalRate}%` }}
+                                                    />
+                                                </div>
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">

@@ -75,6 +75,11 @@ export const lockUser = async (id, locked) => {
     return response.data;
 };
 
+export const resetPasswordDirect = async (id, newPassword) => {
+    const response = await apiClient.post(`/users/${id}/reset-password-direct`, { newPassword });
+    return response.data;
+};
+
 // Also reuse the exact impersonate logic we added to the theOne feature previously.
 export const impersonateUser = async (id) => {
     // The previous implementation mapped this route under /api/the-one/impersonate

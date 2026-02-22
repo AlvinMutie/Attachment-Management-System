@@ -14,7 +14,8 @@ const {
     toggleUserLock,
     getAuditLogs,
     getSystemHealth,
-    impersonateUser
+    impersonateUser,
+    resetPasswordDirect
 } = require('../controllers/superadminController');
 const { uploadLogo } = require('../middleware/uploadMiddleware');
 
@@ -37,6 +38,7 @@ router.get('/users', getGlobalUsers);
 router.patch('/users/:id/role', updateUserRole);
 router.post('/users/:id/reset-password', resetUserPassword);
 router.patch('/users/:id/lock', toggleUserLock);
+router.post('/users/:id/reset-password-direct', resetPasswordDirect);
 router.post('/users/:id/impersonate', impersonateUser);
 
 // Audit Logs

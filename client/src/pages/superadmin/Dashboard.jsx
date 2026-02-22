@@ -100,25 +100,25 @@ const Dashboard = () => {
                     trend="+12%"
                 />
                 <StatCard
+                    title="Industry Partners"
+                    value={analytics?.metrics?.totalIndustrySupervisors || 0}
+                    icon={Briefcase}
+                    color="bg-emerald-600"
+                    trend="active"
+                />
+                <StatCard
+                    title="Approval Rate"
+                    value={`${analytics?.metrics?.globalApprovalRate || 0}%`}
+                    icon={Activity}
+                    color="bg-amber-600"
+                    trend="optimized"
+                />
+                <StatCard
                     title="Global Users"
                     value={analytics?.metrics?.totalUsers || 0}
                     icon={Users}
                     color="bg-blue-600"
                     trend="+4.2k"
-                />
-                <StatCard
-                    title="Active Students"
-                    value={analytics?.metrics?.totalStudents || 0}
-                    icon={GraduationCap}
-                    color="bg-purple-600"
-                    trend="+18%"
-                />
-                <StatCard
-                    title="Live Attachments"
-                    value={analytics?.metrics?.activeAttachments || 0}
-                    icon={Briefcase}
-                    color="bg-rose-600"
-                    trend="vibrant"
                 />
             </div>
 
