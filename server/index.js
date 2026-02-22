@@ -39,6 +39,7 @@ app.use('/api/student', require('./routes/studentRoutes'));
 app.use('/api/meetings', require('./routes/meetingRoutes'));
 app.use('/api/messages', require('./routes/messageRoutes'));
 app.use('/api/the-one', require('./routes/theOneRoutes'));
+app.use('/api/inquiry', require('./routes/inquiryRoutes'));
 
 // Basic Route
 app.get('/', (req, res) => {
@@ -60,6 +61,13 @@ app.use((err, req, res, next) => {
 // Port configuration
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// Sync database (creates missing tables only, never alters existing ones) then start server
+sequelize.sync().then(() => {
+    console.log('✅ Database synced');
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}).catch((err) => {
+    console.error('❌ Database sync failed:', err);
+    process.exit(1);
 });

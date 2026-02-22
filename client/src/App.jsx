@@ -10,6 +10,7 @@ import LandingPage from './pages/LandingPage';
 import Settings from './pages/Settings';
 import LegalPage from './pages/LegalPage';
 import CommunicationHub from './pages/CommunicationHub';
+import RequestAccess from './pages/RequestAccess';
 
 // Student
 import StudentDashboard from './pages/student/Dashboard';
@@ -55,6 +56,7 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/request-access" element={<RequestAccess />} />
             <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
 
             {/* Student Routes */}

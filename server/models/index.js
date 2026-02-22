@@ -9,6 +9,7 @@ const AuditLog = require('./AuditLog');
 const Meeting = require('./Meeting');
 const SystemSetting = require('./SystemSetting');
 const Message = require('./Message');
+const Inquiry = require('./Inquiry');
 
 // School - User
 School.hasMany(User, { foreignKey: 'schoolId', as: 'users' });
@@ -96,11 +97,10 @@ module.exports = {
     Student,
     Logbook,
     Attendance,
-    Attendance,
     Assessment,
     Meeting,
     AuditLog,
-    AuditLog,
     SystemSetting,
-    Message
+    Message,
+    Inquiry
 };

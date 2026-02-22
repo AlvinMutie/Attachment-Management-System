@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
     Users,
-    School,
+    Building2,
     GraduationCap,
     Briefcase,
     Activity,
@@ -9,7 +9,9 @@ import {
     TrendingUp,
     ShieldCheck,
     Globe,
-    Zap
+    Zap,
+    VenetianMask,
+    History
 } from 'lucide-react';
 import { getDashboardAnalytics } from '../../utils/superadminApi';
 
