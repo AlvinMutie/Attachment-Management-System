@@ -1,29 +1,27 @@
 import { useEffect, useState } from 'react';
-import { Search, Lock, Unlock, RotateCcw, UserCog, Shield, Globe, Mail, User, Users, VenetianMask, Key } from 'lucide-react';
-import { getUsers, updateUserRole, resetPassword, lockUser, impersonateUser, resetPasswordDirect } from '../../utils/superadminApi';
+import {
+    Search, Lock, Unlock, RotateCcw, UserCog, Shield,
+    Globe, Mail, User, Users, VenetianMask, Key,
+    Filter, ChevronLeft, ChevronRight
+} from 'lucide-react';
+import {
+    getUsers, updateUserRole, resetPassword,
+    lockUser, impersonateUser, resetPasswordDirect
+} from '../../utils/superadminApi';
 import { useNavigate } from 'react-router-dom';
 
 const UserManagement = () => {
-
-    const handleDirectReset = async (user) => {
-        const newPassword = prompt(`Enter new direct password for ${user.email} (min 6 chars):`);
-        if (newPassword && newPassword.length >= 6) {
-            try {
-                await resetPasswordDirect(user.id, newPassword);
-                alert('Password updated successfully');
-            } catch (error) {
-                alert(error.response?.data?.message || 'Failed to update password');
-            }
-        } else if (newPassword) {
-            alert('Password too short');
-        }
-    };
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [roleFilter, setRoleFilter] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
-    const [pagination, setPagination] = useState({ page: 1, limit: 10 });
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 1
+    });
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -85,48 +83,46 @@ const UserManagement = () => {
     };
 
     const handleImpersonateUser = async (user) => {
-        // Prevent super admins from impersonating other super admins to avoid inception issues
         if (user.role === 'super_admin') {
-            alert('Cannot log in as another system administrator.');
+            alert('Cannot impersonate another system administrator.');
             return;
         }
 
-        if (confirm(`Log in as ${user.name}? You will be switched to their account.`)) {
+        if (confirm(`Access system as ${user.name}? You will be temporarily logged in as this user.`)) {
             try {
                 const response = await impersonateUser(user.id);
-
-                // Store the current superadmin token
-                const currentUserString = localStorage.getItem('ams_user');
-                if (currentUserString) {
-                    localStorage.setItem('ams_superadmin_backup', currentUserString);
-                }
-
-                // Inject the new impersonated token
-                const newTokenData = {
-                    ...response.data.user,
-                    token: response.data.token
-                };
+                localStorage.setItem('ams_superadmin_backup', localStorage.getItem('ams_user'));
+                const newTokenData = { ...response.data.user, token: response.data.token };
                 localStorage.setItem('ams_user', JSON.stringify(newTokenData));
-
-                alert(`You are now logged in as ${user.name}.`);
-
-                // Force a hard reload to the root to re-evaluate routing based on the new token
                 window.location.href = '/';
-
             } catch (error) {
-                console.error('Login Failed:', error);
+                console.error('Impersonation failed:', error);
                 alert(error.response?.data?.message || 'Login failed');
             }
         }
     };
 
+    const handleDirectReset = async (user) => {
+        const newPassword = prompt(`Enter new direct password for ${user.email} (min 6 chars):`);
+        if (newPassword && newPassword.length >= 6) {
+            try {
+                await resetPasswordDirect(user.id, newPassword);
+                alert('Password updated successfully');
+            } catch (error) {
+                alert(error.response?.data?.message || 'Failed to update password');
+            }
+        } else if (newPassword) {
+            alert('Password too short');
+        }
+    };
+
     const getRoleBadge = (role) => {
         const styles = {
-            student: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+            student: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
             industry_supervisor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
             university_supervisor: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
             school_admin: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-            super_admin: 'bg-rose-500/10 text-rose-400 border-rose-500/20 font-black'
+            super_admin: 'bg-rose-500/10 text-rose-400 border-rose-500/20'
         };
         return (
             <span className={`px-2 py-1 text-[9px] font-bold uppercase tracking-widest rounded-lg border ${styles[role] || 'bg-slate-500/10 text-slate-400 border-slate-500/20'}`}>
@@ -135,194 +131,152 @@ const UserManagement = () => {
         );
     };
 
-    const getStatusBadge = (status) => {
-        const styles = {
-            active: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-            locked: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-            pending: 'bg-amber-500/10 text-amber-400 border-amber-500/20'
-        };
-        return (
-            <span className={`px-2 py-1 text-[9px] font-bold uppercase tracking-widest rounded-lg border ${styles[status]}`}>
-                {status}
-            </span>
-        );
-    };
-
     return (
-        <div className="space-y-12">
-            <div className="flex flex-col md:flex-row justify-between items-end gap-8 animate-fade-in">
-                <div className="flex items-center gap-6">
-                    <div className="w-20 h-20 bg-blue-600 rounded-[2rem] flex items-center justify-center shadow-2xl shadow-blue-600/30 ring-1 ring-white/20">
-                        <Users size={40} className="text-white" />
+        <div className="flex-1 space-y-8 p-8 max-w-7xl mx-auto">
+            {/* Header */}
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex items-center space-x-5">
+                    <div className="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20 text-white">
+                        <Users size={28} />
                     </div>
-                    <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">User Management</span>
-                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase">All <span className="text-blue-500">Users</span></h1>
-                        <p className="text-slate-500 font-medium leading-relaxed max-w-lg">Manage all users across the entire system.</p>
+                    <div>
+                        <h1 className="text-3xl font-bold text-white tracking-tight">User <span className="text-indigo-500">Registry</span></h1>
+                        <p className="text-slate-400 text-sm mt-1 font-medium">Manage cross-institutional user accounts and access levels.</p>
                     </div>
                 </div>
-            </div>
+            </header>
 
             {/* Filters */}
-            <div className="glass-card p-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div className="relative md:col-span-2">
-                        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500" size={18} />
-                        <input
-                            type="text"
-                            placeholder="Search users by name, email or ID..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="input-field pl-12"
-                        />
-                    </div>
+            <div className="glass-card p-4 flex flex-col md:flex-row gap-4 items-center">
+                <div className="relative flex-1 w-full">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Search by name, email or ID..."
+                        className="input-field pl-10"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <div className="flex items-center space-x-3 w-full md:w-auto">
+                    <Filter className="text-slate-500" size={18} />
                     <select
+                        className="input-field text-xs font-bold uppercase tracking-widest"
                         value={roleFilter}
                         onChange={(e) => setRoleFilter(e.target.value)}
-                        className="input-field cursor-pointer font-semibold text-xs"
                     >
                         <option value="">All Roles</option>
-                        <option value="student">Role: Student</option>
-                        <option value="industry_supervisor">Role: Industry</option>
-                        <option value="university_supervisor">Role: University</option>
-                        <option value="school_admin">Role: Admin</option>
+                        <option value="student">Student</option>
+                        <option value="industry_supervisor">Industry</option>
+                        <option value="university_supervisor">University</option>
+                        <option value="school_admin">School Admin</option>
                     </select>
                     <select
+                        className="input-field text-xs font-bold uppercase tracking-widest"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="input-field cursor-pointer font-semibold text-xs"
                     >
-                        <option value="">All Statuses</option>
-                        <option value="active">Status: Active</option>
-                        <option value="locked">Status: Locked</option>
-                        <option value="pending">Status: Pending</option>
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="locked">Locked</option>
                     </select>
                 </div>
             </div>
 
-            {/* Users Table */}
-            <div className="glass-card overflow-hidden border-white/5">
-                {loading ? (
-                    <div className="flex items-center justify-center h-64 text-blue-500">
-                        <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
-                    </div>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead>
-                                <tr className="border-b border-white/5 bg-white/5">
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">User</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">School</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Role</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Status</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                                {users.map((user) => (
+            {/* Table */}
+            <div className="glass-card overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="bg-slate-900/50 border-b border-white/5">
+                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">User Details</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Institution</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Role</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/5">
+                            {loading ? (
+                                Array(5).fill(0).map((_, i) => (
+                                    <tr key={i} className="animate-pulse">
+                                        <td colSpan="5" className="px-6 py-6"><div className="h-4 bg-slate-800 rounded w-full"></div></td>
+                                    </tr>
+                                ))
+                            ) : (
+                                users.map((user) => (
                                     <tr key={user.id} className="hover:bg-white/[0.02] transition-colors group">
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-4">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center space-x-4">
                                                 <div className="w-10 h-10 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-blue-400 font-bold group-hover:bg-blue-600/20 transition-all">
                                                     {user.name?.charAt(0) || 'U'}
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-white tracking-tight">{user.name}</p>
-                                                    <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium">
-                                                        <Mail size={10} />
-                                                        {user.email}
-                                                    </div>
+                                                    <div className="text-sm font-bold text-white uppercase tracking-tight">{user.name}</div>
+                                                    <div className="text-[10px] text-slate-500 font-medium">{user.email}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-2 text-sm text-slate-300 font-bold">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center space-x-2 text-xs font-semibold text-slate-300">
                                                 <Globe size={14} className="text-slate-500" />
-                                                {user.school?.name || 'CENTRAL'}
+                                                <span>{user.school?.name || 'Central Platform'}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
+                                        <td className="px-6 py-4">
                                             {getRoleBadge(user.role)}
                                         </td>
-                                        <td className="px-6 py-5">
-                                            {getStatusBadge(user.status)}
+                                        <td className="px-6 py-4">
+                                            <span className={`px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${user.status === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
+                                                {user.status}
+                                            </span>
                                         </td>
-                                        <td className="px-6 py-5">
+                                        <td className="px-6 py-4 text-right">
                                             {user.role !== 'super_admin' && (
-                                                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                    <button
-                                                        onClick={() => handleChangeRole(user)}
-                                                        className="p-2 rounded-lg bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white transition-all border border-indigo-500/20"
-                                                        title="Change User Role"
-                                                    >
-                                                        <UserCog size={16} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleResetPassword(user)}
-                                                        className="p-2 rounded-lg bg-blue-600/10 text-blue-400 hover:bg-blue-600 hover:text-white transition-all border border-blue-500/20"
-                                                        title="Send Reset Email"
-                                                    >
-                                                        <RotateCcw size={16} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDirectReset(user)}
-                                                        className="p-2 rounded-lg bg-emerald-600/10 text-emerald-400 hover:bg-emerald-600 hover:text-white transition-all border border-emerald-500/20"
-                                                        title="Direct Password Override"
-                                                    >
-                                                        <Key size={16} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleImpersonateUser(user)}
-                                                        className="p-2 rounded-lg bg-amber-600/10 text-amber-400 hover:bg-amber-600 hover:text-white transition-all border border-amber-500/20"
-                                                        title="Assume Identity (Impersonate)"
-                                                    >
-                                                        <VenetianMask size={16} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleLockUser(user)}
-                                                        className={`p-2 rounded-lg transition-all border ${user.status === 'locked'
-                                                            ? 'bg-emerald-600/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-600 hover:text-white'
-                                                            : 'bg-rose-600/10 text-rose-400 border-rose-500/20 hover:bg-rose-600 hover:text-white'
-                                                            }`}
-                                                        title={user.status === 'locked' ? 'Restore Infrastructure Access' : 'Restrict Network Connection'}
-                                                    >
+                                                <div className="flex items-center justify-end space-x-2">
+                                                    <button onClick={() => handleChangeRole(user)} className="p-2 text-slate-400 hover:text-indigo-400 hover:bg-indigo-600/10 rounded-lg transition-all" title="Change Role"><UserCog size={16} /></button>
+                                                    <button onClick={() => handleResetPassword(user)} className="p-2 text-slate-400 hover:text-blue-400 hover:bg-blue-600/10 rounded-lg transition-all" title="Email Reset"><RotateCcw size={16} /></button>
+                                                    <button onClick={() => handleDirectReset(user)} className="p-2 text-slate-400 hover:text-emerald-400 hover:bg-emerald-600/10 rounded-lg transition-all" title="Direct Reset"><Key size={16} /></button>
+                                                    <button onClick={() => handleImpersonateUser(user)} className="p-2 text-slate-400 hover:text-amber-400 hover:bg-amber-600/10 rounded-lg transition-all" title="Impersonate"><VenetianMask size={16} /></button>
+                                                    <button onClick={() => handleLockUser(user)} className={`p-2 rounded-lg transition-all ${user.status === 'locked' ? 'text-slate-400 hover:text-emerald-400 hover:bg-emerald-600/10' : 'text-slate-400 hover:text-rose-400 hover:bg-rose-600/10'}`} title={user.status === 'locked' ? 'Unlock' : 'Lock'}>
                                                         {user.status === 'locked' ? <Unlock size={16} /> : <Lock size={16} />}
                                                     </button>
                                                 </div>
                                             )}
                                         </td>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
+                </div>
 
-            {/* Pagination */}
-            {!loading && users.length > 0 && (
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                        Global ID Index: {((pagination.page - 1) * pagination.limit) + 1} - {Math.min(pagination.page * pagination.limit, pagination.total)} OF {pagination.total} IDENTITIES
-                    </p>
-                    <div className="flex gap-2">
+                {/* Pagination */}
+                <div className="p-6 bg-slate-900/30 flex items-center justify-between border-t border-white/5">
+                    <div className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+                        Total Identity Indexed: <span className="text-white">{pagination.total}</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
                         <button
                             onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
                             disabled={pagination.page === 1}
-                            className="px-6 py-2 glass-card rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-20 hover:bg-white/10 transition-colors"
+                            className="p-2 bg-slate-900 border border-white/5 rounded-lg text-slate-400 hover:text-white disabled:opacity-30 transition-all"
                         >
-                            Back
+                            <ChevronLeft size={16} />
                         </button>
+                        <div className="px-4 py-1.5 bg-indigo-600/10 border border-indigo-500/20 rounded-lg text-xs font-bold text-indigo-400">
+                            {pagination.page} / {pagination.totalPages}
+                        </div>
                         <button
                             onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
                             disabled={pagination.page >= pagination.totalPages}
-                            className="px-6 py-2 glass-card rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-20 hover:bg-white/10 transition-colors"
+                            className="p-2 bg-slate-900 border border-white/5 rounded-lg text-slate-400 hover:text-white disabled:opacity-30 transition-all"
                         >
-                            Forward
+                            <ChevronRight size={16} />
                         </button>
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };

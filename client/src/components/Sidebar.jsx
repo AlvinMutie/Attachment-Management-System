@@ -25,26 +25,23 @@ import { useAuth } from '../context/AuthContext';
 const SidebarItem = ({ icon: Icon, label, active, onClick }) => (
     <button
         onClick={onClick}
-        className={`w-full flex items-center px-4 py-3 rounded-full transition-all duration-300 group relative overflow-hidden ${active
-            ? 'text-white'
-            : 'text-slate-400 hover:text-white hover:bg-white/5'
+        className={`w-full flex items-center px-4 py-2.5 rounded-xl transition-all duration-200 group relative ${active
+            ? 'bg-blue-600/10 text-blue-400'
+            : 'text-slate-400 hover:text-slate-100 hover:bg-white/5'
             }`}
     >
-        {/* M3 Active Indicator Pill */}
+        {/* Active Indicator Line */}
         {active && (
-            <div className="absolute inset-0 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.3)] animate-in fade-in zoom-in-95 duration-300" />
+            <div className="absolute left-0 top-2 bottom-2 w-1 bg-blue-500 rounded-r-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
         )}
 
-        <div className="relative flex items-center space-x-4 z-10 w-full">
-            <div className={`p-1.5 transition-all duration-500 ${active ? 'scale-110' : 'group-hover:text-blue-400'}`}>
-                <Icon size={20} />
+        <div className="flex items-center space-x-3 w-full">
+            <div className={`transition-colors duration-200 ${active ? 'text-blue-400' : 'group-hover:text-blue-400'}`}>
+                <Icon size={18} />
             </div>
-            <span className={`font-bold tracking-tight text-xs uppercase tracking-[0.1em] transition-all ${active ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'}`}>
+            <span className={`font-semibold text-sm tracking-tight transition-all ${active ? 'opacity-100' : 'opacity-80 group-hover:opacity-100'}`}>
                 {label}
             </span>
-            {active && (
-                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-white shadow-[0_0_10px_white] animate-pulse" />
-            )}
         </div>
     </button>
 );
@@ -73,12 +70,12 @@ const Sidebar = ({ isOpen, onClose }) => {
 
     return (
         <aside className={`
-            fixed top-0 left-0 bottom-0 w-64 glass-sidebar z-[60] flex flex-col p-6 transition-all duration-500 ease-in-out
+            fixed top-0 left-0 bottom-0 w-64 glass-sidebar z-[60] flex flex-col p-5 transition-all duration-300 ease-in-out
             ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}>
             {/* Branding */}
-            <div className="flex items-center space-x-3 mb-12 px-2 cursor-pointer group" onClick={() => { navigate('/'); onClose(); }}>
-                <div className="w-12 h-12 bg-blue-600 rounded-[1.25rem] flex items-center justify-center shadow-2xl shadow-blue-600/40 group-hover:scale-110 transition-transform text-white ring-1 ring-white/20 overflow-hidden">
+            <div className="flex items-center space-x-3 mb-10 px-2 cursor-pointer group" onClick={() => { navigate('/'); onClose(); }}>
+                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/20 text-white overflow-hidden">
                     {user?.schoolLogo ? (
                         <img
                             src={user.schoolLogo.startsWith('http') ? user.schoolLogo : `http://localhost:5000${user.schoolLogo}`}
@@ -86,21 +83,21 @@ const Sidebar = ({ isOpen, onClose }) => {
                             className="w-full h-full object-cover"
                         />
                     ) : (
-                        <ShieldCheck size={28} />
+                        <ShieldCheck size={24} />
                     )}
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-xl font-black text-white tracking-tighter uppercase leading-none truncate max-w-[120px]">
+                    <span className="text-lg font-bold text-white tracking-tight leading-none truncate max-w-[130px]">
                         {user?.schoolName?.split(' ')[0] || "Attach"}<span className="text-blue-500">{user?.schoolName?.split(' ')[1] || "Pro"}</span>
                     </span>
-                    <span className="text-[8px] font-black text-slate-500 uppercase tracking-[0.3em] mt-1 ml-0.5">Control Grid</span>
+                    <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wider mt-1">Management Console</span>
                 </div>
             </div>
 
             {/* Navigation Menu */}
-            <div className="flex-1 space-y-3 overflow-y-auto no-scrollbar pr-2">
+            <div className="flex-1 space-y-2 overflow-y-auto no-scrollbar pr-2">
                 <div className="pb-4">
-                    <p className="px-5 text-[9px] font-black text-slate-600 uppercase tracking-[0.25em] mb-4 opacity-50">Core Interface</p>
+                    <p className="px-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-3">Navigation</p>
                     <SidebarItem
                         icon={LayoutDashboard}
                         label="Dashboard"
@@ -110,7 +107,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     {role !== 'super_admin' && (
                         <SidebarItem
                             icon={User}
-                            label="Identity Profile"
+                            label="My Profile"
                             active={location.pathname.includes('/profile')}
                             onClick={() => { navigate(`/${prefix}/profile`); onClose(); }}
                         />
@@ -118,7 +115,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="py-4 border-t border-white/5">
-                    <p className="px-5 text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4">Active Operations</p>
+                    <p className="px-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-3">Workspace</p>
                     {role === 'student' && (
                         <>
                             <SidebarItem
@@ -135,7 +132,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                             />
                             <SidebarItem
                                 icon={MessageCircle}
-                                label="Communication Hub"
+                                label="Messages"
                                 active={location.pathname.includes('/student/messages')}
                                 onClick={() => { navigate('/student/messages'); onClose(); }}
                             />
@@ -146,7 +143,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                         <>
                             <SidebarItem
                                 icon={Activity}
-                                label="Live Presence"
+                                label="Presence Tracking"
                                 active={location.pathname === '/industry/presence'}
                                 onClick={() => { navigate('/industry/presence'); onClose(); }}
                             />
@@ -164,7 +161,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                             />
                             <SidebarItem
                                 icon={MessageCircle}
-                                label="Communication Hub"
+                                label="Messages"
                                 active={location.pathname === '/industry/messages'}
                                 onClick={() => { navigate('/industry/messages'); onClose(); }}
                             />
@@ -175,7 +172,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                         <>
                             <SidebarItem
                                 icon={Users}
-                                label="Students"
+                                label="Student List"
                                 active={location.pathname === '/university/dashboard'}
                                 onClick={() => { navigate('/university/dashboard'); onClose(); }}
                             />
@@ -187,13 +184,13 @@ const Sidebar = ({ isOpen, onClose }) => {
                             />
                             <SidebarItem
                                 icon={MapPin}
-                                label="Meeting Scheduler"
+                                label="Meetings"
                                 active={location.pathname === '/university/meetings'}
                                 onClick={() => { navigate('/university/meetings'); onClose(); }}
                             />
                             <SidebarItem
                                 icon={MessageCircle}
-                                label="Communication Hub"
+                                label="Messages"
                                 active={location.pathname === '/university/messages'}
                                 onClick={() => { navigate('/university/messages'); onClose(); }}
                             />
@@ -210,13 +207,13 @@ const Sidebar = ({ isOpen, onClose }) => {
                             />
                             <SidebarItem
                                 icon={Users}
-                                label="Member Directory"
+                                label="User List"
                                 active={location.pathname === '/school_admin/users'}
                                 onClick={() => { navigate('/school_admin/users'); onClose(); }}
                             />
                             <SidebarItem
                                 icon={Activity}
-                                label="Analytics Hub"
+                                label="Performance Analytics"
                                 active={location.pathname === '/school_admin/analytics'}
                                 onClick={() => { navigate('/school_admin/analytics'); onClose(); }}
                             />
@@ -233,7 +230,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                             />
                             <SidebarItem
                                 icon={Users}
-                                label="User Registry"
+                                label="User Management"
                                 active={location.pathname.includes('/superadmin/users')}
                                 onClick={() => { navigate('/superadmin/users'); onClose(); }}
                             />
@@ -245,7 +242,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                             />
                             <SidebarItem
                                 icon={Activity}
-                                label="System Health"
+                                label="System Status"
                                 active={location.pathname.includes('/superadmin/system-health')}
                                 onClick={() => { navigate('/superadmin/system-health'); onClose(); }}
                             />
@@ -254,7 +251,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 </div>
 
                 <div className="py-4 border-t border-white/5">
-                    <p className="px-5 text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-4">Support</p>
+                    <p className="px-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-3">General</p>
                     <SidebarItem
                         icon={Settings}
                         label="Settings"
@@ -265,25 +262,25 @@ const Sidebar = ({ isOpen, onClose }) => {
             </div>
 
             {/* User Profile Summary & Logout */}
-            <div className="pt-6 border-t border-white/5">
-                <div className="bg-white/5 rounded-2xl p-4 mb-4 flex items-center gap-3 border border-white/5">
-                    <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center font-bold text-blue-400">
+            <div className="pt-5 border-t border-white/5">
+                <div className="bg-slate-900/50 rounded-xl p-3 mb-3 flex items-center gap-3 border border-white/5">
+                    <div className="w-9 h-9 rounded-lg bg-blue-600/20 flex items-center justify-center font-bold text-blue-400 text-sm">
                         {user?.name?.charAt(0) || 'U'}
                     </div>
                     <div className="flex flex-col overflow-hidden">
-                        <span className="text-xs font-bold text-white truncate">{user?.name}</span>
+                        <span className="text-xs font-semibold text-white truncate">{user?.name}</span>
                         <span className="text-[10px] font-medium text-slate-500 truncate uppercase tracking-widest">{role?.replace('_', ' ')}</span>
                     </div>
                 </div>
                 <button
                     onClick={handleLogout}
-                    className="w-full flex items-center space-x-4 px-5 py-4 rounded-2xl text-rose-500 hover:bg-rose-500/10 transition-all font-bold text-sm uppercase tracking-widest"
+                    className="w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-500/10 transition-colors font-semibold text-xs uppercase tracking-widest"
                 >
-                    <LogOut size={18} />
+                    <LogOut size={16} />
                     <span>Sign Out</span>
                 </button>
             </div>
-        </aside>
+        </aside >
     );
 };
 
