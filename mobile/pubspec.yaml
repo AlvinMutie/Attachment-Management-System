@@ -1,0 +1,28 @@
+name: ams_supervisor
+description: "AMS Industry Supervisor - Manage student attachments on the go"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  http: ^1.4.0
+  flutter_secure_storage: ^9.2.4
+  mobile_scanner: ^7.0.2
+  provider: ^6.1.5
+  google_fonts: ^6.2.1
+  flutter_animate: ^4.5.2
+  intl: ^0.20.2
+  shimmer: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

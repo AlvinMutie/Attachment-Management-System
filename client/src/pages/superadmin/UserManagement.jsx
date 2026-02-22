@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Search, Lock, Unlock, RotateCcw, UserCog, Shield, Globe, Mail, User, Users } from 'lucide-react';
-import { getUsers, updateUserRole, resetPassword, lockUser } from '../../utils/superadminApi';
+import { Search, Lock, Unlock, RotateCcw, UserCog, Shield, Globe, Mail, User, Users, VenetianMask } from 'lucide-react';
+import { getUsers, updateUserRole, resetPassword, lockUser, impersonateUser } from '../../utils/superadminApi';
+import { useNavigate } from 'react-router-dom';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([]);
@@ -9,6 +10,7 @@ const UserManagement = () => {
     const [roleFilter, setRoleFilter] = useState('');
     const [statusFilter, setStatusFilter] = useState('');
     const [pagination, setPagination] = useState({ page: 1, limit: 10 });
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchUsers();
@@ -37,33 +39,69 @@ const UserManagement = () => {
         if (confirm(`Send secure reset sequence to ${user.email}?`)) {
             try {
                 await resetPassword(user.id);
-                alert('Reset sequence initiated');
+                alert('Password reset link sent');
             } catch (error) {
-                alert('Sequence failed');
+                alert('Failed to reset password');
             }
         }
     };
 
     const handleLockUser = async (user) => {
-        const action = user.status === 'locked' ? 'restore' : 'terminate';
-        if (confirm(`Are you sure you want to ${action} ${user.name}'s access?`)) {
+        const action = user.status === 'locked' ? 'unlock' : 'lock';
+        if (confirm(`Are you sure you want to ${action} ${user.name}?`)) {
             try {
                 await lockUser(user.id, user.status !== 'locked');
                 fetchUsers();
             } catch (error) {
-                alert(`Operation failed`);
+                alert(`Failed to ${action} user`);
             }
         }
     };
 
     const handleChangeRole = async (user) => {
-        const newRole = prompt(`Assign new role profile for ${user.name}:\n- student\n- industry_supervisor\n- university_supervisor\n- school_admin`, user.role);
+        const newRole = prompt(`Select new role for ${user.name}:\n- student\n- industry_supervisor\n- university_supervisor\n- school_admin`, user.role);
         if (newRole && ['student', 'industry_supervisor', 'university_supervisor', 'school_admin'].includes(newRole)) {
             try {
                 await updateUserRole(user.id, newRole);
                 fetchUsers();
             } catch (error) {
-                alert('Role assignment failed');
+                alert('Failed to change role');
+            }
+        }
+    };
+
+    const handleImpersonateUser = async (user) => {
+        // Prevent super admins from impersonating other super admins to avoid inception issues
+        if (user.role === 'super_admin') {
+            alert('Cannot log in as another system administrator.');
+            return;
+        }
+
+        if (confirm(`Log in as ${user.name}? You will be switched to their account.`)) {
+            try {
+                const response = await impersonateUser(user.id);
+
+                // Store the current superadmin token
+                const currentUserString = localStorage.getItem('ams_user');
+                if (currentUserString) {
+                    localStorage.setItem('ams_superadmin_backup', currentUserString);
+                }
+
+                // Inject the new impersonated token
+                const newTokenData = {
+                    ...response.data.user,
+                    token: response.data.token
+                };
+                localStorage.setItem('ams_user', JSON.stringify(newTokenData));
+
+                alert(`You are now logged in as ${user.name}.`);
+
+                // Force a hard reload to the root to re-evaluate routing based on the new token
+                window.location.href = '/';
+
+            } catch (error) {
+                console.error('Login Failed:', error);
+                alert(error.response?.data?.message || 'Login failed');
             }
         }
     };
@@ -104,9 +142,9 @@ const UserManagement = () => {
                         <Users size={40} className="text-white" />
                     </div>
                     <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">Identity Protocols</span>
-                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Global <span className="text-blue-500">Directory</span></h1>
-                        <p className="text-slate-500 font-medium leading-relaxed max-w-lg">Universal user tracking and administrative authority console.</p>
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">User Management</span>
+                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase">All <span className="text-blue-500">Users</span></h1>
+                        <p className="text-slate-500 font-medium leading-relaxed max-w-lg">Manage all users across the entire system.</p>
                     </div>
                 </div>
             </div>
@@ -118,7 +156,7 @@ const UserManagement = () => {
                         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500" size={18} />
                         <input
                             type="text"
-                            placeholder="Search identities by name, email or ID..."
+                            placeholder="Search users by name, email or ID..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="input-field pl-12"
@@ -129,21 +167,21 @@ const UserManagement = () => {
                         onChange={(e) => setRoleFilter(e.target.value)}
                         className="input-field cursor-pointer font-semibold text-xs"
                     >
-                        <option value="">Roles: All Profiles</option>
-                        <option value="student">Profiles: Student</option>
-                        <option value="industry_supervisor">Profiles: Industry</option>
-                        <option value="university_supervisor">Profiles: University</option>
-                        <option value="school_admin">Profiles: Admin</option>
+                        <option value="">All Roles</option>
+                        <option value="student">Role: Student</option>
+                        <option value="industry_supervisor">Role: Industry</option>
+                        <option value="university_supervisor">Role: University</option>
+                        <option value="school_admin">Role: Admin</option>
                     </select>
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                         className="input-field cursor-pointer font-semibold text-xs"
                     >
-                        <option value="">State: All Conditions</option>
-                        <option value="active">State: Active</option>
-                        <option value="locked">State: Terminated</option>
-                        <option value="pending">State: Pending</option>
+                        <option value="">All Statuses</option>
+                        <option value="active">Status: Active</option>
+                        <option value="locked">Status: Locked</option>
+                        <option value="pending">Status: Pending</option>
                     </select>
                 </div>
             </div>
@@ -159,11 +197,11 @@ const UserManagement = () => {
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b border-white/5 bg-white/5">
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Identity</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Affiliation</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Classification</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">User</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">School</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Role</th>
                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Status</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Authority</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
@@ -201,16 +239,23 @@ const UserManagement = () => {
                                                     <button
                                                         onClick={() => handleChangeRole(user)}
                                                         className="p-2 rounded-lg bg-indigo-600/10 text-indigo-400 hover:bg-indigo-600 hover:text-white transition-all border border-indigo-500/20"
-                                                        title="Assign Role Profile"
+                                                        title="Change User Role"
                                                     >
                                                         <UserCog size={16} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleResetPassword(user)}
                                                         className="p-2 rounded-lg bg-blue-600/10 text-blue-400 hover:bg-blue-600 hover:text-white transition-all border border-blue-500/20"
-                                                        title="Reset Security Sequence"
+                                                        title="Reset Password"
                                                     >
                                                         <RotateCcw size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleImpersonateUser(user)}
+                                                        className="p-2 rounded-lg bg-amber-600/10 text-amber-400 hover:bg-amber-600 hover:text-white transition-all border border-amber-500/20"
+                                                        title="Assume Identity (Impersonate)"
+                                                    >
+                                                        <VenetianMask size={16} />
                                                     </button>
                                                     <button
                                                         onClick={() => handleLockUser(user)}

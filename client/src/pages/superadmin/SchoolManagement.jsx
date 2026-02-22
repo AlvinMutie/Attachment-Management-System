@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Search, Plus, Edit, Ban, CheckCircle, Users as UsersIcon, Shield, Globe, Mail, MapPin, School, Upload, Link } from 'lucide-react';
-import { getSchools, createSchool, updateSchool, toggleSchoolStatus } from '../../utils/superadminApi';
+import { Search, Plus, Edit, Ban, CheckCircle, Users as UsersIcon, Shield, Globe, Mail, MapPin, School, Upload, Link, ShieldAlert } from 'lucide-react';
+import { getSchools, createSchool, updateSchool, toggleSchoolStatus, resetSchoolAdminPassword } from '../../utils/superadminApi';
 
 const SchoolManagement = () => {
     const [schools, setSchools] = useState([]);
@@ -46,6 +46,17 @@ const SchoolManagement = () => {
         }
     };
 
+    const handleResetRootAdmin = async (school) => {
+        if (confirm(`INITIATE OVERRIDE: Send secure password reset sequence to ${school.name}'s root administrator?`)) {
+            try {
+                const response = await resetSchoolAdminPassword(school.id);
+                alert(response.message || 'Reset sequence initiated');
+            } catch (error) {
+                alert(error.response?.data?.message || 'Override sequence failed');
+            }
+        }
+    };
+
     const getStatusBadge = (status) => {
         const styles = {
             active: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
@@ -67,9 +78,9 @@ const SchoolManagement = () => {
                         <School size={44} className="text-white" />
                     </div>
                     <div className="space-y-1.5">
-                        <span className="text-[11px] font-black uppercase tracking-[0.4em] text-indigo-400 opacity-70">Governance Layer</span>
-                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase leading-none">Institution <span className="text-indigo-500">Registry</span></h1>
-                        <p className="text-slate-500 font-medium leading-relaxed max-w-md text-sm">Scale and manage global academic nodes and institutional compliance.</p>
+                        <span className="text-[11px] font-black uppercase tracking-[0.4em] text-indigo-400 opacity-70">Administrative Control</span>
+                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase leading-none">School <span className="text-indigo-500">Registry</span></h1>
+                        <p className="text-slate-500 font-medium leading-relaxed max-w-md text-sm">Manage and monitor all schools connected to the system.</p>
                     </div>
                 </div>
                 <button
@@ -77,7 +88,7 @@ const SchoolManagement = () => {
                     className="btn-primary px-10 py-4 group !rounded-2xl"
                 >
                     <Plus size={22} className="group-hover:rotate-90 transition-transform" />
-                    <span className="text-xs font-black uppercase tracking-[0.2em]">Onboard Node</span>
+                    <span className="text-xs font-black uppercase tracking-[0.2em]">Add New School</span>
                 </button>
             </div>
 
@@ -99,10 +110,10 @@ const SchoolManagement = () => {
                         onChange={(e) => setStatusFilter(e.target.value)}
                         className="input-field appearance-none cursor-pointer"
                     >
-                        <option value="">Status: All Nodes</option>
-                        <option value="active">Nodes: Active</option>
-                        <option value="suspended">Nodes: Suspended</option>
-                        <option value="trial">Nodes: Trial</option>
+                        <option value="">Status: All Schools</option>
+                        <option value="active">Schools: Active</option>
+                        <option value="suspended">Schools: Suspended</option>
+                        <option value="trial">Schools: Trial</option>
                     </select>
                 </div>
             </div>
@@ -118,11 +129,11 @@ const SchoolManagement = () => {
                         <table className="w-full text-left">
                             <thead>
                                 <tr className="border-b border-white/5 bg-white/5">
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Institution</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Network Info</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">State</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Capacity</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Control</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">School</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Contact Details</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Status</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Users</th>
+                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
@@ -145,7 +156,7 @@ const SchoolManagement = () => {
                                                     <p className="font-bold text-white tracking-tight">{school.name}</p>
                                                     <div className="flex items-center gap-1.5 text-[10px] text-slate-500 font-medium uppercase tracking-widest">
                                                         <MapPin size={10} className="text-indigo-500" />
-                                                        {school.address || "No HQ Address Registered"}
+                                                        {school.address || "No Address Registered"}
                                                     </div>
                                                 </div>
                                             </div>
@@ -192,6 +203,13 @@ const SchoolManagement = () => {
                                                 >
                                                     {school.status === 'active' ? <Ban size={16} /> : <CheckCircle size={16} />}
                                                 </button>
+                                                <button
+                                                    onClick={() => handleResetRootAdmin(school)}
+                                                    className="p-2 rounded-lg bg-orange-600/10 text-orange-400 hover:bg-orange-600 hover:text-white transition-all border border-orange-500/20"
+                                                    title="Reset Admin Password"
+                                                >
+                                                    <ShieldAlert size={16} />
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
@@ -206,7 +224,7 @@ const SchoolManagement = () => {
             {!loading && schools.length > 0 && (
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                        Registry Index: {((pagination.page - 1) * pagination.limit) + 1} - {Math.min(pagination.page * pagination.limit, pagination.total)} OF {pagination.total} NODES
+                        Schools: {((pagination.page - 1) * pagination.limit) + 1} - {Math.min(pagination.page * pagination.limit, pagination.total)} OF {pagination.total} ENTRIES
                     </p>
                     <div className="flex gap-2">
                         <button
@@ -260,6 +278,17 @@ const CreateSchoolModal = ({ onClose, onSuccess }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Client-side validation: confirm all expected data is present
+        const required = ['name', 'contactEmail', 'adminName', 'adminEmail', 'adminPassword'];
+        const missing = required.filter(field => !formData[field]);
+
+        if (missing.length > 0) {
+            console.error('Submission blocked: Missing fields', missing);
+            alert(`Please fill in all required fields: ${missing.join(', ')}`);
+            return;
+        }
+
         try {
             const data = new FormData();
             Object.keys(formData).forEach(key => {
@@ -269,14 +298,24 @@ const CreateSchoolModal = ({ onClose, onSuccess }) => {
                 data.append('logoFile', logoFile);
             }
 
+            // Diagnostic: Log exactly what is being sent to the server
+            console.log('--- SUBMITTING REGISTRATION ---');
+            for (let [key, value] of data.entries()) {
+                console.log(`${key}:`, value || '(EMPTY)');
+            }
+
             await createSchool(data);
             alert('Institution successfully registered');
             onSuccess();
             onClose();
         } catch (error) {
-            alert('Registration protocol failed');
+            console.error('Registration failed:', error);
+            const message = error.response?.data?.message || 'Registration protocol failed';
+            alert(message);
         }
     };
+
+
 
     return (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center z-[100] p-4">
@@ -288,8 +327,8 @@ const CreateSchoolModal = ({ onClose, onSuccess }) => {
                             <Plus className="text-white" size={28} />
                         </div>
                         <div>
-                            <h2 className="text-2xl font-black text-white tracking-tighter uppercase">Onboard Institution</h2>
-                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Deploy primary node</p>
+                            <h2 className="text-2xl font-black text-white tracking-tighter uppercase">Add New School</h2>
+                            <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Register a new academic institution</p>
                         </div>
                     </div>
                 </div>
@@ -299,7 +338,7 @@ const CreateSchoolModal = ({ onClose, onSuccess }) => {
                     <div className="space-y-6">
                         <div className="flex items-center gap-4">
                             <div className="h-px flex-1 bg-white/5" />
-                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">Institutional Identity</span>
+                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.3em]">School Details</span>
                             <div className="h-px flex-1 bg-white/5" />
                         </div>
 
@@ -436,7 +475,7 @@ const CreateSchoolModal = ({ onClose, onSuccess }) => {
                                 />
                             </div>
                             <div className="space-y-2">
-                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">HQ Physical Address</label>
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Address</label>
                                 <input
                                     type="text"
                                     placeholder="City, Region, Country"
@@ -452,13 +491,13 @@ const CreateSchoolModal = ({ onClose, onSuccess }) => {
                     <div className="space-y-6">
                         <div className="flex items-center gap-4">
                             <div className="h-px flex-1 bg-white/5" />
-                            <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">Access Management</span>
+                            <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">Administrator Account</span>
                             <div className="h-px flex-1 bg-white/5" />
                         </div>
 
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Root Administrator Name</label>
+                                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Administrator Full Name</label>
                                 <input
                                     type="text"
                                     placeholder="Full Legal Name"
@@ -470,7 +509,7 @@ const CreateSchoolModal = ({ onClose, onSuccess }) => {
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Admin Network ID (Email)</label>
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Email (Username)</label>
                                     <input
                                         type="email"
                                         placeholder="admin@school.edu"
@@ -481,10 +520,10 @@ const CreateSchoolModal = ({ onClose, onSuccess }) => {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Access Secret (Password)</label>
+                                    <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Set Password</label>
                                     <input
                                         type="password"
-                                        placeholder="Create Secure Secret"
+                                        placeholder="Create a strong password"
                                         value={formData.adminPassword}
                                         onChange={(e) => setFormData({ ...formData, adminPassword: e.target.value })}
                                         className="input-field"
@@ -499,10 +538,10 @@ const CreateSchoolModal = ({ onClose, onSuccess }) => {
                 {/* Modal Footer */}
                 <div className="p-8 border-t border-white/5 bg-white/[0.01] flex gap-4">
                     <button onClick={handleSubmit} className="btn-primary flex-1 py-4 text-xs font-black uppercase tracking-widest">
-                        Deploy Institution
+                        Save and Register
                     </button>
                     <button onClick={onClose} className="px-8 py-4 glass-card rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-white hover:bg-white/10 transition-all">
-                        Abort Protocol
+                        Cancel
                     </button>
                 </div>
             </div>
@@ -558,8 +597,8 @@ const EditSchoolModal = ({ school, onClose, onSuccess }) => {
                         <Edit className="text-white" size={28} />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-black text-white tracking-tighter uppercase">Modify Node</h2>
-                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Update registry data</p>
+                        <h2 className="text-3xl font-black text-white tracking-tighter uppercase">Edit School</h2>
+                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-widest">Update school information</p>
                     </div>
                 </div>
 

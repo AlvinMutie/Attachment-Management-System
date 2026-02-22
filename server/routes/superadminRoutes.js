@@ -10,9 +10,11 @@ const {
     getGlobalUsers,
     updateUserRole,
     resetUserPassword,
+    resetSchoolAdminPassword,
     toggleUserLock,
     getAuditLogs,
-    getSystemHealth
+    getSystemHealth,
+    impersonateUser
 } = require('../controllers/superadminController');
 const { uploadLogo } = require('../middleware/uploadMiddleware');
 
@@ -28,12 +30,14 @@ router.get('/schools', getAllSchools);
 router.post('/schools', uploadLogo, createSchool);
 router.put('/schools/:id', uploadLogo, updateSchool);
 router.patch('/schools/:id/status', toggleSchoolStatus);
+router.post('/schools/:id/reset-admin-password', resetSchoolAdminPassword);
 
 // User Management
 router.get('/users', getGlobalUsers);
 router.patch('/users/:id/role', updateUserRole);
 router.post('/users/:id/reset-password', resetUserPassword);
 router.patch('/users/:id/lock', toggleUserLock);
+router.post('/users/:id/impersonate', impersonateUser);
 
 // Audit Logs
 router.get('/audit-logs', getAuditLogs);

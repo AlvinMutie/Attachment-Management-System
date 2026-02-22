@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const { logAudit } = require('../utils/auditLogger');
 const { sendPasswordResetEmail, sendAccountLockedEmail, sendWelcomeEmail } = require('../utils/emailService');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 /**
  * Get platform-wide dashboard analytics
@@ -142,6 +143,10 @@ const getAllSchools = async (req, res) => {
  */
 const createSchool = async (req, res) => {
     try {
+        console.log('--- CREATE SCHOOL DEBUG ---');
+        console.log('req.body:', JSON.stringify(req.body, null, 2));
+        console.log('req.file:', req.file ? req.file.filename : 'No file');
+
         const { name, logo, address, contactEmail, primaryColor, adminName, adminEmail, adminPassword } = req.body;
         let finalLogo = logo;
 
@@ -151,20 +156,27 @@ const createSchool = async (req, res) => {
         }
 
         // Validate required fields
-        if (!name || !contactEmail || !adminName || !adminEmail || !adminPassword) {
-            return res.status(400).json({ success: false, message: 'Missing required fields' });
+        const requiredFields = { name, contactEmail, adminName, adminEmail, adminPassword };
+        const missingFields = Object.keys(requiredFields).filter(key => !requiredFields[key]);
+
+        if (missingFields.length > 0) {
+            console.log('Validation failed. Missing fields:', missingFields);
+            return res.status(400).json({
+                success: false,
+                message: `Please fill in all required fields: ${missingFields.join(', ')}`
+            });
         }
 
         // Check if school email already exists
         const existingSchool = await School.findOne({ where: { contactEmail } });
         if (existingSchool) {
-            return res.status(400).json({ success: false, message: 'School with this email already exists' });
+            return res.status(400).json({ success: false, message: 'A school with this email is already registered' });
         }
 
         // Check if admin email already exists
         const existingUser = await User.findOne({ where: { email: adminEmail } });
         if (existingUser) {
-            return res.status(400).json({ success: false, message: 'User with this email already exists' });
+            return res.status(400).json({ success: false, message: 'This admin email is already in use' });
         }
 
         // Create school and admin user in a transaction
@@ -204,17 +216,19 @@ const createSchool = async (req, res) => {
             userAgent: req.get('user-agent')
         });
 
-        // Send welcome email
-        await sendWelcomeEmail(result.adminUser, result.school, adminPassword);
+        // Send welcome email (fire-and-forget)
+        sendWelcomeEmail(result.adminUser, result.school, adminPassword).catch(emailError => {
+            console.error('Welcome email failed to send:', emailError.message);
+        });
 
         res.status(201).json({
             success: true,
-            message: 'School created successfully',
+            message: 'School registered successfully',
             data: result.school
         });
     } catch (error) {
         console.error('Create school error:', error);
-        res.status(500).json({ success: false, message: 'Failed to create school' });
+        res.status(500).json({ success: false, message: 'Database error: Could not register school. Please try again.' });
     }
 };
 
@@ -452,6 +466,61 @@ const resetUserPassword = async (req, res) => {
 };
 
 /**
+ * Reset root admin password for a specific school
+ */
+const resetSchoolAdminPassword = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find the school
+        const school = await School.findByPk(id);
+        if (!school) {
+            return res.status(404).json({ success: false, message: 'Institution not found' });
+        }
+
+        // Find the root admin for this school
+        const rootAdmin = await User.findOne({
+            where: {
+                schoolId: id,
+                role: 'school_admin'
+            },
+            order: [['createdAt', 'ASC']] // Assume the first created school admin is the root
+        });
+
+        if (!rootAdmin) {
+            return res.status(404).json({ success: false, message: 'Root administrator not found for this institution' });
+        }
+
+        // Generate reset token
+        const resetToken = rootAdmin.generatePasswordResetToken();
+        await rootAdmin.save();
+
+        // Send reset email
+        await sendPasswordResetEmail(rootAdmin, resetToken);
+
+        // Log audit
+        await logAudit({
+            userId: req.user.id,
+            action: 'RESET_SCHOOL_ROOT_PASSWORD',
+            targetType: 'User',
+            targetId: rootAdmin.id,
+            metadata: { schoolId: id, adminEmail: rootAdmin.email },
+            ipAddress: req.ip,
+            userAgent: req.get('user-agent')
+        });
+
+        res.json({
+            success: true,
+            message: `Root password reset sequence initiated for ${school.name}`
+        });
+
+    } catch (error) {
+        console.error('Reset school admin password error:', error);
+        res.status(500).json({ success: false, message: 'Failed to reset institution root password' });
+    }
+};
+
+/**
  * Lock/unlock user account
  */
 const toggleUserLock = async (req, res) => {
@@ -571,10 +640,18 @@ const getSystemHealth = async (req, res) => {
         }
 
         // Get database size (approximate)
-        const tableStats = await sequelize.query(
-            "SELECT table_schema AS 'database', SUM(data_length + index_length) AS 'size' FROM information_schema.tables WHERE table_schema = DATABASE() GROUP BY table_schema",
-            { type: sequelize.QueryTypes.SELECT }
-        );
+        let totalSize = 0;
+        if (sequelize.getDialect() === 'sqlite') {
+            const stats = await sequelize.query("PRAGMA page_count;");
+            const pageSize = await sequelize.query("PRAGMA page_size;");
+            totalSize = stats[0].page_count * pageSize[0].page_size;
+        } else {
+            const tableStats = await sequelize.query(
+                "SELECT table_schema AS 'database', SUM(data_length + index_length) AS 'size' FROM information_schema.tables WHERE table_schema = DATABASE() GROUP BY table_schema",
+                { type: sequelize.QueryTypes.SELECT }
+            );
+            totalSize = tableStats.length > 0 ? tableStats[0].size : 0;
+        }
 
         // Get recent errors from audit logs (if we log errors there)
         const recentErrors = await AuditLog.findAll({
@@ -592,7 +669,7 @@ const getSystemHealth = async (req, res) => {
                 database: {
                     status: dbStatus,
                     latency: `${dbLatency}ms`,
-                    size: tableStats[0]?.size || 0
+                    size: totalSize
                 },
                 server: {
                     uptime: process.uptime(),
@@ -608,6 +685,55 @@ const getSystemHealth = async (req, res) => {
     }
 };
 
+/**
+ * Generate Impersonation Token for a target user
+ */
+const impersonateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const targetUser = await User.findByPk(id);
+
+        if (!targetUser) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Generate a token for the target user
+        const token = jwt.sign(
+            { id: targetUser.id, role: targetUser.role },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' } // Shorter expiry for impersonation
+        );
+
+        // Log audit
+        await logAudit({
+            userId: req.user.id,
+            action: 'IMPERSONATE_USER',
+            targetType: 'User',
+            targetId: targetUser.id,
+            metadata: { targetEmail: targetUser.email, targetRole: targetUser.role },
+            ipAddress: req.ip,
+            userAgent: req.get('user-agent')
+        });
+
+        res.json({
+            success: true,
+            data: {
+                token,
+                user: {
+                    id: targetUser.id,
+                    name: targetUser.name,
+                    email: targetUser.email,
+                    role: targetUser.role
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Impersonation Error:', error);
+        res.status(500).json({ success: false, message: 'Impersonation failed', error: error.message });
+    }
+};
+
 module.exports = {
     getDashboardAnalytics,
     getAllSchools,
@@ -617,7 +743,9 @@ module.exports = {
     getGlobalUsers,
     updateUserRole,
     resetUserPassword,
+    resetSchoolAdminPassword,
     toggleUserLock,
     getAuditLogs,
-    getSystemHealth
+    getSystemHealth,
+    impersonateUser
 };

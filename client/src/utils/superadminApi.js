@@ -49,6 +49,11 @@ export const toggleSchoolStatus = async (id, status) => {
     return response.data;
 };
 
+export const resetSchoolAdminPassword = async (id) => {
+    const response = await apiClient.post(`/schools/${id}/reset-admin-password`);
+    return response.data;
+};
+
 // Users
 export const getUsers = async (params = {}) => {
     const response = await apiClient.get('/users', { params });
@@ -67,6 +72,17 @@ export const resetPassword = async (id) => {
 
 export const lockUser = async (id, locked) => {
     const response = await apiClient.patch(`/users/${id}/lock`, { locked });
+    return response.data;
+};
+
+// Also reuse the exact impersonate logic we added to the theOne feature previously.
+export const impersonateUser = async (id) => {
+    // The previous implementation mapped this route under /api/the-one/impersonate
+    // I need to use the full axios instance to make a cross-controller call since it wasn't moved to superadmin.
+    // Let me check if the route is still there. Wait I should move the route to superadmin.
+
+    // For now I'll use the apiClient which targets /superadmin
+    const response = await apiClient.post(`/users/${id}/impersonate`);
     return response.data;
 };
 
