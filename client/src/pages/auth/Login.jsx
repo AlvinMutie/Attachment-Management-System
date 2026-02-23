@@ -67,12 +67,12 @@ const Login = () => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, delay: 0.1 }}
-                className="hidden lg:flex flex-col justify-between w-[45%] bg-slate-900 border-r border-white/5 p-16 relative overflow-hidden h-full"
+                className="hidden lg:flex flex-col justify-between w-[45%] bg-slate-900 border-r border-white/5 py-10 px-12 md:p-16 relative overflow-hidden h-full"
             >
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent pointer-events-none" />
 
-                <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-24 mt-12">
+                <div className="relative z-10 flex-1 flex flex-col min-h-0">
+                    <div className="flex items-center gap-3 mb-12 mt-4 shrink-0">
                         <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-2xl shadow-blue-600/20">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M12 2L2 7l10 5 10-5-10-5z" />
@@ -83,7 +83,7 @@ const Login = () => {
                         <span className="font-black text-xl text-white tracking-widest uppercase">AttachPro</span>
                     </div>
 
-                    <div className="space-y-12">
+                    <div className="flex-1 overflow-y-auto pr-4 -mr-4 space-y-8 scrollbar-hide pb-10">
                         <div className="space-y-4">
                             <h1 className="text-5xl font-black text-white leading-[1.1] tracking-tighter uppercase">
                                 UNIVERSAL <br />
@@ -118,7 +118,7 @@ const Login = () => {
                     </div>
                 </div>
 
-                <div className="relative z-10 flex items-center gap-4">
+                <div className="relative z-10 flex items-center gap-4 pt-8 border-t border-white/5 mt-auto bg-slate-900">
                     <div className="w-8 h-px bg-slate-800" />
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-600">
                         System Integrity Validated
