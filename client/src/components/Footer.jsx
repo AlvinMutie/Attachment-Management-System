@@ -9,7 +9,13 @@ const Footer = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     <div className="space-y-6">
                         <div className="flex items-center space-x-2">
-                            <Zap className="text-blue-500" size={24} fill="currentColor" />
+                            <div className="w-7 h-7 bg-blue-600 rounded-md flex items-center justify-center">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                    <path d="M2 17l10 5 10-5" />
+                                    <path d="M2 12l10 5 10-5" />
+                                </svg>
+                            </div>
                             <span className="text-2xl font-black tracking-tighter text-white">AttachPro</span>
                         </div>
                         <p className="text-slate-400 text-sm font-medium leading-relaxed max-w-xs">

@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { LogIn, Mail, Lock, AlertCircle, Zap } from 'lucide-react';
+import { Mail, Lock, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { login, demoLogin } = useAuth();
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const rolePaths = {
@@ -20,99 +21,153 @@ const Login = () => {
         'super_admin': '/superadmin/dashboard'
     };
 
-    const handleDemoLogin = (role) => {
-        const user = demoLogin(role);
-        navigate(rolePaths[user.role] || '/');
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         setLoading(true);
-
         try {
             const user = await login(email, password);
-            console.log('Logged in as:', user.role);
             navigate(rolePaths[user.role] || '/');
         } catch (err) {
-            setError(err.message || 'Failed to sign in. Please check your credentials.');
+            setError(err.message || 'Invalid credentials. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen w-full flex items-center justify-center p-4 bg-slate-950 bg-mesh relative overflow-hidden">
-            {/* Decorative Blur */}
-            <div className="absolute top-1/4 -left-20 w-96 h-96 bg-blue-600/10 rounded-full blur-[120px]" />
-            <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-purple-600/10 rounded-full blur-[120px]" />
-
-            <div className="glass-card w-full max-w-[440px] p-10 space-y-10 relative z-10 animate-fade-in shadow-blue-900/40">
-                <div className="text-center space-y-2">
-                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-blue-600/10 text-blue-500 mb-4 border border-blue-500/20 shadow-inner">
-                        <Zap size={40} fill="currentColor" className="opacity-80" />
+        <div className="min-h-screen flex bg-slate-950 text-white">
+            {/* Left Panel */}
+            <div className="hidden lg:flex flex-col justify-between w-[42%] bg-slate-900 border-r border-white/5 p-12">
+                <div>
+                    <div className="flex items-center gap-3 mb-16">
+                        <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                <path d="M2 17l10 5 10-5" />
+                                <path d="M2 12l10 5 10-5" />
+                            </svg>
+                        </div>
+                        <span className="font-bold text-white tracking-wide">AMS Portal</span>
                     </div>
-                    <h2 className="text-4xl font-black text-white tracking-tight">Welcome Back</h2>
-                    <p className="text-slate-500 font-medium">Continue to your AttachPro account</p>
+
+                    <div className="space-y-8">
+                        <div>
+                            <h1 className="text-3xl font-bold text-white leading-tight mb-3">
+                                Attachment<br />Management System
+                            </h1>
+                            <p className="text-slate-400 text-sm leading-relaxed">
+                                A centralised platform for managing student internships, logbooks, attendance, and institutional reporting.
+                            </p>
+                        </div>
+
+                        <div className="space-y-4">
+                            {[
+                                { label: 'Students', desc: 'Submit logbooks & track attendance' },
+                                { label: 'Supervisors', desc: 'Review reports & validate presence' },
+                                { label: 'Schools', desc: 'Manage placements & generate reports' },
+                            ].map((item, i) => (
+                                <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/5">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0" />
+                                    <div>
+                                        <p className="text-sm font-semibold text-white">{item.label}</p>
+                                        <p className="text-xs text-slate-500 mt-0.5">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
-                {error && (
-                    <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl flex items-center space-x-3 transition-all">
-                        <AlertCircle size={20} />
-                        <span className="text-sm font-medium">{error}</span>
-                    </div>
-                )}
+                <p className="text-xs text-slate-600">
+                    For portal access issues, contact your institution's administrator.
+                </p>
+            </div>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300 ml-1">Email Address</label>
-                        <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
-                            <input
-                                type="email"
-                                required
-                                className="input-field w-full pl-10"
-                                placeholder="name@university.edu"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
+            {/* Right Panel – Form */}
+            <div className="flex-1 flex items-center justify-center p-6 sm:p-10">
+                <div className="w-full max-w-[400px] space-y-8">
+                    {/* Mobile logo */}
+                    <div className="flex items-center gap-2 lg:hidden">
+                        <div className="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                <path d="M2 17l10 5 10-5" />
+                                <path d="M2 12l10 5 10-5" />
+                            </svg>
                         </div>
+                        <span className="font-bold text-sm text-white">AMS Portal</span>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-slate-300 ml-1">Password</label>
-                        <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
-                            <input
-                                type="password"
-                                required
-                                className="input-field w-full pl-10"
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                    <div>
+                        <h2 className="text-2xl font-bold text-white">Sign in</h2>
+                        <p className="text-slate-400 text-sm mt-1">Enter your credentials to access your account.</p>
+                    </div>
+
+                    {error && (
+                        <div className="flex items-start gap-3 p-3.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                            <AlertCircle size={16} className="shrink-0 mt-0.5" />
+                            <span>{error}</span>
                         </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium text-slate-300">Email</label>
+                            <div className="relative">
+                                <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                                <input
+                                    type="email"
+                                    required
+                                    className="w-full bg-white/[0.05] border border-white/10 rounded-lg pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:bg-white/[0.07] transition-colors"
+                                    placeholder="you@institution.edu"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="space-y-1.5">
+                            <label className="text-sm font-medium text-slate-300">Password</label>
+                            <div className="relative">
+                                <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    required
+                                    className="w-full bg-white/[0.05] border border-white/10 rounded-lg pl-10 pr-10 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 focus:bg-white/[0.07] transition-colors"
+                                    placeholder="••••••••"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                                >
+                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 disabled:cursor-not-allowed rounded-lg text-sm font-semibold text-white transition-colors flex items-center justify-center gap-2"
+                        >
+                            {loading ? (
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : 'Sign In'}
+                        </button>
+                    </form>
+
+                    <div className="border-t border-white/5 pt-6 text-center">
+                        <p className="text-sm text-slate-500">
+                            Registering a new institution?{' '}
+                            <Link to="/signup" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                                Get started
+                            </Link>
+                        </p>
                     </div>
-
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className={`btn-primary w-full py-3 text-lg mt-4 flex items-center justify-center space-x-2 ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
-                    >
-                        {loading ? (
-                            <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        ) : (
-                            <span>Sign In</span>
-                        )}
-                    </button>
-                </form>
-
-
-
-                <div className="text-center pt-4">
-                    <p className="text-sm text-slate-500">
-                        For academic portal assistance, contact your department.
-                    </p>
                 </div>
             </div>
         </div>

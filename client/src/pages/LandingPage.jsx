@@ -15,7 +15,7 @@ import {
     AlertCircle,
     ArrowRight,
     MousePointer2,
-    Sparkles
+    Activity
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
@@ -84,10 +84,27 @@ const LandingPage = () => {
             {/* Theme Toggle Button */}
             <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
-                className={`fixed bottom-10 right-10 z-[100] w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl transition-all hover:scale-110 active:scale-90 border backdrop-blur-xl ${isDarkMode ? 'bg-white/10 border-white/10 text-white hover:bg-white/20' : 'bg-slate-900/10 border-slate-200 text-slate-900 hover:bg-slate-900/20'}`}
-                title="Toggle Theme"
+                className={`fixed bottom-10 right-10 z-[100] w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 border ${isDarkMode ? 'bg-slate-800 border-slate-700 text-amber-400 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-slate-200/60'}`}
+                title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                aria-label={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
-                {isDarkMode ? <Sparkles size={24} /> : <Zap size={24} />}
+                {isDarkMode ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="4" />
+                        <line x1="12" y1="2" x2="12" y2="4" />
+                        <line x1="12" y1="20" x2="12" y2="22" />
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                        <line x1="2" y1="12" x2="4" y2="12" />
+                        <line x1="20" y1="12" x2="22" y2="12" />
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                    </svg>
+                ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                    </svg>
+                )}
             </button>
 
             {/* Hero Section */}
@@ -99,14 +116,7 @@ const LandingPage = () => {
 
                 <div className="content-width relative z-10">
                     <div className="max-w-4xl space-y-12 animate-fade-in">
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className={`inline-flex items-center space-x-3 px-6 py-2.5 rounded-full border text-[11px] font-black uppercase tracking-[0.3em] backdrop-blur-md ${isDarkMode ? 'bg-white/5 border-white/10 text-[var(--brand-primary)]' : 'bg-blue-600/5 border-blue-600/10 text-blue-600'}`}
-                        >
-                            <Sparkles size={16} fill="currentColor" />
-                            <span>Empowering Next-Gen Attachments</span>
-                        </motion.div>
+
 
                         <motion.h1
                             initial={{ opacity: 0, y: 20 }}
@@ -225,9 +235,9 @@ const LandingPage = () => {
 
                             <div className="space-y-8">
                                 {[
-                                    { title: "Real-time Presence Radar", icon: Globe, desc: "Monitor student clock-ins across multiple geographical sites instantly." },
-                                    { title: "AI Reporting Engine", icon: Sparkles, desc: "Automatically refine student logbooks for high-impact technical reporting." },
-                                    { title: "Biometric QR Vault", icon: Shield, desc: "Encrypted verification system that eliminates attendance fraud." }
+                                    { title: "Real-time Presence Radar", icon: Activity, desc: "Monitor student clock-ins across multiple geographical sites instantly." },
+                                    { title: "Smart Reporting Engine", icon: Shield, desc: "Automatically refine student logbooks for high-impact technical reporting." },
+                                    { title: "Biometric QR Vault", icon: QrCode, desc: "Encrypted verification system that eliminates attendance fraud." }
                                 ].map((item, i) => (
                                     <div key={i} className="flex gap-6 group">
                                         <div className="w-12 h-12 rounded-xl bg-[var(--brand-primary)]/10 text-[var(--brand-primary)] flex items-center justify-center shrink-0 border border-[var(--brand-primary)]/20 shadow-[0_0_20px_rgba(37,99,235,0.1)] group-hover:scale-110 transition-transform">

@@ -6,8 +6,12 @@ const Navbar = () => (
     <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50">
         <div className="content-width h-16 flex justify-between items-center text-slate-900">
             <Link to="/" className="flex items-center space-x-2 group cursor-pointer text-slate-900">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-transform text-white">
-                    <Zap size={20} fill="currentColor" />
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-transform">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                        <path d="M2 17l10 5 10-5" />
+                        <path d="M2 12l10 5 10-5" />
+                    </svg>
                 </div>
                 <span className="text-xl font-bold tracking-tight">AttachPro</span>
             </Link>
