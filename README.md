@@ -1,14 +1,14 @@
-# 📋 Attachment Management System (AMS)
+# Attachment Management System (AMS)
 
 A full-stack web platform that digitizes and streamlines the entire student industrial attachment (internship) process — connecting students, industry supervisors, university supervisors, and school administrators in one place.
 
 ---
 
-## 🧩 The Problem It Solves
+## The Problem It Solves
 
 Managing student industrial attachments is traditionally a mess of paperwork, physical logbooks, phone calls, and manual sign-offs. Key pain points include:
 
-- **No real-time visibility** — Universities can't track student attendance or progress without physical visits.
+- **No real-time visibility** — Universities cannot track student attendance or progress without physical visits.
 - **Paper logbooks** — Easily lost, damaged, or falsified. No way to verify entries after the fact.
 - **Scattered communication** — Students, industry supervisors, and university staff coordinate through emails and calls with no central record.
 - **Inconsistent assessments** — No standardized way to evaluate students across different industries.
@@ -16,7 +16,7 @@ Managing student industrial attachments is traditionally a mess of paperwork, ph
 
 ---
 
-## ✅ How AMS Solves It
+## How AMS Solves It
 
 AMS replaces the entire manual workflow with a centralized digital platform:
 
@@ -34,9 +34,9 @@ AMS replaces the entire manual workflow with a centralized digital platform:
 
 ---
 
-## 👥 User Roles
+## User Roles
 
-The system supports **6 distinct roles**, each with their own dashboard and permissions:
+The system supports **5 distinct roles**, each with their own dashboard and permissions:
 
 | Role | Access |
 |---|---|
@@ -48,17 +48,17 @@ The system supports **6 distinct roles**, each with their own dashboard and perm
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **React.js** (Vite) — Fast, component-based UI
-- **Material 3 Design** — Clean, modern interface with school branding support
+- **Tailwind CSS & Design System** — Clean, institutional interface with multi-tenant branding support
 - **Framer Motion** — Smooth animations and page transitions
 - **Context API** — Global auth and session state management
 
 ### Backend
 - **Node.js + Express.js** — RESTful API server
-- **Sequelize ORM + MySQL** — Relational database with structured data models
+- **Sequelize ORM + SQLite/MySQL** — Relational database with structured data models
 - **JWT Authentication** — Secure, role-based access control
 - **Helmet.js** — Security headers for production hardening
 - **PDFKit** — Server-side PDF generation for reports and ID cards
@@ -66,7 +66,7 @@ The system supports **6 distinct roles**, each with their own dashboard and perm
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 AMS/
@@ -79,9 +79,10 @@ AMS/
 │       │   ├── school_admin/
 │       │   ├── admin/
 │       │   └── superadmin/
-│       ├── components/       # Reusable UI components
+│       ├── components/       # Reusable UI components & primitives
+│       ├── config/           # Centralized role navigation
 │       ├── context/          # Auth & branding context
-│       └── utils/            # Axios API helpers
+│       └── utils/            # Axios API helpers & status definitions
 │
 ├── server/                   # Node.js + Express backend
 │   ├── controllers/          # Business logic & request handlers
@@ -96,8 +97,8 @@ AMS/
 │   │   ├── Message.js
 │   │   └── AuditLog.js
 │   ├── routes/               # API route definitions
-│   ├── middleware/           # Auth & role-based access middleware
-│   ├── services/             # PDF generation, AI report refinement
+│   ├── middleware/           # Auth, rate limiting & role-based access middleware
+│   ├── services/             # PDF generation, CSV parsing
 │   └── utils/                # Shared utilities
 │
 ├── DEPLOYMENT_GUIDE.md
@@ -107,29 +108,24 @@ AMS/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js (v18+)
-- MySQL database
 - npm
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/AlvinMutie/AM-System.git
-cd AM-System
+git clone https://github.com/AlvinMutie/Attachment-Management-System.git
+cd Attachment-Management-System
 ```
 
 ### 2. Configure the backend
 Create a `.env` file in the `/server` directory:
 ```env
-DB_HOST=localhost
-DB_USER=your_db_user
-DB_PASS=your_db_password
-DB_NAME=ams_db
-JWT_SECRET=your_jwt_secret
-NODE_ENV=development
 PORT=5000
+JWT_SECRET=your_jwt_secret_here
+NODE_ENV=development
 ```
 
 ### 3. Install dependencies
@@ -146,7 +142,7 @@ npm install
 ### 4. Run the development servers
 ```bash
 # In /server
-npm run dev
+npm start
 
 # In /client (separate terminal)
 npm run dev
@@ -159,9 +155,9 @@ The frontend will be available at `http://localhost:5173` and the API at `http:/
 
 ---
 
-## 🔐 Default Login Credentials
+## Default Login Credentials
 
-After seeding the database, you can log in with the following test accounts:
+After seeding the database (`node sync.js`), you can log in with the following test accounts:
 
 | Role | Email | Password |
 |---|---|---|
@@ -171,17 +167,17 @@ After seeding the database, you can log in with the following test accounts:
 | Industry Supervisor | `industry@ams.com` | `password123` |
 | University Supervisor | `university@ams.com` | `password123` |
 
-> ⚠️ Change all default passwords before deploying to production.
+> Note: Change all default passwords before deploying to production.
 
 ---
 
-## 👨‍💻 Developer
+## Developer
 
 **Alvin Mutie**  
 Software Engineer  
-📧 [mutiealvin0@gmail.com](mailto:mutiealvin0@gmail.com)  
-🐙 [github.com/AlvinMutie](https://github.com/AlvinMutie)
+Email: [mutiealvin0@gmail.com](mailto:mutiealvin0@gmail.com)  
+GitHub: [github.com/AlvinMutie](https://github.com/AlvinMutie)
 
 ---
 
-*© 2026 AMS Project. All Rights Reserved.*
+*Copyright 2026 AMS Project. All Rights Reserved.*
