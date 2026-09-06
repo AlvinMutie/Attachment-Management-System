@@ -1,47 +1,67 @@
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+const { User, School } = require('../models');
 const { logAudit } = require('../utils/auditLogger');
 
+/**
+ * Protect routes: Authenticate JWT Bearer token and attach active user
+ */
 const protect = async (req, res, next) => {
     let token;
 
     if (
         req.headers.authorization &&
-        req.headers.authorization.startsWith('Bearer')
+        req.headers.authorization.startsWith('Bearer ')
     ) {
         try {
             token = req.headers.authorization.split(' ')[1];
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-            req.user = await User.findByPk(decoded.id, {
-                attributes: { exclude: ['password'] }
-            });
-
-            // Check if account is locked
-            if (req.user && req.user.status === 'locked') {
-                return res.status(403).json({ message: 'Account is locked. Contact administrator.' });
+            if (!token || token === 'undefined' || token === 'null') {
+                return res.status(401).json({ success: false, message: 'Not authorized, invalid token format' });
             }
 
-            // Attach school context for filtering
-            req.schoolId = decoded.schoolId;
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-            next();
+            const user = await User.findByPk(decoded.id, {
+                attributes: { exclude: ['password', 'passwordResetToken', 'passwordResetExpiry'] },
+                include: [{ model: School, as: 'school', attributes: ['id', 'name', 'status'] }]
+            });
+
+            if (!user) {
+                return res.status(401).json({ success: false, message: 'User belonging to this token no longer exists' });
+            }
+
+            // Check if account is locked or deactivated
+            if (user.status === 'locked') {
+                return res.status(403).json({ success: false, message: 'Account is locked. Contact administrator.' });
+            }
+
+            // Bind authoritative database context
+            req.user = user;
+            req.schoolId = user.schoolId;
+
+            return next();
         } catch (error) {
             console.error('Auth verification failed:', error.message);
-            res.status(401).json({ message: 'Not authorized, token failed' });
+            return res.status(401).json({
+                success: false,
+                message: error.name === 'TokenExpiredError'
+                    ? 'Session expired. Please log in again.'
+                    : 'Not authorized, token failed'
+            });
         }
     }
 
-    if (!token) {
-        res.status(401).json({ message: 'Not authorized, no token' });
-    }
+    return res.status(401).json({ success: false, message: 'Not authorized, no token provided' });
 };
 
+/**
+ * Authorize specific roles
+ */
 const authorize = (...roles) => {
     return (req, res, next) => {
-        if (!roles.includes(req.user.role)) {
+        if (!req.user || !roles.includes(req.user.role)) {
             return res.status(403).json({
-                message: `User role ${req.user.role} is not authorized to access this route`,
+                success: false,
+                message: `Access denied. Role '${req.user?.role || 'unauthenticated'}' is not authorized to access this resource`,
             });
         }
         next();
@@ -52,8 +72,9 @@ const authorize = (...roles) => {
  * Middleware to require super_admin role
  */
 const requireSuperAdmin = (req, res, next) => {
-    if (req.user.role !== 'super_admin') {
+    if (!req.user || req.user.role !== 'super_admin') {
         return res.status(403).json({
+            success: false,
             message: 'Access denied. Super admin privileges required.',
         });
     }
@@ -65,12 +86,9 @@ const requireSuperAdmin = (req, res, next) => {
  */
 const auditAction = (action) => {
     return async (req, res, next) => {
-        // Store original send function
         const originalSend = res.send;
 
-        // Override send to capture response
         res.send = function (data) {
-            // Only log if request was successful
             if (res.statusCode >= 200 && res.statusCode < 300) {
                 logAudit({
                     userId: req.user?.id,
@@ -87,7 +105,6 @@ const auditAction = (action) => {
                 }).catch(err => console.error('Audit log error:', err));
             }
 
-            // Call original send
             originalSend.call(this, data);
         };
 

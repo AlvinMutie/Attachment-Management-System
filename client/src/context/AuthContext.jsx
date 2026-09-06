@@ -6,11 +6,10 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const useAuth = () => useContext(AuthContext);
 
-// Helper to apply institutional theme
+// Helper to apply institutional theme dynamically
 export const applyTheme = (color) => {
     if (!color) return;
 
-    // Hex to RGB converter for variants
     const hexToRgb = (hex) => {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? {
@@ -35,14 +34,40 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const savedUser = localStorage.getItem('ams_user');
         if (savedUser) {
-            const parsedUser = JSON.parse(savedUser);
-            setUser(parsedUser);
-            axios.defaults.headers.common['Authorization'] = `Bearer ${parsedUser.token}`;
-            if (parsedUser.schoolPrimaryColor) {
-                applyTheme(parsedUser.schoolPrimaryColor);
+            try {
+                const parsedUser = JSON.parse(savedUser);
+                setUser(parsedUser);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${parsedUser.token}`;
+                if (parsedUser.schoolPrimaryColor) {
+                    applyTheme(parsedUser.schoolPrimaryColor);
+                }
+            } catch (e) {
+                console.error('Failed to parse cached session:', e);
+                localStorage.removeItem('ams_user');
             }
         }
         setLoading(false);
+
+        // Global response interceptor for 401 expiration handling
+        const interceptor = axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error.response && error.response.status === 401) {
+                    // Stale or expired token
+                    const currentUser = localStorage.getItem('ams_user');
+                    if (currentUser && !currentUser.includes('demo-token')) {
+                        setUser(null);
+                        localStorage.removeItem('ams_user');
+                        delete axios.defaults.headers.common['Authorization'];
+                    }
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        return () => {
+            axios.interceptors.response.eject(interceptor);
+        };
     }, []);
 
     const login = async (email, password) => {
@@ -59,7 +84,7 @@ export const AuthProvider = ({ children }) => {
 
             return userData;
         } catch (error) {
-            throw error.response ? error.response.data : { message: 'Network error' };
+            throw error.response ? error.response.data : { message: 'Network connection failed' };
         }
     };
 

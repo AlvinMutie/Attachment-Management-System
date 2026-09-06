@@ -49,6 +49,10 @@ const getMyLogbooks = async (req, res) => {
     try {
         const student = await Student.findOne({ where: { userId: req.user.id } });
 
+        if (!student) {
+            return res.status(404).json({ success: false, message: 'Student profile not found' });
+        }
+
         const logbooks = await Logbook.findAll({
             where: { studentId: student.id },
             order: [['weekNumber', 'DESC']]
