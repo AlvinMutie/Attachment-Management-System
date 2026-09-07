@@ -14,22 +14,22 @@ export const DashboardLayout = ({ children, role: propRole }) => {
     const roleDef = ROLE_DEFINITIONS[activeRole] || ROLE_DEFINITIONS.student;
 
     return (
-        <div className="min-h-screen bg-slate-950 font-sans text-slate-100 bg-mesh relative overflow-x-hidden">
-            {/* Ambient Lighting Effect */}
+        <div className="min-h-screen bg-[#080c14] font-sans text-slate-100 relative overflow-x-hidden">
+            {/* Ambient Lighting Mesh */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-                <div className="absolute top-[-10%] left-[-10%] w-[35%] h-[35%] bg-blue-600/5 rounded-full blur-[140px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[35%] h-[35%] bg-indigo-600/5 rounded-full blur-[140px]" />
+                <div className="absolute top-[-15%] left-[-10%] w-[45%] h-[45%] bg-indigo-600/10 rounded-full blur-[160px]" />
+                <div className="absolute bottom-[-15%] right-[-10%] w-[40%] h-[40%] bg-sky-600/08 rounded-full blur-[160px]" />
             </div>
 
             {/* Mobile Header */}
-            <header className="lg:hidden fixed top-0 left-0 right-0 h-16 glass-sidebar z-[70] flex items-center justify-between px-4 sm:px-6 border-b border-white/5">
-                <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-md shadow-blue-600/30 text-white font-bold text-sm">
-                        <ShieldCheck size={18} />
+            <header className="lg:hidden fixed top-0 left-0 right-0 h-14 bg-[#0a0e1a]/90 backdrop-blur-md z-[70] flex items-center justify-between px-4 border-b border-[#192237]">
+                <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xs shadow-md shadow-indigo-600/30">
+                        <ShieldCheck size={16} />
                     </div>
                     <div className="flex flex-col">
-                        <span className="font-bold tracking-tight text-sm text-white">AttachPro</span>
-                        <span className="text-[9px] text-slate-500 uppercase tracking-widest leading-none">{roleDef.label}</span>
+                        <span className="font-bold tracking-tight text-xs text-white">AttachPro</span>
+                        <span className="text-[8px] text-slate-500 uppercase tracking-widest">{roleDef.label}</span>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -37,28 +37,28 @@ export const DashboardLayout = ({ children, role: propRole }) => {
                     <button
                         type="button"
                         onClick={() => setSidebarOpen(!sidebarOpen)}
-                        className="p-2 rounded-xl bg-white/5 text-slate-300 hover:text-white transition-colors focus-visible:outline-blue-500"
+                        className="p-1.5 rounded-lg bg-white/[0.04] text-slate-300 hover:text-white transition-colors border border-white/10"
                         aria-label={sidebarOpen ? "Close navigation menu" : "Open navigation menu"}
                         aria-expanded={sidebarOpen}
                     >
-                        {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                        {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
                     </button>
                 </div>
             </header>
 
-            {/* Application Shell Sidebar */}
+            {/* Application Sidebar */}
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-            {/* Desktop Top Notification Bar */}
-            <div className="hidden lg:flex fixed top-4 right-8 z-[50] items-center gap-3">
+            {/* Desktop Top Header Bar */}
+            <div className="hidden lg:flex fixed top-3 right-6 z-[50] items-center gap-3">
                 <NotificationDropdown />
             </div>
 
-            {/* Main Content Landmark */}
+            {/* Main Content Area */}
             <main
                 id="main-content"
                 className={`
-                    lg:ml-64 min-h-screen p-4 sm:p-6 md:p-8 lg:p-10 pt-20 lg:pt-8 transition-all duration-300
+                    lg:ml-64 min-h-screen p-4 sm:p-6 md:p-8 pt-18 lg:pt-6 transition-all duration-300
                     ${sidebarOpen ? 'blur-sm lg:blur-none pointer-events-none lg:pointer-events-auto' : ''}
                 `}
             >
@@ -70,7 +70,7 @@ export const DashboardLayout = ({ children, role: propRole }) => {
             {/* Mobile Backdrop Overlay */}
             {sidebarOpen && (
                 <div
-                    className="lg:hidden fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-[55] animate-fade-in"
+                    className="lg:hidden fixed inset-0 bg-[#080c14]/80 backdrop-blur-sm z-[55] animate-fade-in"
                     onClick={() => setSidebarOpen(false)}
                     aria-hidden="true"
                 />

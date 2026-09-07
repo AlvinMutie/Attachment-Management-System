@@ -4,7 +4,7 @@ import Button from './Button';
 import EmptyState from './EmptyState';
 
 export const Table = ({ children, className = '', containerClassName = '' }) => (
-    <div className={`w-full overflow-x-auto rounded-2xl border border-white/5 bg-slate-900/60 shadow-xl ${containerClassName}`}>
+    <div className={`w-full overflow-x-auto rounded-2xl border border-[#1f293d] bg-[#101626] shadow-xl ${containerClassName}`}>
         <table className={`w-full text-left text-sm text-slate-300 border-collapse ${className}`}>
             {children}
         </table>
@@ -12,13 +12,13 @@ export const Table = ({ children, className = '', containerClassName = '' }) => 
 );
 
 export const TableHeader = ({ children, className = '' }) => (
-    <thead className={`bg-slate-950/70 border-b border-white/5 text-[11px] font-bold uppercase tracking-wider text-slate-400 select-none ${className}`}>
+    <thead className={`bg-[#0c101d] border-b border-[#1f293d] text-[11px] font-semibold uppercase tracking-wider text-slate-400 select-none ${className}`}>
         {children}
     </thead>
 );
 
 export const TableBody = ({ children, className = '' }) => (
-    <tbody className={`divide-y divide-white/5 ${className}`}>
+    <tbody className={`divide-y divide-[#1f293d]/60 ${className}`}>
         {children}
     </tbody>
 );
@@ -28,7 +28,7 @@ export const TableRow = ({ children, className = '', hoverable = true, onClick }
         onClick={onClick}
         className={`
             transition-colors duration-150
-            ${hoverable ? 'hover:bg-white/[0.02]' : ''}
+            ${hoverable ? 'hover:bg-[#162035]/80' : ''}
             ${onClick ? 'cursor-pointer' : ''}
             ${className}
         `}
@@ -49,7 +49,7 @@ export const TableHead = ({
     };
 
     return (
-        <th scope="col" className={`px-5 py-3.5 ${alignStyles[align] || 'text-left'} ${className}`}>
+        <th scope="col" className={`px-4 py-3 ${alignStyles[align] || 'text-left'} ${className}`}>
             {children}
         </th>
     );
@@ -67,7 +67,7 @@ export const TableCell = ({
     };
 
     return (
-        <td className={`px-5 py-4 text-xs font-normal text-slate-200 ${alignStyles[align] || 'text-left'} ${className}`}>
+        <td className={`px-4 py-3 text-xs font-normal text-slate-200 ${alignStyles[align] || 'text-left'} ${className}`}>
             {children}
         </td>
     );
@@ -98,7 +98,7 @@ export const TablePagination = ({
     const endItem = Math.min(currentPage * itemsPerPage, totalItems || currentPage * itemsPerPage);
 
     return (
-        <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 p-4 border-t border-white/5 text-xs text-slate-400 ${className}`}>
+        <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 p-3.5 border-t border-[#1f293d] text-xs text-slate-400 bg-[#0c101d] ${className}`}>
             <div>
                 {totalItems !== undefined ? (
                     <span>
@@ -119,7 +119,7 @@ export const TablePagination = ({
                 >
                     Previous
                 </Button>
-                <div className="px-3 py-1 bg-slate-800 rounded-lg text-white font-semibold">
+                <div className="px-2.5 py-1 bg-[#162035] border border-[#263554] rounded-lg text-white font-semibold text-xs">
                     {currentPage}
                 </div>
                 <Button

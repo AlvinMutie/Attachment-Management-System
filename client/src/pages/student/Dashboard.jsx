@@ -4,21 +4,19 @@ import { Link } from 'react-router-dom';
 import {
     Calendar,
     CheckCircle2,
-    XCircle,
     Clock,
     FileText,
-    QrCode,
     TrendingUp,
     AlertTriangle,
     GraduationCap,
-    Building2,
-    UserCheck,
     Briefcase,
     ArrowRight,
     RefreshCw,
     ShieldCheck,
     Check,
-    AlertCircle
+    AlertCircle,
+    Sparkles,
+    UserCheck
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import DashboardLayout from '../../components/DashboardLayout';
@@ -84,12 +82,13 @@ export default function StudentDashboard() {
     if (loading) {
         return (
             <DashboardLayout role="student">
-                <div className="space-y-6 p-6">
+                <div className="space-y-6 p-6 sm:p-8 max-w-7xl mx-auto">
                     <LoadingSkeleton className="h-28 rounded-2xl" />
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <LoadingSkeleton className="h-32 rounded-xl" />
-                        <LoadingSkeleton className="h-32 rounded-xl" />
-                        <LoadingSkeleton className="h-32 rounded-xl" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                        <LoadingSkeleton className="h-28 rounded-xl" />
+                        <LoadingSkeleton className="h-28 rounded-xl" />
+                        <LoadingSkeleton className="h-28 rounded-xl" />
+                        <LoadingSkeleton className="h-28 rounded-xl" />
                     </div>
                     <LoadingSkeleton className="h-96 rounded-2xl" />
                 </div>
@@ -103,7 +102,6 @@ export default function StudentDashboard() {
         attendance = {},
         readiness = {},
         actionQueue = [],
-        deadlines = [],
         timeline = [],
         logbooksSummary = {}
     } = workspaceData || {};
@@ -115,75 +113,93 @@ export default function StudentDashboard() {
         switch (status) {
             case 'APPROVED':
             case 'ACTIVE':
-                return <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">{status}</Badge>;
+                return <Badge variant="success" dot={true}>Active Attachment</Badge>;
             case 'PENDING_APPROVAL':
-                return <Badge className="bg-amber-500/10 text-amber-400 border border-amber-500/20">PENDING APPROVAL</Badge>;
+                return <Badge variant="warning" dot={true}>Pending Approval</Badge>;
             case 'REJECTED':
-                return <Badge className="bg-rose-500/10 text-rose-400 border border-rose-500/20">REJECTED</Badge>;
+                return <Badge variant="danger" dot={true}>Rejected</Badge>;
             case 'COMPLETED':
-                return <Badge className="bg-purple-500/10 text-purple-400 border border-purple-500/20">COMPLETED</Badge>;
+                return <Badge variant="indigo" dot={true}>Completed</Badge>;
             default:
-                return <Badge className="bg-slate-500/10 text-slate-400 border border-slate-500/20">DRAFT</Badge>;
+                return <Badge variant="default" dot={true}>Draft Profile</Badge>;
         }
     };
 
     return (
         <DashboardLayout role="student">
-            <div className="space-y-8 p-6 max-w-7xl mx-auto pb-16">
-                {/* Header Welcome Card */}
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-blue-900/40 via-slate-900/60 to-slate-900/40 border border-blue-500/20 backdrop-blur-md">
-                    <div className="flex items-center gap-5">
-                        <div className="w-16 h-16 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-2xl font-black text-blue-400">
+            <div className="space-y-7 p-6 sm:p-8 max-w-7xl mx-auto pb-16">
+                {/* Header Welcome Bento Banner */}
+                <div className="relative overflow-hidden rounded-2xl bg-[#101626] border border-[#1f293d] p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/10 blur-3xl pointer-events-none" />
+                    
+                    <div className="flex items-center gap-4 sm:gap-5 relative z-10">
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-600 border border-white/20 flex items-center justify-center text-xl sm:text-2xl font-black text-white shadow-lg shadow-indigo-500/20">
                             {user?.name?.charAt(0) || 'S'}
                         </div>
                         <div>
-                            <div className="flex items-center gap-3">
-                                <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                                    Welcome, {user?.name?.split(' ')[0]}!
+                            <div className="flex flex-wrap items-center gap-2.5">
+                                <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                                    {user?.name}
                                 </h1>
                                 {getPlacementBadge(student.placementStatus)}
                             </div>
-                            <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                                {student.course || student.department || 'Academic Industrial Attachment'} • {student.organizationName || 'Placement Unset'}
+                            <p className="text-xs sm:text-sm text-slate-400 mt-1 flex items-center gap-2">
+                                <span>{student.course || student.department || 'Undergraduate Attachment'}</span>
+                                <span className="text-slate-600">•</span>
+                                <span className="text-indigo-400 font-medium">{student.organizationName || 'No Organization Placed'}</span>
                             </p>
                         </div>
                     </div>
-                    <Button
-                        variant="outline"
-                        onClick={loadWorkspace}
-                        className="flex items-center gap-2 text-xs bg-slate-800/80 border-slate-700 hover:bg-slate-700"
-                    >
-                        <RefreshCw className="w-3.5 h-3.5" />
-                        Refresh Workspace
-                    </Button>
+
+                    <div className="flex items-center gap-3 relative z-10 w-full md:w-auto">
+                        <Button
+                            variant="secondary"
+                            onClick={loadWorkspace}
+                            className="flex-1 md:flex-none flex items-center justify-center gap-2 text-xs"
+                        >
+                            <RefreshCw className="w-3.5 h-3.5 text-slate-400" />
+                            <span>Refresh Sync</span>
+                        </Button>
+                        <Link to="/student/logbook" className="flex-1 md:flex-none">
+                            <Button variant="primary" className="w-full flex items-center justify-center gap-2 text-xs">
+                                <FileText className="w-3.5 h-3.5" />
+                                <span>Open Logbook</span>
+                            </Button>
+                        </Link>
+                    </div>
                 </div>
 
-                {/* Prioritized Action Queue: "What I need to do next" */}
+                {/* Prioritized Action Queue */}
                 {actionQueue.length > 0 && (
-                    <div className="p-6 rounded-3xl bg-amber-500/5 border border-amber-500/20 space-y-4">
+                    <div className="p-5 sm:p-6 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-4">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-sm font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
-                                <AlertTriangle className="w-4 h-4" />
-                                Action Required ({actionQueue.length} items)
-                            </h2>
-                            <span className="text-xs text-slate-500">Immediate next steps</span>
+                            <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-lg bg-amber-500/10 border border-amber-500/25 flex items-center justify-center text-amber-400">
+                                    <AlertTriangle className="w-3.5 h-3.5" />
+                                </div>
+                                <h2 className="text-xs sm:text-sm font-bold text-amber-400 uppercase tracking-wider">
+                                    Action Required ({actionQueue.length} items)
+                                </h2>
+                            </div>
+                            <span className="text-xs text-slate-400 font-mono">Immediate attention</span>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                             {actionQueue.map(action => (
                                 <div
                                     key={action.id}
-                                    className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-start justify-between gap-4"
+                                    className="p-4 rounded-xl bg-[#0c101d] border border-[#1f293d] flex items-start justify-between gap-3 hover:border-slate-600 transition-all"
                                 >
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <span className={`w-2 h-2 rounded-full ${action.priority === 'CRITICAL' ? 'bg-rose-500' : action.priority === 'HIGH' ? 'bg-amber-500' : 'bg-blue-500'}`} />
-                                            <h3 className="text-xs font-bold text-white">{action.title}</h3>
+                                            <span className={`w-2 h-2 rounded-full ${action.priority === 'CRITICAL' ? 'bg-rose-500 animate-pulse' : action.priority === 'HIGH' ? 'bg-amber-500' : 'bg-indigo-500'}`} />
+                                            <h3 className="text-xs font-bold text-slate-200">{action.title}</h3>
                                         </div>
-                                        <p className="text-[11px] text-slate-400 leading-relaxed">{action.description}</p>
+                                        <p className="text-xs text-slate-400 leading-relaxed">{action.description}</p>
                                     </div>
                                     <Link to={action.link} className="shrink-0">
-                                        <Button size="sm" className="text-xs bg-amber-600 hover:bg-amber-700 text-white font-semibold">
-                                            {action.actionText} <ArrowRight className="w-3 h-3 ml-1" />
+                                        <Button size="sm" variant="outline" className="text-xs text-amber-400 border-amber-500/30 hover:bg-amber-500/10">
+                                            <span>{action.actionText}</span>
+                                            <ArrowRight className="w-3 h-3 ml-1" />
                                         </Button>
                                     </Link>
                                 </div>
@@ -192,99 +208,108 @@ export default function StudentDashboard() {
                     </div>
                 )}
 
-                {/* Key Progress & Metrics Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <Card className="p-6 border border-slate-800 bg-slate-900/60 backdrop-blur-sm">
+                {/* Stripe-Grade Metric Tiles */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                    <div className="kpi-metric-tile">
                         <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Attendance Rate</p>
-                                <p className="text-3xl font-extrabold text-white mt-1">{attendance.rate ?? 0}%</p>
-                                <p className="text-xs text-slate-500 mt-1">{attendance.presentCount || 0} / {attendance.totalRecords || 0} sessions verified</p>
-                            </div>
-                            <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-400">
-                                <TrendingUp className="w-6 h-6" />
+                            <span className="text-xs font-semibold text-slate-400">Attendance Rate</span>
+                            <div className="w-7 h-7 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                                <TrendingUp className="w-4 h-4" />
                             </div>
                         </div>
-                    </Card>
+                        <div className="kpi-metric-value mt-2">{attendance.rate ?? 0}%</div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#1f293d]/50 text-xs text-slate-400">
+                            <span>Verified Presence</span>
+                            <span className="font-mono text-slate-300 font-semibold">{attendance.presentCount || 0} / {attendance.totalRecords || 0}</span>
+                        </div>
+                    </div>
 
-                    <Card className="p-6 border border-slate-800 bg-slate-900/60 backdrop-blur-sm">
+                    <div className="kpi-metric-tile">
                         <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Approved Logbooks</p>
-                                <p className="text-3xl font-extrabold text-emerald-400 mt-1">{logbooksSummary.approved || 0}</p>
-                                <p className="text-xs text-slate-500 mt-1">{logbooksSummary.pending || 0} pending review • {logbooksSummary.rejected || 0} rejected</p>
-                            </div>
-                            <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-400">
-                                <FileText className="w-6 h-6" />
+                            <span className="text-xs font-semibold text-slate-400">Approved Logbooks</span>
+                            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                <FileText className="w-4 h-4" />
                             </div>
                         </div>
-                    </Card>
+                        <div className="kpi-metric-value text-emerald-400 mt-2">{logbooksSummary.approved || 0}</div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#1f293d]/50 text-xs text-slate-400">
+                            <span>Pending Review</span>
+                            <span className="font-mono text-amber-400 font-semibold">{logbooksSummary.pending || 0} entries</span>
+                        </div>
+                    </div>
 
-                    <Card className="p-6 border border-slate-800 bg-slate-900/60 backdrop-blur-sm">
+                    <div className="kpi-metric-tile">
                         <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Days Remaining</p>
-                                <p className="text-3xl font-extrabold text-white mt-1">{dates.daysRemaining ?? 0}</p>
-                                <p className="text-xs text-slate-500 mt-1">{dates.daysCompleted || 0} days elapsed ({dates.percentElapsed || 0}%)</p>
-                            </div>
-                            <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-400">
-                                <Clock className="w-6 h-6" />
+                            <span className="text-xs font-semibold text-slate-400">Days Remaining</span>
+                            <div className="w-7 h-7 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+                                <Clock className="w-4 h-4" />
                             </div>
                         </div>
-                    </Card>
+                        <div className="kpi-metric-value mt-2">{dates.daysRemaining ?? 0} <span className="text-sm font-normal text-slate-400">days</span></div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#1f293d]/50 text-xs text-slate-400">
+                            <span>Elapsed Time</span>
+                            <span className="font-mono text-slate-300 font-semibold">{dates.percentElapsed || 0}%</span>
+                        </div>
+                    </div>
 
-                    <Card className="p-6 border border-slate-800 bg-slate-900/60 backdrop-blur-sm">
+                    <div className="kpi-metric-tile">
                         <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Completion Readiness</p>
-                                <p className="text-3xl font-extrabold text-teal-400 mt-1">{readiness.score ?? 0}%</p>
-                                <p className="text-xs text-slate-500 mt-1">{readiness.ready ? 'Eligible for Completion' : `${readiness.blockers?.length || 0} criteria pending`}</p>
-                            </div>
-                            <div className="w-12 h-12 rounded-xl bg-teal-500/10 flex items-center justify-center text-teal-400">
-                                <CheckCircle2 className="w-6 h-6" />
+                            <span className="text-xs font-semibold text-slate-400">Readiness Score</span>
+                            <div className="w-7 h-7 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
+                                <CheckCircle2 className="w-4 h-4" />
                             </div>
                         </div>
-                    </Card>
+                        <div className="kpi-metric-value text-teal-400 mt-2">{readiness.score ?? 0}%</div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#1f293d]/50 text-xs text-slate-400">
+                            <span>Status</span>
+                            <span className="font-semibold text-teal-300">{readiness.ready ? 'Eligible' : 'In Progress'}</span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Main Content: Daily Check-In & Academic Completion Checklist */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* Left Column: Daily QR Verification & Check-in */}
+                {/* Main Bento Grid: Daily Check-In & Academic Completion Checklist */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-7">
+                    {/* Left Column: QR Attendance & Assigned Team */}
                     <div className="lg:col-span-5 space-y-6">
-                        <Card className="p-6 sm:p-8 border border-slate-800 bg-slate-900/80 rounded-3xl flex flex-col items-center justify-between space-y-6">
+                        <Card variant="stripe" className="p-6 sm:p-7 flex flex-col items-center justify-between space-y-6">
                             <div className="text-center space-y-1">
-                                <h3 className="text-base font-bold text-white uppercase tracking-wider">Daily Attendance Verification</h3>
-                                <p className="text-xs text-slate-500">Scan at workplace or log daily portal check-in</p>
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[11px] font-semibold">
+                                    <Sparkles size={11} className="text-indigo-400" />
+                                    Daily Verification
+                                </div>
+                                <h3 className="text-base font-extrabold text-white tracking-tight">On-Site QR Attendance</h3>
+                                <p className="text-xs text-slate-400">Scan at institutional reader or log daily portal check-in</p>
                             </div>
 
-                            <div className="p-6 bg-white rounded-3xl shadow-xl">
+                            <div className="p-5 bg-white rounded-2xl shadow-xl ring-4 ring-indigo-500/10">
                                 <QRCodeSVG
                                     value={qrToken}
-                                    size={190}
+                                    size={180}
                                     level="H"
                                     includeMargin={true}
                                 />
                             </div>
 
                             <div className="w-full space-y-3">
-                                <div className="flex items-center justify-center space-x-2 text-slate-400 text-[10px] font-bold uppercase tracking-widest">
-                                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                                    <span>QR token rotating every 30s</span>
+                                <div className="flex items-center justify-center space-x-2 text-slate-400 text-[11px] font-semibold">
+                                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                                    <span>Token rotating every 30 seconds</span>
                                 </div>
 
                                 {todayCheckedIn ? (
-                                    <div className="w-full py-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-center font-bold text-xs flex items-center justify-center gap-2">
-                                        <CheckCircle2 className="w-4 h-4" />
-                                        <span>Attendance Logged For Today</span>
+                                    <div className="w-full py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-300 text-center font-bold text-xs flex items-center justify-center gap-2">
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                                        <span>Today's Check-In Verified</span>
                                     </div>
                                 ) : (
                                     <Button
                                         onClick={handleCheckIn}
                                         disabled={checkInLoading}
-                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2"
+                                        variant="primary"
+                                        className="w-full py-3 rounded-xl text-xs flex items-center justify-center gap-2"
                                     >
                                         <UserCheck className="w-4 h-4" />
-                                        <span>{checkInLoading ? 'Recording...' : 'Instant Check-In Today'}</span>
+                                        <span>{checkInLoading ? 'Recording Session...' : 'Instant Check-In Today'}</span>
                                     </Button>
                                 )}
 
@@ -297,25 +322,29 @@ export default function StudentDashboard() {
                         </Card>
 
                         {/* Assigned Supervisors Card */}
-                        <Card className="p-6 border border-slate-800 bg-slate-900/60 rounded-3xl space-y-4">
-                            <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Assigned Supervisory Team</h3>
-                            <div className="space-y-3 text-xs">
-                                <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-between">
+                        <Card variant="stripe" className="p-6 space-y-4">
+                            <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">Supervisory Team</h3>
+                            <div className="space-y-3">
+                                <div className="p-3.5 rounded-xl bg-[#0c101d] border border-[#1f293d] flex items-center justify-between">
                                     <div>
-                                        <p className="text-slate-500 text-[10px] font-bold uppercase">Industry Supervisor</p>
-                                        <p className="text-white font-bold text-sm mt-0.5">{student.industrySupervisor?.name || 'Pending Assignment'}</p>
-                                        <p className="text-slate-400 text-[11px]">{student.industrySupervisor?.email || '—'}</p>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Industry Supervisor</span>
+                                        <p className="text-white font-bold text-xs sm:text-sm mt-0.5">{student.industrySupervisor?.name || 'Pending Assignment'}</p>
+                                        <p className="text-slate-400 text-xs">{student.industrySupervisor?.email || '—'}</p>
                                     </div>
-                                    <Briefcase className="w-5 h-5 text-emerald-400 opacity-80" />
+                                    <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                        <Briefcase className="w-4 h-4" />
+                                    </div>
                                 </div>
 
-                                <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/50 flex items-center justify-between">
+                                <div className="p-3.5 rounded-xl bg-[#0c101d] border border-[#1f293d] flex items-center justify-between">
                                     <div>
-                                        <p className="text-slate-500 text-[10px] font-bold uppercase">University Supervisor</p>
-                                        <p className="text-white font-bold text-sm mt-0.5">{student.universitySupervisor?.name || 'Pending Assignment'}</p>
-                                        <p className="text-slate-400 text-[11px]">{student.universitySupervisor?.email || '—'}</p>
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400">University Faculty Lead</span>
+                                        <p className="text-white font-bold text-xs sm:text-sm mt-0.5">{student.universitySupervisor?.name || 'Pending Assignment'}</p>
+                                        <p className="text-slate-400 text-xs">{student.universitySupervisor?.email || '—'}</p>
                                     </div>
-                                    <GraduationCap className="w-5 h-5 text-purple-400 opacity-80" />
+                                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                                        <GraduationCap className="w-4 h-4" />
+                                    </div>
                                 </div>
                             </div>
                         </Card>
@@ -324,21 +353,21 @@ export default function StudentDashboard() {
                     {/* Right Column: Academic Milestones Checklist & Timeline */}
                     <div className="lg:col-span-7 space-y-6">
                         {/* Milestone Completion Checklist */}
-                        <Card className="p-6 sm:p-8 border border-slate-800 bg-slate-900/80 rounded-3xl space-y-5">
-                            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+                        <Card variant="stripe" className="p-6 sm:p-7 space-y-5">
+                            <div className="flex items-center justify-between pb-4 border-b border-[#1f293d]">
                                 <div>
-                                    <h3 className="text-base font-bold text-white flex items-center gap-2">
-                                        <ShieldCheck className="w-5 h-5 text-teal-400" />
-                                        Academic Completion Requirements
+                                    <h3 className="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+                                        <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-teal-400" />
+                                        Academic Completion Rubric
                                     </h3>
-                                    <p className="text-xs text-slate-500 mt-0.5">Authoritative criteria required for attachment credit sign-off</p>
+                                    <p className="text-xs text-slate-400 mt-0.5">Authoritative criteria required for university attachment credit</p>
                                 </div>
-                                <span className="font-mono text-xs font-bold text-teal-400 bg-teal-500/10 px-2.5 py-1 rounded-full border border-teal-500/20">
+                                <span className="font-mono text-xs font-bold text-teal-300 bg-teal-500/10 px-3 py-1 rounded-full border border-teal-500/25">
                                     {readiness.score}% Complete
                                 </span>
                             </div>
 
-                            <div className="space-y-2.5">
+                            <div className="space-y-2">
                                 {[
                                     { label: 'Approved Placement & Organization Record', passed: readiness.checklist?.placementApproved },
                                     { label: 'Industry Supervisor Allocation', passed: readiness.checklist?.industrySupervisorAssigned },
@@ -351,30 +380,30 @@ export default function StudentDashboard() {
                                 ].map((item, idx) => (
                                     <div
                                         key={idx}
-                                        className={`p-3 rounded-xl border flex items-center justify-between text-xs ${
+                                        className={`p-3 rounded-xl border flex items-center justify-between text-xs transition-all ${
                                             item.passed
                                                 ? 'bg-emerald-500/5 border-emerald-500/20 text-emerald-300'
-                                                : 'bg-slate-800/40 border-slate-800 text-slate-400'
+                                                : 'bg-[#0c101d] border-[#1f293d] text-slate-400'
                                         }`}
                                     >
                                         <span className="font-medium">{item.label}</span>
                                         {item.passed ? (
-                                            <span className="flex items-center gap-1 font-bold text-emerald-400">
-                                                <Check className="w-4 h-4" /> Verified
+                                            <span className="flex items-center gap-1 font-bold text-emerald-400 text-[11px]">
+                                                <Check className="w-3.5 h-3.5" /> Verified
                                             </span>
                                         ) : (
-                                            <span className="text-[11px] text-amber-500/90 font-semibold">Pending</span>
+                                            <span className="text-[10px] text-amber-400 font-semibold bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/20">Pending</span>
                                         )}
                                     </div>
                                 ))}
                             </div>
 
                             {readiness.blockers?.length > 0 && (
-                                <div className="p-4 rounded-xl bg-rose-500/5 border border-rose-500/20 space-y-1 text-xs">
-                                    <p className="font-bold text-rose-400 flex items-center gap-1.5">
-                                        <AlertCircle className="w-4 h-4" /> Outstanding Completion Blockers:
+                                <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/25 space-y-1 text-xs">
+                                    <p className="font-bold text-rose-300 flex items-center gap-1.5">
+                                        <AlertCircle className="w-4 h-4 text-rose-400" /> Outstanding Completion Blockers:
                                     </p>
-                                    <ul className="list-disc list-inside space-y-0.5 text-slate-400 text-[11px]">
+                                    <ul className="list-disc list-inside space-y-0.5 text-slate-300 text-[11px] pt-1">
                                         {readiness.blockers.map((b, i) => (
                                             <li key={i}>{b}</li>
                                         ))}
@@ -384,31 +413,31 @@ export default function StudentDashboard() {
                         </Card>
 
                         {/* Chronological Lifecycle Timeline */}
-                        <Card className="p-6 sm:p-8 border border-slate-800 bg-slate-900/80 rounded-3xl space-y-5">
-                            <h3 className="text-base font-bold text-white flex items-center gap-2 pb-3 border-b border-slate-800">
-                                <Calendar className="w-5 h-5 text-blue-400" />
+                        <Card variant="stripe" className="p-6 sm:p-7 space-y-5">
+                            <h3 className="text-sm sm:text-base font-extrabold text-white flex items-center gap-2 pb-4 border-b border-[#1f293d]">
+                                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
                                 Attachment Lifecycle Journey
                             </h3>
 
-                            <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-800">
+                            <div className="relative pl-6 space-y-5 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-[#1f293d]">
                                 {timeline.map((step, idx) => (
                                     <div key={idx} className="relative group">
                                         <div className={`absolute -left-6 top-0.5 w-4 h-4 rounded-full border-2 ${
                                             step.completed
-                                                ? 'bg-emerald-500 border-emerald-400'
+                                                ? 'bg-emerald-500 border-emerald-400 shadow-sm shadow-emerald-500/50'
                                                 : step.current
-                                                ? 'bg-blue-500 border-blue-400 animate-pulse'
-                                                : 'bg-slate-900 border-slate-700'
+                                                ? 'bg-indigo-500 border-indigo-400 ring-2 ring-indigo-500/30 animate-pulse'
+                                                : 'bg-[#0c101d] border-slate-700'
                                         }`} />
                                         <div>
                                             <div className="flex items-center gap-2">
-                                                <h4 className={`text-xs font-bold ${step.completed ? 'text-white' : step.current ? 'text-blue-400' : 'text-slate-500'}`}>
+                                                <h4 className={`text-xs font-bold ${step.completed ? 'text-white' : step.current ? 'text-indigo-400' : 'text-slate-500'}`}>
                                                     {step.title}
                                                 </h4>
                                                 {step.completed && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
                                             </div>
                                             {step.date && (
-                                                <p className="text-[10px] text-slate-500 mt-0.5">
+                                                <p className="text-[10px] text-slate-400 mt-0.5">
                                                     {new Date(step.date).toLocaleDateString()}
                                                 </p>
                                             )}

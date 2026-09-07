@@ -4,22 +4,23 @@
   --font-inter: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   --animate-float: float 6s ease-in-out infinite;
-  --animate-fade-in: fadeIn 0.3s ease-out forwards;
+  --animate-fade-in: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-shimmer: shimmer 2s linear infinite;
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
   @keyframes float {
     0%, 100% {
       transform: translateY(0px);
     }
     50% {
-      transform: translateY(-10px);
+      transform: translateY(-8px);
     }
   }
 
   @keyframes fadeIn {
     0% {
       opacity: 0;
-      transform: translateY(6px);
+      transform: translateY(4px);
     }
     100% {
       opacity: 1;
@@ -35,76 +36,68 @@
       background-position: 200% 0;
     }
   }
-
-  @keyframes slideRight {
-    0%, 100% {
-      transform: translateX(0);
-    }
-    50% {
-      transform: translateX(4px);
-    }
-  }
 }
 
 @layer base {
   :root {
-    /* Brand Accent Defaults (dynamically overridden by institutional theme) */
-    --brand-primary: #3b82f6;
-    --brand-primary-hover: #2563eb;
-    --brand-primary-glow: rgba(59, 130, 246, 0.25);
-    --brand-primary-subtle: rgba(59, 130, 246, 0.08);
+    /* Stripe-inspired Precision Dark Canvas Tokens */
+    --surface-bg: #080c14;        /* Deep midnight base canvas */
+    --surface-main: #0b0f19;      /* Primary container background */
+    --surface-card: #101626;      /* Precision card surface */
+    --surface-card-hover: #162035;/* Hover card state */
+    --surface-elevated: #1a243b;  /* Modals, menus & popovers */
+    --surface-subtle: rgba(255, 255, 255, 0.02);
 
-    /* Surface Hierarchy (Level 1, Level 2, Level 3) */
-    --surface-bg: #020617;        /* Level 1: Page Background */
-    --surface-main: #0b0f19;      /* Level 1b: Content Area Background */
-    --surface-card: #0f172a;      /* Level 2: Cards & Primary Panels */
-    --surface-card-hover: #162036;/* Level 2 Hover */
-    --surface-elevated: #1e293b;  /* Level 3: Modals, Drawers & Popovers */
-    --surface-subtle: rgba(255, 255, 255, 0.03);
-
-    /* Border System */
-    --border-subtle: rgba(255, 255, 255, 0.07);
+    /* Precision 1px Border Tokens */
+    --border-subtle: rgba(255, 255, 255, 0.08);
     --border-medium: rgba(255, 255, 255, 0.14);
-    --border-strong: rgba(255, 255, 255, 0.24);
+    --border-strong: rgba(255, 255, 255, 0.25);
+    --border-card: #1f293d;
 
-    /* Typography & Text Semantics */
+    /* High-Contrast Typography Hierarchy */
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
     --text-muted: #64748b;
     --text-disabled: #475569;
 
-    /* Semantic Status Tokens */
+    /* Dynamic Brand Accents */
+    --brand-primary: #4f46e5;
+    --brand-primary-hover: #4338ca;
+    --brand-primary-glow: rgba(79, 70, 229, 0.25);
+    --brand-primary-subtle: rgba(79, 70, 229, 0.12);
+
+    /* Attio-Style Status Badges & Accents */
     --status-success: #10b981;
-    --status-success-bg: rgba(16, 185, 129, 0.1);
+    --status-success-bg: rgba(16, 185, 129, 0.12);
     --status-success-border: rgba(16, 185, 129, 0.25);
-    
+
     --status-warning: #f59e0b;
-    --status-warning-bg: rgba(245, 158, 11, 0.1);
+    --status-warning-bg: rgba(245, 158, 11, 0.12);
     --status-warning-border: rgba(245, 158, 11, 0.25);
-    
-    --status-danger: #ef4444;
-    --status-danger-bg: rgba(239, 68, 68, 0.1);
-    --status-danger-border: rgba(239, 68, 68, 0.25);
-    
-    --status-info: #3b82f6;
-    --status-info-bg: rgba(59, 130, 246, 0.1);
-    --status-info-border: rgba(59, 130, 246, 0.25);
+
+    --status-danger: #f43f5e;
+    --status-danger-bg: rgba(244, 63, 94, 0.12);
+    --status-danger-border: rgba(244, 63, 94, 0.25);
+
+    --status-info: #0ea5e9;
+    --status-info-bg: rgba(14, 165, 233, 0.12);
+    --status-info-border: rgba(14, 165, 233, 0.25);
 
     --status-neutral: #64748b;
-    --status-neutral-bg: rgba(100, 116, 139, 0.1);
+    --status-neutral-bg: rgba(100, 116, 139, 0.12);
     --status-neutral-border: rgba(100, 116, 139, 0.25);
 
-    /* Radii Tokens */
-    --radius-sm: 0.375rem;   /* 6px */
-    --radius-md: 0.625rem;   /* 10px */
-    --radius-lg: 0.875rem;   /* 14px */
-    --radius-xl: 1.25rem;    /* 20px */
-    --radius-2xl: 1.75rem;   /* 28px */
-    --radius-full: 9999px;
+    /* Radii */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
   }
 
   html {
     scroll-behavior: smooth;
+    color-scheme: dark;
   }
 
   body {
@@ -114,191 +107,138 @@
     -moz-osx-font-smoothing: grayscale;
     font-family: var(--font-inter);
     min-height: 100vh;
+    background-image: 
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.12), transparent 70%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(14, 165, 233, 0.05), transparent 70%);
+    background-attachment: fixed;
   }
 
-  /* Reduced Motion Accessibility */
-  @media (prefers-reduced-motion: reduce) {
-    *,
-    ::before,
-    ::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
-  }
-
-  /* Global Focus Visible Styling */
   :focus-visible {
     outline: 2px solid var(--brand-primary);
     outline-offset: 2px;
   }
+
+  /* Sleek Custom Scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
 }
 
 @layer components {
-  .page-container {
-    min-height: 100vh;
+  /* Stripe Precision Card Surface */
+  .stripe-card {
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .stripe-card:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+    background-color: var(--surface-card-hover);
+  }
+
+  /* Attio Bento Card */
+  .bento-card {
+    background: linear-gradient(180deg, rgba(22, 32, 53, 0.7) 0%, rgba(16, 22, 38, 0.9) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-xl);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bento-card:hover {
+    border-color: rgba(99, 102, 241, 0.35);
+    box-shadow: 0 12px 35px -5px rgba(79, 70, 229, 0.15);
+    transform: translateY(-2px);
+  }
+
+  /* Attio Segmented Pill Tabs */
+  .segmented-tabs {
+    display: inline-flex;
+    padding: 0.25rem;
+    background-color: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 9999px;
+    backdrop-filter: blur(8px);
+  }
+
+  .segmented-tab-btn {
+    padding: 0.375rem 0.875rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border-radius: 9999px;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+  }
+
+  .segmented-tab-btn.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Stripe KPI Metric Tile */
+  .kpi-metric-tile {
     display: flex;
     flex-direction: column;
-    overflow-x: hidden;
-  }
-
-  .content-width {
-    max-width: 84rem;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-    width: 100%;
-  }
-
-  /* Surface Cards */
-  .glass-card {
+    padding: 1.25rem;
     background-color: var(--surface-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-xl);
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
-    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-lg);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   }
 
-  .glass-card:hover {
-    border-color: var(--border-medium);
-  }
-
-  /* Panels */
-  .glass-panel {
-    background-color: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(12px);
-    border: 1px solid var(--border-subtle);
-  }
-
-  /* Standard Buttons */
-  .btn-primary {
-    background-color: var(--brand-primary);
+  .kpi-metric-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
     color: #ffffff;
-    font-weight: 600;
-    padding: 0.625rem 1.25rem;
-    border-radius: var(--radius-md);
-    transition: all 0.15s ease-in-out;
+    line-height: 1.2;
+  }
+
+  .kpi-trend-badge {
     display: inline-flex;
     align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    box-shadow: 0 2px 8px -1px var(--brand-primary-glow);
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
   }
 
-  .btn-primary:hover:not(:disabled) {
-    background-color: var(--brand-primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px -2px var(--brand-primary-glow);
+  .kpi-trend-up {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.25);
   }
 
-  .btn-primary:active:not(:disabled) {
-    transform: translateY(0);
+  .kpi-trend-down {
+    background-color: rgba(244, 63, 94, 0.15);
+    color: #fb7185;
+    border: 1px solid rgba(244, 63, 94, 0.25);
   }
 
-  .btn-primary:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  /* Shimmer Glass Surface */
+  .glass-surface {
+    background: rgba(16, 22, 38, 0.65);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
-
-  /* Form Inputs */
-  .input-field {
-    background-color: rgba(15, 23, 42, 0.6);
-    border: 1px solid var(--border-medium);
-    border-radius: var(--radius-md);
-    padding: 0.625rem 0.875rem;
-    color: var(--text-primary);
-    width: 100%;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
-    font-size: 0.875rem;
-  }
-
-  .input-field::placeholder {
-    color: var(--text-muted);
-  }
-
-  .input-field:focus {
-    outline: none;
-    background-color: rgba(15, 23, 42, 0.9);
-    border-color: var(--brand-primary);
-    box-shadow: 0 0 0 3px var(--brand-primary-subtle);
-  }
-
-  .input-field:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: rgba(15, 23, 42, 0.3);
-  }
-
-  /* Application Shell Sidebar */
-  .glass-sidebar {
-    background-color: #020617;
-    border-right: 1px solid var(--border-subtle);
-    box-shadow: 4px 0 24px -8px rgba(0, 0, 0, 0.6);
-  }
-
-  .glass-card-accent {
-    background-color: var(--brand-primary-subtle);
-    border: 1px solid var(--brand-primary-glow);
-    border-radius: var(--radius-xl);
-  }
-
-  /* M3 Backward-Compatibility Helpers */
-  .rounded-m3-large {
-    border-radius: var(--radius-lg);
-  }
-  .rounded-m3-xl {
-    border-radius: var(--radius-xl);
-  }
-  .rounded-m3-full {
-    border-radius: var(--radius-full);
-  }
-}
-
-/* Background Gradients */
-.bg-mesh {
-  background-image:
-    radial-gradient(at 0% 0%, hsla(217, 33%, 20%, 0.15) 0, transparent 50%),
-    radial-gradient(at 100% 100%, hsla(217, 33%, 20%, 0.1) 0, transparent 50%);
-}
-
-/* Shimmer Loading Background */
-.skeleton-shimmer {
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.03) 0%,
-    rgba(255, 255, 255, 0.08) 50%,
-    rgba(255, 255, 255, 0.03) 100%
-  );
-  background-size: 200% 100%;
-  animation: var(--animate-shimmer);
-}
-
-/* Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--surface-bg);
-}
-
-::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }

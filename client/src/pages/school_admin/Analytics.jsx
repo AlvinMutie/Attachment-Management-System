@@ -1,33 +1,28 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     LayoutDashboard,
     Users,
     BookOpen,
     CheckCircle2,
-    AlertCircle,
     AlertTriangle,
     TrendingUp,
     Download,
     RefreshCcw,
-    FileText,
     PieChart,
-    Calendar,
     Activity,
     ShieldAlert,
     FileSpreadsheet,
-    Search,
-    ChevronRight,
     UserCheck,
-    Check,
     Sparkles,
     Database,
     ShieldCheck,
-    Clock,
-    ArrowUpRight
+    ArrowUpRight,
+    ArrowRight
 } from 'lucide-react';
 import * as adminApi from '../../utils/adminApi';
 import { reportApi } from '../../utils/reportApi';
 import { analyticsApi } from '../../utils/analyticsApi';
+import { Card, Badge, Button, LoadingSkeleton } from '../../components/ui';
 
 const Analytics = () => {
     const [analyticsOverview, setAnalyticsOverview] = useState(null);
@@ -114,64 +109,73 @@ const Analytics = () => {
     const logbooks = analyticsOverview?.logbooks || {};
     const monthlyTrends = analyticsOverview?.monthlyTrends || [];
 
-    const StatCard = ({ icon: Icon, label, value, color, description }) => (
-        <div className="glass-card p-6 flex items-start gap-4 group hover:scale-[1.02] transition-all">
-            <div className={`p-3 rounded-2xl ${color} bg-opacity-10 shadow-inner`}>
-                <Icon size={24} className={color} />
+    if (loading) {
+        return (
+            <div className="space-y-6 p-6 sm:p-8 max-w-7xl mx-auto">
+                <LoadingSkeleton className="h-14 w-80 rounded-xl" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    {[1, 2, 3, 4].map(i => (
+                        <LoadingSkeleton key={i} className="h-28 rounded-xl" />
+                    ))}
+                </div>
+                <LoadingSkeleton className="h-96 rounded-2xl" />
             </div>
-            <div className="space-y-1">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{label}</p>
-                <h3 className="text-3xl font-black text-white tracking-tighter">{value}</h3>
-                <p className="text-[10px] text-slate-400 font-medium">{description}</p>
-            </div>
-        </div>
-    );
+        );
+    }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-7 max-w-7xl mx-auto pb-16 font-sans">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-blue-600/5 p-8 rounded-m3-xl border border-blue-600/10 backdrop-blur-md">
-                <div className="flex items-center gap-6">
-                    <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-600/30">
-                        <Activity size={32} className="text-white" />
+            <div className="relative overflow-hidden rounded-2xl bg-[#101626] border border-[#1f293d] p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
+                <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-600/10 blur-3xl pointer-events-none" />
+
+                <div className="flex items-center gap-4 sm:gap-5 relative z-10">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-blue-600 border border-white/20 flex items-center justify-center shadow-lg shadow-indigo-500/20 text-white">
+                        <Activity size={28} />
                     </div>
-                    <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-400">Phase 7 Intelligence</span>
-                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase leading-none">
-                            Operational <span className="text-blue-500">Intelligence</span>
+                    <div>
+                        <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-[11px] font-semibold mb-1">
+                            <Sparkles size={11} className="text-indigo-400" />
+                            Audited Executive Telemetry
+                        </div>
+                        <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                            Institutional Analytics & Compliance
                         </h1>
-                        <p className="text-slate-400 text-sm font-medium">
-                            Explainable risk scoring, cohort trend telemetry, data quality auditing, and compliance reporting.
+                        <p className="text-xs sm:text-sm text-slate-400 mt-0.5">
+                            Real-time risk scoring, cohort telemetry, data quality auditing, and regulatory reports.
                         </p>
                     </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-3">
-                    <button
+
+                <div className="flex items-center gap-3 relative z-10 w-full md:w-auto">
+                    <Button
+                        variant="secondary"
                         onClick={fetchAllData}
-                        className="p-3.5 glass-card rounded-2xl text-slate-400 hover:text-white transition-all"
-                        title="Refresh Intelligence"
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 text-xs"
                     >
-                        <RefreshCcw size={18} className={loading ? 'animate-spin' : ''} />
-                    </button>
-                    <button
+                        <RefreshCcw size={14} className={loading ? 'animate-spin' : ''} />
+                        <span>Refresh Data</span>
+                    </Button>
+                    <Button
+                        variant="primary"
                         onClick={handleGeneratePDF}
                         disabled={generating}
-                        className="btn-primary px-6 py-3.5 !rounded-2xl flex items-center gap-2 group shadow-lg shadow-blue-600/20"
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 text-xs"
                     >
-                        <Download size={18} className={generating ? 'animate-bounce' : 'group-hover:-translate-y-0.5 transition-transform'} />
-                        <span className="text-xs font-black uppercase tracking-wider">{generating ? 'Exporting PDF...' : 'Institutional PDF'}</span>
-                    </button>
+                        <Download size={14} className={generating ? 'animate-bounce' : ''} />
+                        <span>{generating ? 'Exporting PDF...' : 'Audit PDF'}</span>
+                    </Button>
                 </div>
             </div>
 
-            {/* Navigation Tabs */}
-            <div className="flex items-center gap-2 border-b border-white/10 pb-4 overflow-x-auto">
+            {/* Attio-Style Segmented Sliding Tabs */}
+            <div className="segmented-tabs overflow-x-auto">
                 {[
                     { id: 'overview', label: 'Executive Overview', icon: LayoutDashboard },
-                    { id: 'insights', label: `Intervention Queue (${interventionData.totalCount})`, icon: ShieldAlert, badge: interventionData.totalCount > 0 ? 'bg-amber-500' : 'bg-slate-700' },
+                    { id: 'insights', label: `Intervention Queue (${interventionData.totalCount})`, icon: ShieldAlert },
                     { id: 'data_quality', label: `Data Quality (${dataQualityData?.integrityScore || 100}%)`, icon: Database },
                     { id: 'reports', label: 'CSV Export Center', icon: FileSpreadsheet },
-                    { id: 'supervisors', label: 'Supervisor Workload', icon: UserCheck }
+                    { id: 'supervisors', label: 'Supervisor Allocations', icon: UserCheck }
                 ].map((tab) => {
                     const Icon = tab.icon;
                     const isActive = activeTab === tab.id;
@@ -179,13 +183,9 @@ const Analytics = () => {
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-                                isActive
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30'
-                                    : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'
-                            }`}
+                            className={`segmented-tab-btn flex items-center gap-2 ${isActive ? 'active' : ''}`}
                         >
-                            <Icon size={16} />
+                            <Icon size={14} />
                             <span>{tab.label}</span>
                         </button>
                     );
@@ -194,223 +194,251 @@ const Analytics = () => {
 
             {/* TAB 1: EXECUTIVE OVERVIEW */}
             {activeTab === 'overview' && (
-                <div className="space-y-8 animate-fade-in">
-                    {/* Metrics Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <StatCard
-                            icon={Users}
-                            label="Student Cohort"
-                            value={summary.totalStudents || 0}
-                            color="text-blue-400"
-                            description={`${summary.activePlacements || 0} active placements`}
-                        />
-                        <StatCard
-                            icon={TrendingUp}
-                            label="Attendance Velocity"
-                            value={`${attendance.averageRate || 0}%`}
-                            color="text-purple-400"
-                            description={`${attendance.totalRecords || 0} verified check-ins`}
-                        />
-                        <StatCard
-                            icon={BookOpen}
-                            label="Logbook Approval Rate"
-                            value={`${logbooks.approvalRate || 0}%`}
-                            color="text-emerald-400"
-                            description={`${logbooks.approved || 0} of ${logbooks.total || 0} approved`}
-                        />
-                        <StatCard
-                            icon={CheckCircle2}
-                            label="Completion Rate"
-                            value={`${summary.completionRate || 0}%`}
-                            color="text-amber-400"
-                            description={`${summary.completedPlacements || 0} completed attachments`}
-                        />
+                <div className="space-y-7">
+                    {/* Stripe-Grade Metric Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                        <div className="kpi-metric-tile">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-slate-400">Enrolled Cohort</span>
+                                <div className="w-7 h-7 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                                    <Users className="w-4 h-4" />
+                                </div>
+                            </div>
+                            <div className="kpi-metric-value mt-2">{summary.totalStudents || 0}</div>
+                            <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#1f293d]/50 text-xs text-slate-400">
+                                <span>Active Placements</span>
+                                <span className="font-mono text-slate-300 font-semibold">{summary.activePlacements || 0}</span>
+                            </div>
+                        </div>
+
+                        <div className="kpi-metric-tile">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-slate-400">Cohort Attendance</span>
+                                <div className="w-7 h-7 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                                    <TrendingUp className="w-4 h-4" />
+                                </div>
+                            </div>
+                            <div className="kpi-metric-value text-purple-400 mt-2">{attendance.averageRate || 0}%</div>
+                            <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#1f293d]/50 text-xs text-slate-400">
+                                <span>Total Check-Ins</span>
+                                <span className="font-mono text-slate-300 font-semibold">{attendance.totalRecords || 0}</span>
+                            </div>
+                        </div>
+
+                        <div className="kpi-metric-tile">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-slate-400">Logbook Approval</span>
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                    <BookOpen className="w-4 h-4" />
+                                </div>
+                            </div>
+                            <div className="kpi-metric-value text-emerald-400 mt-2">{logbooks.approvalRate || 0}%</div>
+                            <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#1f293d]/50 text-xs text-slate-400">
+                                <span>Reviewed Entries</span>
+                                <span className="font-mono text-emerald-400 font-semibold">{logbooks.approved || 0} / {logbooks.total || 0}</span>
+                            </div>
+                        </div>
+
+                        <div className="kpi-metric-tile">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-slate-400">Completion Rate</span>
+                                <div className="w-7 h-7 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                                    <CheckCircle2 className="w-4 h-4" />
+                                </div>
+                            </div>
+                            <div className="kpi-metric-value text-amber-400 mt-2">{summary.completionRate || 0}%</div>
+                            <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#1f293d]/50 text-xs text-slate-400">
+                                <span>Finalized Attachments</span>
+                                <span className="font-mono text-amber-300 font-semibold">{summary.completedPlacements || 0}</span>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Operational Risk Teaser Banner */}
                     {interventionData.totalCount > 0 && (
-                        <div className="glass-card p-6 border-l-4 border-amber-500 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-amber-500/5">
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 rounded-xl bg-amber-500/10 text-amber-400">
-                                    <AlertTriangle size={24} />
+                        <div className="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-3.5">
+                                <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                                    <AlertTriangle size={18} />
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-bold text-white">
-                                        {interventionData.totalCount} Students Require Academic Oversight
+                                    <h4 className="text-xs sm:text-sm font-bold text-white">
+                                        {interventionData.totalCount} Students Require Academic Oversight Intervention
                                     </h4>
                                     <p className="text-xs text-slate-400 mt-0.5">
-                                        Deterministic risk models flagged elevated operational or academic blockers.
+                                        Deterministic risk models flagged elevated attendance or assessment blockers.
                                     </p>
                                 </div>
                             </div>
-                            <button
+                            <Button
+                                size="sm"
+                                variant="outline"
                                 onClick={() => setActiveTab('insights')}
-                                className="px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-bold flex items-center gap-1.5 transition-colors"
+                                className="text-xs text-amber-300 border-amber-500/30 hover:bg-amber-500/10 shrink-0"
                             >
-                                <span>Inspect Intervention Queue</span>
-                                <ChevronRight size={14} />
-                            </button>
+                                <span>Inspect Queue</span>
+                                <ArrowRight size={13} className="ml-1" />
+                            </Button>
                         </div>
                     )}
 
                     {/* Historical Trend Timeline & Attendance Distribution */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-7">
                         {/* Monthly Trends Table */}
-                        <div className="lg:col-span-2 glass-card p-6 space-y-6">
-                            <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                                <h4 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2">
-                                    <TrendingUp size={16} className="text-blue-400" />
-                                    Monthly Activity Telemetry (Last 6 Months)
-                                </h4>
-                                <span className="text-[10px] uppercase font-bold text-slate-400">Historical Aggregates</span>
-                            </div>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left text-xs">
-                                    <thead className="bg-white/[0.02] text-slate-400 uppercase font-black tracking-widest text-[9px]">
-                                        <tr>
-                                            <th className="p-3">Reporting Period</th>
-                                            <th className="p-3">New Placements</th>
-                                            <th className="p-3">Logbooks Logged</th>
-                                            <th className="p-3">Assessments Graded</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-white/5">
-                                        {monthlyTrends.length > 0 ? (
-                                            monthlyTrends.map((m, i) => (
-                                                <tr key={i} className="hover:bg-white/[0.02]">
-                                                    <td className="p-3 font-bold text-white">{m.month}</td>
-                                                    <td className="p-3 text-slate-300">{m.placements}</td>
-                                                    <td className="p-3 text-slate-300">{m.logbooks}</td>
-                                                    <td className="p-3 text-slate-300">{m.assessments}</td>
-                                                </tr>
-                                            ))
-                                        ) : (
+                        <div className="lg:col-span-2">
+                            <Card variant="stripe" className="p-6 space-y-4">
+                                <div className="flex items-center justify-between pb-3 border-b border-[#1f293d]">
+                                    <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                        <TrendingUp size={15} className="text-indigo-400" />
+                                        Monthly Activity Telemetry
+                                    </h4>
+                                    <span className="text-[10px] font-mono text-slate-400">Last 6 Months</span>
+                                </div>
+                                <div className="overflow-x-auto -mx-6">
+                                    <table className="w-full text-left text-xs">
+                                        <thead className="bg-[#0c101d] text-slate-400 font-semibold border-b border-[#1f293d]">
                                             <tr>
-                                                <td colSpan={4} className="p-4 text-center text-slate-500 font-bold">
-                                                    No historical records available yet.
-                                                </td>
+                                                <th className="py-3 px-6">Period</th>
+                                                <th className="py-3 px-6">Placements</th>
+                                                <th className="py-3 px-6">Logbooks Logged</th>
+                                                <th className="py-3 px-6">Assessments Graded</th>
                                             </tr>
-                                        )}
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </thead>
+                                        <tbody className="divide-y divide-[#1f293d]">
+                                            {monthlyTrends.length > 0 ? (
+                                                monthlyTrends.map((m, i) => (
+                                                    <tr key={i} className="hover:bg-[#162035]/50 transition-colors">
+                                                        <td className="py-3 px-6 font-bold text-white">{m.month}</td>
+                                                        <td className="py-3 px-6 text-slate-300 font-mono">{m.placements}</td>
+                                                        <td className="py-3 px-6 text-slate-300 font-mono">{m.logbooks}</td>
+                                                        <td className="py-3 px-6 text-slate-300 font-mono">{m.assessments}</td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td colSpan={4} className="py-6 text-center text-slate-500 font-medium">
+                                                        No historical records logged yet.
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Card>
                         </div>
 
                         {/* Attendance Compliance Distribution */}
-                        <div className="glass-card p-6 space-y-6">
-                            <h4 className="text-xs font-black text-white uppercase tracking-[0.2em] border-b border-white/5 pb-3 flex items-center gap-2">
-                                <PieChart size={14} className="text-blue-400" />
-                                Attendance Compliance Standing
+                        <Card variant="stripe" className="p-6 space-y-5">
+                            <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider pb-3 border-b border-[#1f293d] flex items-center gap-2">
+                                <PieChart size={15} className="text-indigo-400" />
+                                Attendance Compliance
                             </h4>
                             <div className="space-y-4">
                                 <div className="space-y-1.5">
-                                    <div className="flex justify-between text-xs font-bold">
-                                        <span className="text-emerald-400">Compliant (&gt;= 75%)</span>
-                                        <span className="text-white">{attendance.distribution?.compliant || 0} Students</span>
+                                    <div className="flex justify-between text-xs font-semibold">
+                                        <span className="text-emerald-400">Compliant (≥ 75%)</span>
+                                        <span className="text-white font-mono">{attendance.distribution?.compliant || 0} students</span>
                                     </div>
-                                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                                    <div className="h-1.5 w-full bg-[#080c14] rounded-full overflow-hidden border border-[#1f293d]">
                                         <div
-                                            className="h-full bg-emerald-500"
+                                            className="h-full bg-emerald-500 rounded-full"
                                             style={{ width: `${summary.totalStudents > 0 ? ((attendance.distribution?.compliant || 0) / summary.totalStudents) * 100 : 0}%` }}
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <div className="flex justify-between text-xs font-bold">
+                                    <div className="flex justify-between text-xs font-semibold">
                                         <span className="text-amber-400">At Risk (60% - 74%)</span>
-                                        <span className="text-white">{attendance.distribution?.atRisk || 0} Students</span>
+                                        <span className="text-white font-mono">{attendance.distribution?.atRisk || 0} students</span>
                                     </div>
-                                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                                    <div className="h-1.5 w-full bg-[#080c14] rounded-full overflow-hidden border border-[#1f293d]">
                                         <div
-                                            className="h-full bg-amber-500"
+                                            className="h-full bg-amber-500 rounded-full"
                                             style={{ width: `${summary.totalStudents > 0 ? ((attendance.distribution?.atRisk || 0) / summary.totalStudents) * 100 : 0}%` }}
                                         />
                                     </div>
                                 </div>
 
                                 <div className="space-y-1.5">
-                                    <div className="flex justify-between text-xs font-bold">
-                                        <span className="text-rose-400">Critical (&lt; 60% / No Logs)</span>
-                                        <span className="text-white">{attendance.distribution?.critical || 0} Students</span>
+                                    <div className="flex justify-between text-xs font-semibold">
+                                        <span className="text-rose-400">Critical (&lt; 60% / Inactive)</span>
+                                        <span className="text-white font-mono">{attendance.distribution?.critical || 0} students</span>
                                     </div>
-                                    <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                                    <div className="h-1.5 w-full bg-[#080c14] rounded-full overflow-hidden border border-[#1f293d]">
                                         <div
-                                            className="h-full bg-rose-500"
+                                            className="h-full bg-rose-500 rounded-full"
                                             style={{ width: `${summary.totalStudents > 0 ? ((attendance.distribution?.critical || 0) / summary.totalStudents) * 100 : 0}%` }}
                                         />
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </Card>
                     </div>
                 </div>
             )}
 
             {/* TAB 2: INTERVENTION INSIGHTS & RISK QUEUE */}
             {activeTab === 'insights' && (
-                <div className="space-y-6 animate-fade-in">
-                    <div className="flex items-center justify-between bg-white/[0.02] p-4 rounded-2xl border border-white/5">
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between p-4 rounded-xl bg-[#101626] border border-[#1f293d]">
                         <div className="flex items-center gap-3">
-                            <Sparkles className="text-blue-400" size={20} />
+                            <Sparkles className="text-indigo-400" size={18} />
                             <div>
-                                <h3 className="text-sm font-bold text-white">Deterministic Academic Risk Ranking</h3>
-                                <p className="text-[10px] text-slate-400">Prioritized cases derived from verified attendance, logbook velocity, and assessment milestones.</p>
+                                <h3 className="text-xs sm:text-sm font-bold text-white">Deterministic Academic Risk Ranking</h3>
+                                <p className="text-xs text-slate-400">Prioritized cases derived from verified presence, logbook velocity, and assessment milestones.</p>
                             </div>
                         </div>
-                        <span className="px-3 py-1 bg-blue-500/20 text-blue-300 text-[10px] font-black uppercase rounded-full border border-blue-500/30">
+                        <Badge variant="warning" dot={true}>
                             {interventionData.totalCount} Cases Flagged
-                        </span>
+                        </Badge>
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4">
                         {interventionData.queue.length > 0 ? (
                             interventionData.queue.map((item, idx) => (
-                                <div key={idx} className="glass-card p-6 space-y-4 border border-white/5 hover:border-blue-500/30 transition-all">
+                                <Card key={idx} variant="stripe" className="p-5 space-y-4">
                                     <div className="flex items-start justify-between gap-4">
                                         <div>
-                                            <h4 className="text-base font-black text-white">{item.name}</h4>
-                                            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                                            <h4 className="text-sm font-bold text-white">{item.name}</h4>
+                                            <p className="text-xs text-slate-400 font-mono mt-0.5">
                                                 {item.admissionNumber} • {item.course || 'Attachment'}
                                             </p>
-                                            <p className="text-xs text-slate-300 font-medium mt-1">Host: {item.organizationName || 'Not Assigned'}</p>
+                                            <p className="text-xs text-slate-300 mt-1">Host: <span className="font-semibold text-slate-200">{item.organizationName || 'Not Assigned'}</span></p>
                                         </div>
-                                        <div className="text-right">
-                                            <span className={`text-[10px] font-black uppercase px-2.5 py-1 rounded-full border ${
-                                                item.riskLevel === 'CRITICAL' ? 'bg-rose-500/20 text-rose-300 border-rose-500/30' :
-                                                item.riskLevel === 'ELEVATED' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' :
-                                                'bg-blue-500/20 text-blue-300 border-blue-500/30'
-                                            }`}>
-                                                Risk: {item.riskScore}/100
-                                            </span>
-                                        </div>
+                                        <Badge
+                                            variant={item.riskLevel === 'CRITICAL' ? 'danger' : item.riskLevel === 'ELEVATED' ? 'warning' : 'indigo'}
+                                            dot={true}
+                                        >
+                                            Risk: {item.riskScore}/100
+                                        </Badge>
                                     </div>
 
                                     {item.topInsight && (
-                                        <div className="p-3 bg-white/[0.02] rounded-xl border border-white/5 space-y-1">
-                                            <span className="text-[9px] font-black uppercase text-amber-400 tracking-wider">Primary Risk Indicator</span>
-                                            <p className="text-xs text-slate-300">{item.topInsight.reason}</p>
+                                        <div className="p-3 bg-[#0c101d] rounded-xl border border-[#1f293d] space-y-1">
+                                            <span className="text-[10px] font-bold uppercase text-amber-400 tracking-wider">Primary Risk Indicator</span>
+                                            <p className="text-xs text-slate-300 leading-snug">{item.topInsight.reason}</p>
                                         </div>
                                     )}
 
-                                    <div className="pt-2 border-t border-white/5 flex items-center justify-between">
-                                        <span className="text-[10px] text-slate-400 italic">Action: {item.recommendation}</span>
+                                    <div className="pt-3 border-t border-[#1f293d] flex items-center justify-between text-xs">
+                                        <span className="text-slate-400 italic">Action: {item.recommendation}</span>
                                         <a
                                             href={`/admin/students`}
-                                            className="btn-primary px-3 py-1.5 text-[10px] uppercase flex items-center gap-1"
+                                            className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
                                         >
                                             <span>Manage</span>
-                                            <ArrowUpRight size={12} />
+                                            <ArrowUpRight size={13} />
                                         </a>
                                     </div>
-                                </div>
+                                </Card>
                             ))
                         ) : (
-                            <div className="col-span-2 glass-card p-12 text-center space-y-2 text-slate-400 font-bold uppercase tracking-wider text-xs">
+                            <Card variant="stripe" className="col-span-2 p-12 text-center space-y-2">
                                 <CheckCircle2 className="mx-auto text-emerald-400 mb-2" size={32} />
-                                <p>No elevated academic risk cases detected.</p>
-                                <p className="text-[10px] text-slate-500">All active students are currently meeting compliance thresholds.</p>
-                            </div>
+                                <p className="text-sm font-bold text-white">No elevated academic risk cases detected.</p>
+                                <p className="text-xs text-slate-400">All active students are currently meeting compliance thresholds.</p>
+                            </Card>
                         )}
                     </div>
                 </div>
@@ -418,35 +446,43 @@ const Analytics = () => {
 
             {/* TAB 3: DATA QUALITY AUDIT */}
             {activeTab === 'data_quality' && (
-                <div className="space-y-6 animate-fade-in">
+                <div className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                        <div className="glass-card p-5 border-l-4 border-blue-500">
-                            <p className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Integrity Score</p>
-                            <h3 className="text-3xl font-black text-blue-400 mt-1">{dataQualityData?.integrityScore || 100}%</h3>
-                            <p className="text-[11px] text-slate-400 mt-1">{dataQualityData?.cleanRecords || 0} of {dataQualityData?.totalAudited || 0} records fully intact</p>
+                        <div className="kpi-metric-tile">
+                            <span className="text-xs font-semibold text-slate-400">Integrity Score</span>
+                            <div className="kpi-metric-value text-indigo-400 mt-2">{dataQualityData?.integrityScore || 100}%</div>
+                            <div className="text-xs text-slate-400 mt-2 pt-2 border-t border-[#1f293d]/50">
+                                {dataQualityData?.cleanRecords || 0} / {dataQualityData?.totalAudited || 0} intact
+                            </div>
                         </div>
-                        <div className="glass-card p-5 border-l-4 border-amber-500">
-                            <p className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Missing Attendance</p>
-                            <h3 className="text-3xl font-black text-amber-400 mt-1">{dataQualityData?.issuesCount?.missingAttendance || 0}</h3>
-                            <p className="text-[11px] text-slate-400 mt-1">Active students with 0 check-ins</p>
+                        <div className="kpi-metric-tile">
+                            <span className="text-xs font-semibold text-slate-400">Missing Attendance</span>
+                            <div className="kpi-metric-value text-amber-400 mt-2">{dataQualityData?.issuesCount?.missingAttendance || 0}</div>
+                            <div className="text-xs text-slate-400 mt-2 pt-2 border-t border-[#1f293d]/50">
+                                Students with 0 check-ins
+                            </div>
                         </div>
-                        <div className="glass-card p-5 border-l-4 border-purple-500">
-                            <p className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Unassigned Supervisors</p>
-                            <h3 className="text-3xl font-black text-purple-400 mt-1">
+                        <div className="kpi-metric-tile">
+                            <span className="text-xs font-semibold text-slate-400">Unassigned Mentors</span>
+                            <div className="kpi-metric-value text-purple-400 mt-2">
                                 {(dataQualityData?.issuesCount?.missingIndustrySupervisor || 0) + (dataQualityData?.issuesCount?.missingUniversitySupervisor || 0)}
-                            </h3>
-                            <p className="text-[11px] text-slate-400 mt-1">Missing industry or university mentor</p>
+                            </div>
+                            <div className="text-xs text-slate-400 mt-2 pt-2 border-t border-[#1f293d]/50">
+                                Missing supervisor links
+                            </div>
                         </div>
-                        <div className="glass-card p-5 border-l-4 border-rose-500">
-                            <p className="text-[10px] font-black uppercase text-slate-500 tracking-wider">Incomplete Dates</p>
-                            <h3 className="text-3xl font-black text-rose-400 mt-1">{dataQualityData?.issuesCount?.missingDates || 0}</h3>
-                            <p className="text-[11px] text-slate-400 mt-1">Placements missing start/end dates</p>
+                        <div className="kpi-metric-tile">
+                            <span className="text-xs font-semibold text-slate-400">Incomplete Dates</span>
+                            <div className="kpi-metric-value text-rose-400 mt-2">{dataQualityData?.issuesCount?.missingDates || 0}</div>
+                            <div className="text-xs text-slate-400 mt-2 pt-2 border-t border-[#1f293d]/50">
+                                Placements missing dates
+                            </div>
                         </div>
                     </div>
 
-                    <div className="glass-card p-6 space-y-4">
-                        <h4 className="text-sm font-black text-white uppercase tracking-wider flex items-center gap-2 border-b border-white/5 pb-3">
-                            <ShieldCheck size={18} className="text-emerald-400" />
+                    <Card variant="stripe" className="p-6 space-y-4">
+                        <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-[#1f293d]">
+                            <ShieldCheck size={16} className="text-emerald-400" />
                             Data Quality Deficiencies & Integrity Actions
                         </h4>
 
@@ -456,7 +492,7 @@ const Analytics = () => {
                                     <span className="text-xs font-bold text-amber-300">Active Students Lacking Attendance Records</span>
                                     <div className="flex flex-wrap gap-2 pt-1">
                                         {dataQualityData.issues.missingAttendance.map((item, idx) => (
-                                            <span key={idx} className="text-[10px] px-2.5 py-1 bg-white/5 rounded-lg text-slate-300 border border-white/10">
+                                            <span key={idx} className="text-xs px-2.5 py-1 bg-[#0c101d] rounded-lg text-slate-300 border border-[#1f293d]">
                                                 {item.name} ({item.admissionNumber})
                                             </span>
                                         ))}
@@ -469,7 +505,7 @@ const Analytics = () => {
                                     <span className="text-xs font-bold text-purple-300">Placements Missing Industry Supervisor Assignment</span>
                                     <div className="flex flex-wrap gap-2 pt-1">
                                         {dataQualityData.issues.missingIndustrySupervisor.map((item, idx) => (
-                                            <span key={idx} className="text-[10px] px-2.5 py-1 bg-white/5 rounded-lg text-slate-300 border border-white/10">
+                                            <span key={idx} className="text-xs px-2.5 py-1 bg-[#0c101d] rounded-lg text-slate-300 border border-[#1f293d]">
                                                 {item.name} ({item.admissionNumber})
                                             </span>
                                         ))}
@@ -483,18 +519,18 @@ const Analytics = () => {
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </Card>
                 </div>
             )}
 
             {/* TAB 4: CSV EXPORT CENTER */}
             {activeTab === 'reports' && (
-                <div className="space-y-6 animate-fade-in">
-                    <div className="glass-card p-8 space-y-6">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <div className="space-y-6">
+                    <Card variant="stripe" className="p-6 sm:p-8 space-y-6">
+                        <div className="flex items-center justify-between pb-4 border-b border-[#1f293d]">
                             <div>
-                                <h3 className="text-lg font-black text-white">Institutional Data Exports</h3>
-                                <p className="text-xs text-slate-400">Download sanitized, audit-ready CSV exports for external compliance verification.</p>
+                                <h3 className="text-base font-extrabold text-white">Institutional Data Exports</h3>
+                                <p className="text-xs text-slate-400 mt-0.5">Download sanitized, audit-ready CSV datasets for external regulatory compliance.</p>
                             </div>
                         </div>
 
@@ -505,39 +541,43 @@ const Analytics = () => {
                                 { id: 'logbooks', label: 'Weekly Logbooks', desc: 'Student technical summaries and review evaluations' },
                                 { id: 'assessments', label: 'Graded Assessments', desc: 'Industry and university evaluation marks and feedback' }
                             ].map((rep) => (
-                                <div key={rep.id} className="p-5 bg-white/[0.02] rounded-2xl border border-white/5 flex flex-col justify-between space-y-4">
+                                <div key={rep.id} className="p-5 bg-[#0c101d] rounded-xl border border-[#1f293d] flex flex-col justify-between space-y-4">
                                     <div className="space-y-1">
-                                        <h4 className="text-sm font-bold text-white">{rep.label}</h4>
-                                        <p className="text-[11px] text-slate-400">{rep.desc}</p>
+                                        <h4 className="text-xs sm:text-sm font-bold text-white">{rep.label}</h4>
+                                        <p className="text-xs text-slate-400 leading-snug">{rep.desc}</p>
                                     </div>
-                                    <button
+                                    <Button
+                                        variant="primary"
                                         onClick={() => handleDownloadCSV(rep.id, rep.label)}
                                         disabled={exportingType === rep.id}
-                                        className="btn-primary w-full py-2.5 text-xs flex items-center justify-center gap-2"
+                                        className="w-full text-xs flex items-center justify-center gap-2"
                                     >
-                                        <Download size={14} />
+                                        <Download size={13} />
                                         <span>{exportingType === rep.id ? 'Exporting...' : 'Export CSV'}</span>
-                                    </button>
+                                    </Button>
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </Card>
                 </div>
             )}
 
-            {/* TAB 5: SUPERVISOR WORKLOAD */}
+            {/* TAB 5: SUPERVISOR ALLOCATIONS */}
             {activeTab === 'supervisors' && (
-                <div className="glass-card p-8 space-y-6 animate-fade-in">
-                    <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                        <h3 className="text-lg font-black text-white">Supervisor Allocation & Workload</h3>
-                        <a href="/coordinator/supervisors" className="text-xs font-bold text-blue-400 hover:underline uppercase">
-                            Coordinator Supervisor Console &rarr;
+                <Card variant="stripe" className="p-6 sm:p-8 space-y-5">
+                    <div className="flex items-center justify-between pb-4 border-b border-[#1f293d]">
+                        <div>
+                            <h3 className="text-base font-extrabold text-white">Supervisor Allocation & Workload</h3>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                                {summary.totalSupervisors || 0} active faculty and industry supervisors registered across institutional placements.
+                            </p>
+                        </div>
+                        <a href="/coordinator/supervisors" className="text-xs font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1">
+                            <span>Open Rebalance Console</span>
+                            <ArrowRight size={13} />
                         </a>
                     </div>
-                    <p className="text-xs text-slate-400">
-                        {summary.totalSupervisors || 0} active faculty and industry supervisors registered across institutional placements.
-                    </p>
-                </div>
+                </Card>
             )}
         </div>
     );
