@@ -35,6 +35,11 @@ const Assessment = sequelize.define('Assessment', {
         type: DataTypes.ENUM('mid-term', 'end-of-attachment'),
         allowNull: false
     },
+    evaluatorType: {
+        type: DataTypes.ENUM('industry', 'university'),
+        allowNull: false,
+        defaultValue: 'industry'
+    },
     score: {
         type: DataTypes.INTEGER,
         validate: {
@@ -42,9 +47,18 @@ const Assessment = sequelize.define('Assessment', {
             max: 100
         }
     },
+    criteria: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: {}
+    },
     feedback: {
         type: DataTypes.TEXT,
         allowNull: true
+    },
+    status: {
+        type: DataTypes.ENUM('draft', 'submitted', 'finalized'),
+        defaultValue: 'submitted'
     }
 });
 

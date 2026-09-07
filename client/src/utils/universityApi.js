@@ -20,3 +20,6 @@ apiClient.interceptors.request.use((config) => {
 });
 
 export const getMyStudents = () => apiClient.get('/my-students');
+export const getStudentOverview = (id) => apiClient.get(`/student/${id}/overview`);
+export const getUniversityAssessments = () => apiClient.get('/assessments');
+export const submitUniversityAssessment = (data) => apiClient.post('/assessments', data);

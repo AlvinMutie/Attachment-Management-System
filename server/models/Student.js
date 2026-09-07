@@ -51,6 +51,54 @@ const Student = sequelize.define('Student', {
     institution: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    course: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    yearOfStudy: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    phone: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    organizationName: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    organizationAddress: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    organizationPhone: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    organizationEmail: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    contactPerson: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    startDate: {
+        type: DataTypes.DATEONLY,
+        allowNull: true
+    },
+    endDate: {
+        type: DataTypes.DATEONLY,
+        allowNull: true
+    },
+    placementStatus: {
+        type: DataTypes.ENUM('DRAFT', 'SUBMITTED', 'PENDING_APPROVAL', 'APPROVED', 'REJECTED', 'ACTIVE', 'COMPLETED', 'CANCELLED'),
+        defaultValue: 'DRAFT'
+    },
+    rejectionReason: {
+        type: DataTypes.TEXT,
+        allowNull: true
     }
 });
 

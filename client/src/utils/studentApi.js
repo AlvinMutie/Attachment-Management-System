@@ -14,6 +14,14 @@ apiClient.interceptors.request.use((config) => {
     return config;
 });
 
+export const getStudentProfile = () => apiClient.get('/profile');
+export const getStudentPlacement = () => apiClient.get('/placement');
+export const updateStudentPlacement = (data) => apiClient.put('/placement', data);
+export const getStudentProgress = () => apiClient.get('/progress');
+export const getStudentAttendance = () => apiClient.get('/attendance');
+export const recordCheckIn = (data = {}) => apiClient.post('/attendance/check-in', data);
+export const getStudentAssessments = () => apiClient.get('/assessments');
+
 export const submitLogbook = (formData) => {
     return apiClient.post('/logbooks', formData, {
         headers: {
@@ -23,5 +31,4 @@ export const submitLogbook = (formData) => {
 };
 
 export const getMyLogbooks = () => apiClient.get('/logbooks');
-
 export const refineSummary = (summary) => apiClient.post('/logbooks/refine', { summary });

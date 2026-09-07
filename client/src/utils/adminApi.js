@@ -20,19 +20,26 @@ apiClient.interceptors.request.use((config) => {
 });
 
 /**
- * Student Management
+ * Student Management & Placements
  */
 export const getStudents = (params) => apiClient.get('/students', { params });
 export const createStudent = (data) => apiClient.post('/students', data);
 export const bulkOnboardStudents = (formData) => apiClient.post('/students/bulk', formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
 });
+export const getPlacements = (params) => apiClient.get('/placements', { params });
+export const reviewPlacement = (id, data) => apiClient.put(`/placements/${id}/review`, data);
 
 /**
  * Supervisor Management
  */
 export const getSupervisors = (params) => apiClient.get('/supervisors', { params });
 export const assignSupervisor = (data) => apiClient.post('/assign-supervisor', data);
+
+/**
+ * Attendance
+ */
+export const getInstitutionalAttendance = (params) => apiClient.get('/attendance', { params });
 
 /**
  * Analytics & Reports

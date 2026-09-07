@@ -4,9 +4,12 @@ const { protect, authorize } = require('../middleware/authMiddleware');
 const { uploadCSV } = require('../middleware/uploadMiddleware');
 const {
     getInstitutionalStudents,
+    getInstitutionalPlacements,
+    reviewPlacement,
     createInstitutionalStudent,
     getInstitutionalSupervisors,
     assignSupervisor,
+    getInstitutionalAttendance,
     bulkOnboardStudents,
     getInstitutionalAnalytics,
     generateInstitutionalPDF
@@ -16,14 +19,19 @@ const {
 router.use(protect);
 router.use(authorize('school_admin'));
 
-// Student Management
+// Student Management & Placements
 router.get('/students', getInstitutionalStudents);
 router.post('/students', createInstitutionalStudent);
 router.post('/students/bulk', uploadCSV, bulkOnboardStudents);
+router.get('/placements', getInstitutionalPlacements);
+router.put('/placements/:id/review', reviewPlacement);
 
-// Supervisor Management
+// Supervisor Management & Assignment
 router.get('/supervisors', getInstitutionalSupervisors);
 router.post('/assign-supervisor', assignSupervisor);
+
+// Attendance
+router.get('/attendance', getInstitutionalAttendance);
 
 // Analytics & Reporting
 router.get('/analytics', getInstitutionalAnalytics);

@@ -8,10 +8,14 @@ import {
     QrCode,
     TrendingUp,
     AlertCircle,
-    GraduationCap
+    GraduationCap,
+    Building,
+    UserCheck,
+    Briefcase
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import DashboardLayout from '../../components/DashboardLayout';
+import { getStudentProgress, getStudentAttendance, getMyLogbooks, recordCheckIn } from '../../utils/studentApi';
 
 const StatCard = ({ icon: Icon, label, value, color }) => (
     <div className="glass-card !rounded-[28px] p-8 flex flex-col justify-between h-40 bg-gradient-to-br from-white/[0.04] to-transparent border-white/5 hover:border-blue-500/20 transition-all group">
@@ -28,6 +32,42 @@ const StatCard = ({ icon: Icon, label, value, color }) => (
 const StudentDashboard = () => {
     const { user } = useAuth();
     const [qrToken, setQrToken] = useState('');
+    const [progress, setProgress] = useState(null);
+    const [recentLogs, setRecentLogs] = useState([]);
+    const [todayCheckedIn, setTodayCheckedIn] = useState(false);
+    const [checkInLoading, setCheckInLoading] = useState(false);
+    const [checkInMsg, setCheckInMsg] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    const loadDashboardData = async () => {
+        try {
+            const [progRes, logsRes, attRes] = await Promise.all([
+                getStudentProgress().catch(() => ({ data: { data: null } })),
+                getMyLogbooks().catch(() => ({ data: { data: [] } })),
+                getStudentAttendance().catch(() => ({ data: { data: [] } }))
+            ]);
+
+            if (progRes.data?.data) {
+                setProgress(progRes.data.data);
+            }
+
+            if (logsRes.data?.data) {
+                setRecentLogs(logsRes.data.data.slice(0, 5));
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            const hasCheckedInToday = attRes.data?.data?.some(a => a.date === today);
+            setTodayCheckedIn(hasCheckedInToday);
+        } catch (err) {
+            console.error('Failed to load dashboard data', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadDashboardData();
+    }, []);
 
     useEffect(() => {
         const generateToken = () => {
@@ -45,10 +85,37 @@ const StudentDashboard = () => {
         return () => clearInterval(interval);
     }, [user]);
 
+    const handleCheckIn = async () => {
+        setCheckInLoading(true);
+        setCheckInMsg(null);
+        try {
+            const res = await recordCheckIn({ notes: 'Daily web portal check-in' });
+            setTodayCheckedIn(true);
+            setCheckInMsg({ type: 'success', text: res.data?.message || 'Check-in recorded successfully!' });
+            loadDashboardData();
+        } catch (err) {
+            setCheckInMsg({ type: 'error', text: err.response?.data?.message || 'Check-in failed' });
+        } finally {
+            setCheckInLoading(false);
+        }
+    };
+
+    const statusColors = {
+        DRAFT: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
+        SUBMITTED: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+        PENDING_APPROVAL: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+        APPROVED: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+        ACTIVE: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+        COMPLETED: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+        REJECTED: 'bg-rose-500/20 text-rose-400 border-rose-500/30'
+    };
+
+    const currentStatus = progress?.placementStatus || 'DRAFT';
+
     return (
         <DashboardLayout role="student">
             <div className="space-y-10 animate-fade-in pb-12">
-                {/* M3 Header Section */}
+                {/* Header Section */}
                 <div className="flex flex-col md:flex-row items-center justify-between gap-6 bg-blue-600/5 p-8 rounded-[32px] border border-blue-600/10 backdrop-blur-md">
                     <div className="flex items-center gap-6">
                         <div className="relative">
@@ -62,15 +129,17 @@ const StudentDashboard = () => {
                         <div>
                             <div className="flex items-center gap-3">
                                 <h1 className="text-3xl font-black text-white tracking-tighter">Welcome back, {user?.name?.split(' ')[0]}!</h1>
-                                <span className="px-3 py-1 bg-blue-600/20 text-blue-400 text-[10px] font-black uppercase tracking-widest rounded-full border border-blue-500/20">Year 4 • IT</span>
+                                <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full border ${statusColors[currentStatus] || 'bg-blue-600/20 text-blue-400'}`}>
+                                    {currentStatus.replace('_', ' ')}
+                                </span>
                             </div>
-                            <p className="text-slate-500 font-medium text-sm mt-1">Institutional Identity: {user?.schoolName}</p>
+                            <p className="text-slate-500 font-medium text-sm mt-1">Institutional Identity: {user?.schoolName || 'University Student'}</p>
                         </div>
                     </div>
                 </div>
 
                 <div className="grid lg:grid-cols-12 gap-8">
-                    {/* Primary QR Verification Card (M3 Large) */}
+                    {/* Primary QR Verification Card */}
                     <div className="lg:col-span-4 glass-card !rounded-[32px] p-8 flex flex-col items-center justify-between bg-white/[0.02] border-white/5 space-y-8 min-h-[450px]">
                         <div className="text-center space-y-2">
                             <h3 className="text-xl font-black text-white tracking-tight uppercase tracking-[0.1em]">Daily Verification</h3>
@@ -91,10 +160,28 @@ const StudentDashboard = () => {
                                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-lg shadow-emerald-500/50" />
                                 <span>Token rotating in 30s</span>
                             </div>
-                            <button className="btn-primary w-full !rounded-2xl py-4 text-xs tracking-widest uppercase shadow-blue-600/20 hover:shadow-blue-600/40">
-                                <QrCode size={18} />
-                                <span>Save Offline Card</span>
-                            </button>
+
+                            {todayCheckedIn ? (
+                                <div className="w-full py-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-center font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+                                    <CheckCircle size={18} />
+                                    <span>Checked In Today</span>
+                                </div>
+                            ) : (
+                                <button
+                                    onClick={handleCheckIn}
+                                    disabled={checkInLoading}
+                                    className="btn-primary w-full !rounded-2xl py-4 text-xs tracking-widest uppercase shadow-blue-600/20 hover:shadow-blue-600/40 flex items-center justify-center gap-2"
+                                >
+                                    <UserCheck size={18} />
+                                    <span>{checkInLoading ? 'Recording...' : 'Instant Check-in'}</span>
+                                </button>
+                            )}
+
+                            {checkInMsg && (
+                                <p className={`text-xs text-center font-bold ${checkInMsg.type === 'success' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                    {checkInMsg.text}
+                                </p>
+                            )}
                         </div>
                     </div>
 
@@ -104,52 +191,70 @@ const StudentDashboard = () => {
                             <StatCard
                                 icon={TrendingUp}
                                 label="Attendance"
-                                value="94.8%"
+                                value={`${progress?.attendance?.attendanceRate ?? 0}%`}
                                 color="bg-blue-600/10 text-blue-400"
                             />
                             <StatCard
                                 icon={FileText}
-                                label="Logbooks"
-                                value="09 / 12"
+                                label="Approved Logs"
+                                value={`${progress?.logbooks?.approved ?? 0} / ${progress?.logbooks?.total ?? 0}`}
                                 color="bg-indigo-600/10 text-indigo-400"
                             />
                             <StatCard
                                 icon={Clock}
-                                label="Attachment"
-                                value="18 Days"
+                                label="Days Remaining"
+                                value={`${progress?.daysRemaining ?? 0} Days`}
                                 color="bg-rose-600/10 text-rose-400"
                             />
                         </div>
 
-                        {/* Recent Activity List (M3 List Style) */}
+                        {/* Recent Activity List */}
                         <div className="glass-card !rounded-[32px] p-8 space-y-6">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-xl font-black text-white tracking-tighter uppercase tracking-[0.05em]">Recent Submissions</h3>
-                                <button className="text-blue-500 text-xs font-black uppercase tracking-widest hover:text-blue-400">View Archive</button>
+                                <h3 className="text-xl font-black text-white tracking-tighter uppercase tracking-[0.05em]">Recent Logbook Submissions</h3>
+                                <a href="/student/logbooks" className="text-blue-500 text-xs font-black uppercase tracking-widest hover:text-blue-400">View All</a>
                             </div>
 
                             <div className="space-y-4">
-                                {[
-                                    { week: 8, status: 'Approved', date: 'Today, 10:30 AM', icon: CheckCircle, color: 'text-emerald-400' },
-                                    { week: 7, status: 'Approved', date: 'Yesterday', icon: CheckCircle, color: 'text-emerald-400' },
-                                    { week: 6, status: 'Feedback', date: 'Oct 25', icon: AlertCircle, color: 'text-orange-400' },
-                                ].map((log, i) => (
-                                    <div key={i} className="flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/5 cursor-pointer">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center border border-white/5">
-                                                <GraduationCap className="text-blue-500" size={20} />
+                                {recentLogs.length > 0 ? (
+                                    recentLogs.map((log) => {
+                                        const isApproved = log.status === 'approved';
+                                        const isRejected = log.status === 'rejected';
+                                        const badgeClass = isApproved
+                                            ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
+                                            : isRejected
+                                                ? 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+                                                : 'text-amber-400 bg-amber-500/10 border-amber-500/20';
+
+                                        return (
+                                            <div key={log.id} className="flex items-center justify-between p-4 rounded-2xl hover:bg-white/5 transition-colors border border-white/5">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center border border-white/5">
+                                                        <GraduationCap className="text-blue-500" size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm font-black text-white tracking-tight">Week {log.weekNumber} Logbook Report</p>
+                                                        <p className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">{log.startDate} to {log.endDate}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`text-[9px] font-black tracking-widest uppercase px-3 py-1 rounded-full border ${badgeClass}`}>
+                                                        {log.status}
+                                                    </span>
+                                                    {isApproved ? (
+                                                        <CheckCircle size={16} className="text-emerald-400" />
+                                                    ) : (
+                                                        <AlertCircle size={16} className={isRejected ? "text-rose-400" : "text-amber-400"} />
+                                                    )}
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-sm font-black text-white tracking-tight">Week {log.week} Logbook Submission</p>
-                                                <p className="text-[10px] font-medium text-slate-500 uppercase tracking-widest">{log.date}</p>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3">
-                                            <span className={`text-[9px] font-black tracking-widest uppercase px-3 py-1 rounded-full bg-white/5 ${log.color}`}>{log.status}</span>
-                                            <log.icon size={16} className={log.color} />
-                                        </div>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="text-center py-8 text-slate-500 text-xs font-bold uppercase tracking-widest">
+                                        No logbook submissions recorded yet.
                                     </div>
-                                ))}
+                                )}
                             </div>
                         </div>
                     </div>

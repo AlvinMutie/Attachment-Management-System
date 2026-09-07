@@ -15,4 +15,11 @@ apiClient.interceptors.request.use((config) => {
     return config;
 });
 
+export const getAssignedStudents = () => apiClient.get('/students');
 export const getLivePresence = () => apiClient.get('/presence');
+export const getSupervisorLogbooks = (params) => apiClient.get('/logbooks', { params });
+export const reviewLogbook = (id, data) => apiClient.put(`/logbooks/${id}/review`, data);
+export const getSupervisorAttendance = (params) => apiClient.get('/attendance', { params });
+export const markSupervisorAttendance = (data) => apiClient.post('/attendance/mark', data);
+export const getSupervisorAssessments = () => apiClient.get('/assessments');
+export const submitSupervisorAssessment = (data) => apiClient.post('/assessments', data);

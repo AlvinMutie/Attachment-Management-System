@@ -32,16 +32,24 @@ const Attendance = sequelize.define('Attendance', {
         defaultValue: DataTypes.NOW
     },
     status: {
-        type: DataTypes.ENUM('present', 'absent'),
+        type: DataTypes.ENUM('present', 'absent', 'late', 'excused'),
         defaultValue: 'present'
     },
     scannedBy: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
         references: {
             model: 'Users',
             key: 'id'
         }
+    },
+    verificationMethod: {
+        type: DataTypes.STRING,
+        defaultValue: 'manual'
+    },
+    notes: {
+        type: DataTypes.TEXT,
+        allowNull: true
     }
 });
 
