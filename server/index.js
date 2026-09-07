@@ -38,6 +38,8 @@ app.use('/api/university', require('./routes/universityRoutes'));
 app.use('/api/student', require('./routes/studentRoutes'));
 app.use('/api/meetings', require('./routes/meetingRoutes'));
 app.use('/api/messages', require('./routes/messageRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/the-one', require('./routes/theOneRoutes'));
 app.use('/api/inquiry', require('./routes/inquiryRoutes'));
 

@@ -45,6 +45,27 @@ const ensureSchemaColumns = async () => {
     await checkAndAdd('Assessments', 'evaluatorType', 'VARCHAR(50) DEFAULT "industry"');
     await checkAndAdd('Assessments', 'criteria', 'TEXT');
     await checkAndAdd('Assessments', 'status', 'VARCHAR(50) DEFAULT "submitted"');
+
+    try {
+        await sequelize.query(`
+            CREATE TABLE IF NOT EXISTS Notifications (
+                id VARCHAR(36) PRIMARY KEY,
+                recipientId VARCHAR(36) NOT NULL REFERENCES Users(id),
+                schoolId VARCHAR(36) NOT NULL REFERENCES Schools(id),
+                type VARCHAR(255) NOT NULL,
+                title VARCHAR(255) NOT NULL,
+                message TEXT NOT NULL,
+                entityType VARCHAR(255),
+                entityId VARCHAR(36),
+                isRead BOOLEAN DEFAULT 0,
+                readAt DATETIME,
+                createdAt DATETIME NOT NULL,
+                updatedAt DATETIME NOT NULL
+            );
+        `);
+    } catch (e) {
+        // Ignored if already exists
+    }
 };
 
 const testConnection = async () => {

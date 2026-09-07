@@ -1,6 +1,101 @@
 const { Message, User, School, Student, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const { logAudit } = require('../utils/auditLogger');
+const { createNotification } = require('../services/notificationService');
+
+/**
+ * Validate whether sender is authorized to communicate with receiver
+ */
+const isAuthorizedToMessage = async (sender, receiverId) => {
+    if (sender.id === receiverId) {
+        return { allowed: false, reason: 'Cannot message yourself' };
+    }
+
+    const receiver = await User.findByPk(receiverId);
+    if (!receiver) {
+        return { allowed: false, reason: 'Receiver not found', status: 404 };
+    }
+
+    // Super Admin can message anyone
+    if (sender.role === 'super_admin' || receiver.role === 'super_admin') {
+        return { allowed: true, receiver };
+    }
+
+    // Multi-tenant check: must belong to same school
+    if (sender.schoolId !== receiver.schoolId) {
+        return { allowed: false, reason: 'Cross-tenant communication is not permitted', status: 403 };
+    }
+
+    // School Admin can message anyone in their school, and anyone can message School Admin
+    if (sender.role === 'school_admin' || receiver.role === 'school_admin') {
+        return { allowed: true, receiver };
+    }
+
+    // Student rules
+    if (sender.role === 'student') {
+        const studentProfile = await Student.findOne({ where: { userId: sender.id } });
+        if (!studentProfile) {
+            return { allowed: false, reason: 'Student profile not found', status: 404 };
+        }
+
+        const isAssignedSupervisor = (
+            (studentProfile.industrySupervisorId && studentProfile.industrySupervisorId === receiver.id) ||
+            (studentProfile.universitySupervisorId && studentProfile.universitySupervisorId === receiver.id)
+        );
+
+        if (isAssignedSupervisor) {
+            return { allowed: true, receiver };
+        }
+
+        return {
+            allowed: false,
+            reason: 'Students may only message their assigned supervisors or school administrators',
+            status: 403
+        };
+    }
+
+    // Industry Supervisor rules
+    if (sender.role === 'industry_supervisor') {
+        const assignedStudent = await Student.findOne({
+            where: {
+                industrySupervisorId: sender.id,
+                userId: receiver.id
+            }
+        });
+
+        if (assignedStudent) {
+            return { allowed: true, receiver };
+        }
+
+        return {
+            allowed: false,
+            reason: 'Industry supervisors may only message assigned students or school administrators',
+            status: 403
+        };
+    }
+
+    // University Supervisor rules
+    if (sender.role === 'university_supervisor') {
+        const assignedStudent = await Student.findOne({
+            where: {
+                universitySupervisorId: sender.id,
+                userId: receiver.id
+            }
+        });
+
+        if (assignedStudent) {
+            return { allowed: true, receiver };
+        }
+
+        return {
+            allowed: false,
+            reason: 'University supervisors may only message assigned students or school administrators',
+            status: 403
+        };
+    }
+
+    return { allowed: false, reason: 'Unauthorized communication channel', status: 403 };
+};
 
 /**
  * Send a message to another user
@@ -9,33 +104,60 @@ const sendMessage = async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
         const { receiverId, content } = req.body;
-        const senderId = req.user.id;
-        const schoolId = req.schoolId;
+        const sender = req.user;
+        const schoolId = req.schoolId || sender.schoolId;
 
-        if (!receiverId || !content) {
-            return res.status(400).json({ success: false, message: 'Receiver and content are required' });
-        }
-
-        // Verify receiver exists
-        const receiver = await User.findOne({ where: { id: receiverId, schoolId } });
-        if (!receiver) {
+        if (!receiverId || !content || !content.trim()) {
             await transaction.rollback();
-            return res.status(404).json({ success: false, message: 'Receiver not found' });
+            return res.status(400).json({ success: false, message: 'Receiver and non-empty content are required' });
         }
+
+        // Validate relationship authorization
+        const authCheck = await isAuthorizedToMessage(sender, receiverId);
+        if (!authCheck.allowed) {
+            await transaction.rollback();
+            return res.status(authCheck.status || 403).json({
+                success: false,
+                message: authCheck.reason
+            });
+        }
+
+        const receiver = authCheck.receiver;
 
         const message = await Message.create({
-            senderId,
-            receiverId,
-            content,
-            schoolId,
+            senderId: sender.id,
+            receiverId: receiver.id,
+            content: content.trim(),
+            schoolId: schoolId || receiver.schoolId,
             isRead: false
         }, { transaction });
 
-        // Log the action? Maybe too verbose for every message. Let's skip audit log for chat messages to save space,
-        // or log only high level info.
-
         await transaction.commit();
-        res.status(201).json({ success: true, data: message });
+
+        // Dispatch in-app notification to recipient
+        try {
+            await createNotification({
+                recipientId: receiver.id,
+                schoolId: schoolId || receiver.schoolId,
+                type: 'new_message',
+                title: `New message from ${sender.name}`,
+                message: content.length > 80 ? `${content.substring(0, 77)}...` : content,
+                entityType: 'message',
+                entityId: message.id
+            });
+        } catch (notifErr) {
+            console.error('Failed to create message notification:', notifErr.message);
+        }
+
+        // Return message with sender details
+        const fullMessage = await Message.findByPk(message.id, {
+            include: [
+                { model: User, as: 'sender', attributes: ['id', 'name', 'role', 'email'] },
+                { model: User, as: 'receiver', attributes: ['id', 'name', 'role', 'email'] }
+            ]
+        });
+
+        res.status(201).json({ success: true, data: fullMessage });
 
     } catch (error) {
         await transaction.rollback();
@@ -50,13 +172,22 @@ const sendMessage = async (req, res) => {
 const getMessages = async (req, res) => {
     try {
         const { userId } = req.params;
-        const currentUserId = req.user.id;
+        const sender = req.user;
+
+        // Check if user is allowed to view messages with this user
+        const authCheck = await isAuthorizedToMessage(sender, userId);
+        if (!authCheck.allowed) {
+            return res.status(authCheck.status || 403).json({
+                success: false,
+                message: authCheck.reason
+            });
+        }
 
         const messages = await Message.findAll({
             where: {
                 [Op.or]: [
-                    { senderId: currentUserId, receiverId: userId },
-                    { senderId: userId, receiverId: currentUserId }
+                    { senderId: sender.id, receiverId: userId },
+                    { senderId: userId, receiverId: sender.id }
                 ]
             },
             order: [['createdAt', 'ASC']],
@@ -78,8 +209,12 @@ const getMessages = async (req, res) => {
  */
 const markAsRead = async (req, res) => {
     try {
-        const { senderId } = req.body; // Mark messages sent by this user as read
+        const { senderId } = req.body;
         const currentUserId = req.user.id;
+
+        if (!senderId) {
+            return res.status(400).json({ success: false, message: 'senderId is required' });
+        }
 
         await Message.update(
             { isRead: true },
@@ -100,13 +235,26 @@ const markAsRead = async (req, res) => {
 };
 
 /**
- * Get contacts (Students for Supervisors, Supervisors for Students)
+ * Get authorized contacts for the current user
  */
 const getContacts = async (req, res) => {
     try {
         const userId = req.user.id;
         const role = req.user.role;
-        let contacts = [];
+        const schoolId = req.user.schoolId;
+        const contactMap = new Map();
+
+        const addContact = (user, extra = {}) => {
+            if (user && user.id !== userId && !contactMap.has(user.id)) {
+                contactMap.set(user.id, {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    ...extra
+                });
+            }
+        };
 
         if (role === 'student') {
             const student = await Student.findOne({
@@ -118,10 +266,20 @@ const getContacts = async (req, res) => {
             });
 
             if (student) {
-                if (student.industrySupervisor) contacts.push(student.industrySupervisor);
-                if (student.universitySupervisor) contacts.push(student.universitySupervisor);
+                if (student.industrySupervisor) addContact(student.industrySupervisor, { roleLabel: 'Industry Supervisor' });
+                if (student.universitySupervisor) addContact(student.universitySupervisor, { roleLabel: 'University Supervisor' });
             }
-        } else if (['university_supervisor', 'industry_supervisor'].includes(role)) {
+
+            // Also include School Admins in the same school
+            if (schoolId) {
+                const schoolAdmins = await User.findAll({
+                    where: { schoolId, role: 'school_admin' },
+                    attributes: ['id', 'name', 'email', 'role']
+                });
+                schoolAdmins.forEach(admin => addContact(admin, { roleLabel: 'School Administrator' }));
+            }
+
+        } else if (role === 'industry_supervisor' || role === 'university_supervisor') {
             const whereClause = role === 'university_supervisor'
                 ? { universitySupervisorId: userId }
                 : { industrySupervisorId: userId };
@@ -133,13 +291,46 @@ const getContacts = async (req, res) => {
                 ]
             });
 
-            contacts = students.map(s => s.user).filter(Boolean);
+            students.forEach(s => {
+                if (s.user) {
+                    addContact(s.user, {
+                        roleLabel: 'Assigned Student',
+                        admissionNumber: s.admissionNumber,
+                        department: s.department
+                    });
+                }
+            });
+
+            // Also include School Admins
+            if (schoolId) {
+                const schoolAdmins = await User.findAll({
+                    where: { schoolId, role: 'school_admin' },
+                    attributes: ['id', 'name', 'email', 'role']
+                });
+                schoolAdmins.forEach(admin => addContact(admin, { roleLabel: 'School Administrator' }));
+            }
+
+        } else if (role === 'school_admin') {
+            const users = await User.findAll({
+                where: {
+                    schoolId,
+                    id: { [Op.ne]: userId }
+                },
+                attributes: ['id', 'name', 'email', 'role']
+            });
+            users.forEach(u => addContact(u, { roleLabel: u.role.replace('_', ' ') }));
+
+        } else if (role === 'super_admin') {
+            const users = await User.findAll({
+                where: { id: { [Op.ne]: userId } },
+                attributes: ['id', 'name', 'email', 'role']
+            });
+            users.forEach(u => addContact(u, { roleLabel: u.role.replace('_', ' ') }));
         }
 
-        // Add last message info for each contact (optional, but good for UI)
-        // For now, let's keep it simple and just return the users.
-
+        const contacts = Array.from(contactMap.values());
         res.json({ success: true, data: contacts });
+
     } catch (error) {
         console.error('Get contacts error:', error);
         res.status(500).json({ success: false, message: 'Failed to fetch contacts' });
@@ -150,5 +341,6 @@ module.exports = {
     sendMessage,
     getMessages,
     markAsRead,
-    getContacts
+    getContacts,
+    isAuthorizedToMessage
 };

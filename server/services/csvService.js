@@ -28,6 +28,38 @@ const parseStudentCSV = (filePath) => {
     });
 };
 
+/**
+ * Convert structured data array into sanitized CSV text string
+ * @param {Array<string>} headers - Column titles
+ * @param {Array<Object>} rows - Row records
+ * @param {Array<string|Function>} fieldKeys - Keys or accessor functions for each column
+ * @returns {string} csvContent
+ */
+const formatCSV = (headers, rows, fieldKeys) => {
+    const sanitizeValue = (val) => {
+        if (val === null || val === undefined) return '""';
+        let str = String(val);
+        // Protect against CSV formula injection
+        if (/^[=+\-@]/.test(str)) {
+            str = `'${str}`;
+        }
+        // Escape quotes
+        str = str.replace(/"/g, '""');
+        return `"${str}"`;
+    };
+
+    const headerLine = headers.map(h => `"${h.replace(/"/g, '""')}"`).join(',');
+    const rowLines = rows.map(row => {
+        return fieldKeys.map(key => {
+            const val = typeof key === 'function' ? key(row) : row[key];
+            return sanitizeValue(val);
+        }).join(',');
+    });
+
+    return [headerLine, ...rowLines].join('\r\n');
+};
+
 module.exports = {
-    parseStudentCSV
+    parseStudentCSV,
+    formatCSV
 };

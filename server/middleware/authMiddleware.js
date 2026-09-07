@@ -54,11 +54,12 @@ const protect = async (req, res, next) => {
 };
 
 /**
- * Authorize specific roles
+ * Authorize specific roles (supports spread or array: authorize('admin', 'student') or authorize(['admin', 'student']))
  */
 const authorize = (...roles) => {
+    const flatRoles = roles.flat();
     return (req, res, next) => {
-        if (!req.user || !roles.includes(req.user.role)) {
+        if (!req.user || !flatRoles.includes(req.user.role)) {
             return res.status(403).json({
                 success: false,
                 message: `Access denied. Role '${req.user?.role || 'unauthenticated'}' is not authorized to access this resource`,
@@ -112,4 +113,11 @@ const auditAction = (action) => {
     };
 };
 
-module.exports = { protect, authorize, requireSuperAdmin, auditAction };
+module.exports = {
+    protect,
+    authorize,
+    requireSuperAdmin,
+    auditAction,
+    authMiddleware: protect,
+    roleMiddleware: authorize
+};

@@ -1,6 +1,7 @@
 const { Logbook, Student, User, Attendance, Assessment } = require('../models');
 const { refineSummary } = require('../services/aiService');
 const { Op } = require('sequelize');
+const { notifyPlacementSubmitted, notifyLogbookSubmitted } = require('../services/notificationService');
 
 /**
  * Get student profile with placement and supervisor details
@@ -43,24 +44,10 @@ const getStudentProfile = async (req, res) => {
 };
 
 /**
- * Submit / update student attachment placement application
+ * Update student placement details & submit for approval
  */
 const updateStudentPlacement = async (req, res) => {
     try {
-        const student = await Student.findOne({ where: { userId: req.user.id } });
-
-        if (!student) {
-            return res.status(404).json({ success: false, message: 'Student profile not found' });
-        }
-
-        // Students cannot modify placement once APPROVED or ACTIVE or COMPLETED unless school admin reopens it
-        if (['APPROVED', 'ACTIVE', 'COMPLETED'].includes(student.placementStatus)) {
-            return res.status(400).json({
-                success: false,
-                message: `Cannot update placement in ${student.placementStatus} status without administrative approval.`
-            });
-        }
-
         const {
             course,
             yearOfStudy,
@@ -72,11 +59,27 @@ const updateStudentPlacement = async (req, res) => {
             contactPerson,
             startDate,
             endDate,
-            submitForApproval = false
+            submitForApproval
         } = req.body;
 
-        // Basic date validation
-        if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+        const student = await Student.findOne({ where: { userId: req.user.id } });
+
+        if (!student) {
+            return res.status(404).json({ success: false, message: 'Student profile not found' });
+        }
+
+        // Students cannot modify placement once APPROVED or ACTIVE or COMPLETED without administrative approval
+        if (['APPROVED', 'ACTIVE', 'COMPLETED'].includes(student.placementStatus)) {
+            return res.status(400).json({
+                success: false,
+                message: `Cannot update placement in ${student.placementStatus} status without administrative approval.`
+            });
+        }
+
+        // Validate date order if both are provided
+        const effectiveStart = startDate || student.startDate;
+        const effectiveEnd = endDate || student.endDate;
+        if (effectiveStart && effectiveEnd && new Date(effectiveStart) > new Date(effectiveEnd)) {
             return res.status(400).json({
                 success: false,
                 message: 'Start date cannot be after end date.'
@@ -99,6 +102,18 @@ const updateStudentPlacement = async (req, res) => {
             placementStatus: newStatus,
             rejectionReason: submitForApproval ? null : student.rejectionReason
         });
+
+        if (submitForApproval) {
+            try {
+                await notifyPlacementSubmitted({
+                    studentUser: req.user,
+                    placement: student,
+                    schoolId: student.schoolId || req.schoolId
+                });
+            } catch (notifErr) {
+                console.error('Failed to dispatch placement notification:', notifErr.message);
+            }
+        }
 
         res.json({
             success: true,
@@ -363,6 +378,18 @@ const submitLogbook = async (req, res) => {
             attachments,
             status: 'pending'
         });
+
+        // Dispatch notification to industry supervisor if assigned
+        try {
+            await notifyLogbookSubmitted({
+                studentUser: req.user,
+                logbook,
+                industrySupervisorId: student.industrySupervisorId,
+                schoolId: req.schoolId
+            });
+        } catch (notifErr) {
+            console.error('Failed to dispatch logbook notification:', notifErr.message);
+        }
 
         res.status(201).json({
             success: true,

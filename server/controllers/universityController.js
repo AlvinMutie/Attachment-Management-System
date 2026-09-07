@@ -1,4 +1,5 @@
 const { Student, User, Logbook, Attendance, Assessment, Meeting } = require('../models');
+const { notifyAssessmentSubmitted } = require('../services/notificationService');
 
 /**
  * Get students assigned to the university supervisor with attachment progress metrics
@@ -180,6 +181,18 @@ const submitUniversityAssessment = async (req, res) => {
             criteria: criteria || {},
             status: 'submitted'
         });
+
+        // Dispatch notification to student
+        try {
+            await notifyAssessmentSubmitted({
+                studentUserId: student.userId,
+                evaluatorName: req.user.name,
+                type: `${type.toUpperCase()} (University)`,
+                schoolId: req.schoolId
+            });
+        } catch (notifErr) {
+            console.error('Failed to dispatch university assessment notification:', notifErr.message);
+        }
 
         res.status(201).json({
             success: true,

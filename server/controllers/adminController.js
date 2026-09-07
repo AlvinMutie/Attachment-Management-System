@@ -2,6 +2,7 @@ const { User, Student, School, AuditLog, Logbook, Attendance, Assessment, sequel
 const { logAudit } = require('../utils/auditLogger');
 const { parseStudentCSV } = require('../services/csvService');
 const { generateInstitutionalReport } = require('../services/reportService');
+const { notifyPlacementApproved, notifyPlacementRejected, notifySupervisorAssigned } = require('../services/notificationService');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
@@ -139,6 +140,25 @@ const reviewPlacement = async (req, res) => {
             rejectionReason: status === 'REJECTED' ? (rejectionReason || 'Placement details incomplete or not eligible.') : null
         });
 
+        // Dispatch notification to student
+        try {
+            if (status === 'APPROVED') {
+                await notifyPlacementApproved({
+                    studentUserId: student.userId,
+                    organizationName: student.organizationName,
+                    schoolId: req.schoolId
+                });
+            } else if (status === 'REJECTED') {
+                await notifyPlacementRejected({
+                    studentUserId: student.userId,
+                    reason: student.rejectionReason,
+                    schoolId: req.schoolId
+                });
+            }
+        } catch (notifErr) {
+            console.error('Failed to dispatch placement review notification:', notifErr.message);
+        }
+
         res.json({
             success: true,
             message: `Placement has been ${status.toLowerCase()} successfully.`,
@@ -272,6 +292,19 @@ const assignSupervisor = async (req, res) => {
             await student.update({ industrySupervisorId: supervisorId });
         } else {
             await student.update({ universitySupervisorId: supervisorId });
+        }
+
+        // Dispatch notifications to student and supervisor
+        try {
+            await notifySupervisorAssigned({
+                studentUserId: student.userId,
+                supervisorUserId: supervisorId,
+                supervisorRole: expectedRole,
+                supervisorName: supervisor.name,
+                schoolId: req.schoolId
+            });
+        } catch (notifErr) {
+            console.error('Failed to dispatch supervisor assigned notification:', notifErr.message);
         }
 
         res.json({

@@ -1,5 +1,6 @@
 const { Student, User, Attendance, Logbook, Assessment } = require('../models');
 const { Op } = require('sequelize');
+const { notifyLogbookReviewed, notifyAssessmentSubmitted } = require('../services/notificationService');
 
 /**
  * Get assigned students for the industry supervisor
@@ -197,6 +198,19 @@ const reviewLogbook = async (req, res) => {
             status,
             supervisorComment: supervisorComment !== undefined ? supervisorComment : logbook.supervisorComment
         });
+
+        // Dispatch notification to student
+        try {
+            await notifyLogbookReviewed({
+                studentUserId: logbook.student.userId,
+                weekNumber: logbook.weekNumber,
+                status,
+                feedback: supervisorComment || logbook.supervisorComment,
+                schoolId: req.schoolId
+            });
+        } catch (notifErr) {
+            console.error('Failed to dispatch logbook review notification:', notifErr.message);
+        }
 
         res.json({
             success: true,
@@ -404,6 +418,18 @@ const submitSupervisorAssessment = async (req, res) => {
             criteria: criteria || {},
             status: 'submitted'
         });
+
+        // Dispatch notification to student
+        try {
+            await notifyAssessmentSubmitted({
+                studentUserId: student.userId,
+                evaluatorName: req.user.name,
+                type: `${type.toUpperCase()} (Industry)`,
+                schoolId: req.schoolId
+            });
+        } catch (notifErr) {
+            console.error('Failed to dispatch assessment notification:', notifErr.message);
+        }
 
         res.status(201).json({
             success: true,

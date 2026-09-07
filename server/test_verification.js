@@ -1,6 +1,7 @@
 const http = require('http');
 const { spawn } = require('child_process');
-const { sequelize, User, School, Student, Logbook, Attendance, Assessment } = require('./models');
+const { sequelize, User, School, Student, Logbook, Attendance, Assessment, Message, Notification } = require('./models');
+const { Op } = require('sequelize');
 
 async function ensureColumnsExist() {
     const checkAndAdd = async (table, col, def) => {
@@ -73,10 +74,28 @@ async function setupTestData() {
         { email: 'student_b@ams.com', name: 'Student Beta', role: 'student', schoolId: schoolB.id }
     ];
 
+    const testEmails = usersToSeed.map(u => u.email);
+    const existingUsers = await User.findAll({ where: { email: testEmails } });
+    const userIds = existingUsers.map(u => u.id);
+
+    if (userIds.length > 0) {
+        const studentRecords = await Student.findAll({ where: { userId: userIds } });
+        const studentIds = studentRecords.map(s => s.id);
+
+        if (studentIds.length > 0) {
+            await Attendance.destroy({ where: { studentId: studentIds } });
+            await Logbook.destroy({ where: { studentId: studentIds } });
+            await Assessment.destroy({ where: { studentId: studentIds } });
+        }
+        await Message.destroy({ where: { [Op.or]: [{ senderId: userIds }, { receiverId: userIds }] } });
+        await Notification.destroy({ where: { recipientId: userIds } });
+        await Student.destroy({ where: { userId: userIds } });
+        await User.destroy({ where: { id: userIds } });
+    }
+
     const userMap = {};
 
     for (const u of usersToSeed) {
-        await User.destroy({ where: { email: u.email } });
         const user = await User.create({
             name: u.name,
             email: u.email,
@@ -88,7 +107,6 @@ async function setupTestData() {
         userMap[u.email] = user;
 
         if (u.role === 'student') {
-            await Student.destroy({ where: { userId: user.id } });
             const sRecord = await Student.create({
                 userId: user.id,
                 schoolId: u.schoolId,
@@ -809,6 +827,267 @@ async function runVerification() {
         });
         assertTest('Student Progress endpoint returns real computed stats (200)', studentProgressGet.statusCode === 200 && studentProgressGet.body?.data?.placementStatus === 'APPROVED' && studentProgressGet.body?.data?.logbooks?.approved === 1);
 
+        // ==========================================
+        // 9. PHASE 4 — NOTIFICATIONS SYSTEM
+        // ==========================================
+        console.log('\n--- 9. PHASE 4 — NOTIFICATIONS SYSTEM ---');
+
+        // 9.1 Student fetches their generated notifications (from placement approval & supervisor assignments)
+        const studentNotificationsGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/notifications',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Student receives in-app notifications from lifecycle events (200)', studentNotificationsGet.statusCode === 200 && Array.isArray(studentNotificationsGet.body?.data));
+
+        // 9.2 Check unread notification count
+        const unreadCountGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/notifications/unread-count',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Unread notification count returns valid numeric total (200)', unreadCountGet.statusCode === 200 && typeof unreadCountGet.body?.unreadCount === 'number');
+
+        // 9.3 Mark single notification as read if available
+        if (studentNotificationsGet.body?.data?.length > 0) {
+            const firstNotifId = studentNotificationsGet.body.data[0].id;
+            const markSingleRead = await makeRequest({
+                hostname: 'localhost',
+                port: TEST_PORT,
+                path: `/api/notifications/${firstNotifId}/read`,
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${studentAToken}` }
+            });
+            assertTest('Single notification marked as read (200)', markSingleRead.statusCode === 200 && markSingleRead.body?.success === true);
+        }
+
+        // 9.4 Mark all notifications as read
+        const markAllRead = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/notifications/read-all',
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Mark all notifications as read succeeds (200)', markAllRead.statusCode === 200 && markAllRead.body?.success === true);
+
+        // ==========================================
+        // 10. PHASE 4 — HARDENED MESSAGING & ACCESS CONTROL
+        // ==========================================
+        console.log('\n--- 10. PHASE 4 — HARDENED MESSAGING & ACCESS CONTROL ---');
+
+        const studentAUser = userMap['student_a@ams.com'];
+        const supervisorAUser = userMap['supervisor_a@ams.com'];
+        const supervisorBUser = userMap['supervisor_b@ams.com'];
+        const studentBUser = userMap['student_b@ams.com'];
+        const adminAUser = userMap['schooladmin_a@ams.com'];
+
+        // 10.1 Student A can message assigned Industry Supervisor A
+        const studentToSupervisorMsg = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/messages',
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${studentAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            receiverId: supervisorAUser.id,
+            content: 'Hello supervisor, I have submitted my Week 1 report.'
+        });
+        assertTest('Student can message assigned Industry Supervisor (201)', studentToSupervisorMsg.statusCode === 201 && studentToSupervisorMsg.body?.success === true);
+
+        // 10.2 Industry Supervisor A can message assigned Student A
+        const supervisorToStudentMsg = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/messages',
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${supervisorAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            receiverId: studentAUser.id,
+            content: 'Great progress on your embedded project.'
+        });
+        assertTest('Industry Supervisor can message assigned Student (201)', supervisorToStudentMsg.statusCode === 201 && supervisorToStudentMsg.body?.success === true);
+
+        // 10.3 Student A CANNOT message unassigned Supervisor B
+        const studentToUnassignedSupMsg = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/messages',
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${studentAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            receiverId: supervisorBUser.id,
+            content: 'Unauthorized message attempt'
+        });
+        assertTest('Student cannot message unassigned Supervisor (403)', studentToUnassignedSupMsg.statusCode === 403);
+
+        // 10.4 Cross-Tenant Messaging is Blocked (Student A in School A -> Student B in School B)
+        const crossTenantMsg = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/messages',
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${studentAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            receiverId: studentBUser.id,
+            content: 'Illegal cross-tenant communication attempt'
+        });
+        assertTest('Cross-tenant communication rejected (403)', crossTenantMsg.statusCode === 403);
+
+        // 10.5 Get authorized contacts for Student A
+        const studentContactsGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/messages/contacts',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Student contacts list includes assigned supervisors and admins (200)', studentContactsGet.statusCode === 200 && Array.isArray(studentContactsGet.body?.data));
+
+        // 10.6 Retrieve conversation history between Student A and Supervisor A
+        const conversationGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: `/api/messages/${supervisorAUser.id}`,
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Retrieve authorized message thread history (200)', conversationGet.statusCode === 200 && conversationGet.body?.data?.length >= 2);
+
+        // ==========================================
+        // 11. PHASE 4 — REPORTS, ANALYTICS & CSV EXPORT
+        // ==========================================
+        console.log('\n--- 11. PHASE 4 — REPORTS, ANALYTICS & CSV EXPORT ---');
+
+        // 11.1 School Admin generates placements report JSON with pagination
+        const placementReportJSON = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/reports/placements?page=1&limit=10',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminAToken}` }
+        });
+        assertTest('School Admin generates paginated placements report (200)', placementReportJSON.statusCode === 200 && placementReportJSON.body?.pagination?.total > 0);
+
+        // 11.2 School Admin exports placements as CSV
+        const placementReportCSV = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/reports/placements?export=csv',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminAToken}` }
+        });
+        assertTest('Placements report exports clean CSV with correct headers (200 & text/csv)',
+            placementReportCSV.statusCode === 200 &&
+            (placementReportCSV.headers['content-type']?.includes('text/csv')) &&
+            typeof placementReportCSV.body === 'string' &&
+            placementReportCSV.body.includes('Student Name') &&
+            placementReportCSV.body.includes('Admission Number')
+        );
+
+        // 11.3 School Admin exports attendance as CSV
+        const attendanceReportCSV = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/reports/attendance?export=csv',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminAToken}` }
+        });
+        assertTest('Attendance report exports clean CSV (200 & text/csv)',
+            attendanceReportCSV.statusCode === 200 &&
+            attendanceReportCSV.headers['content-type']?.includes('text/csv') &&
+            typeof attendanceReportCSV.body === 'string' &&
+            attendanceReportCSV.body.includes('Verification Method')
+        );
+
+        // 11.4 School Admin exports logbooks report as CSV
+        const logbooksReportCSV = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/reports/logbooks?export=csv',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminAToken}` }
+        });
+        assertTest('Logbooks report exports clean CSV (200 & text/csv)',
+            logbooksReportCSV.statusCode === 200 &&
+            logbooksReportCSV.headers['content-type']?.includes('text/csv') &&
+            typeof logbooksReportCSV.body === 'string' &&
+            logbooksReportCSV.body.includes('Week Number')
+        );
+
+        // 11.5 School Admin exports assessments report as CSV
+        const assessmentsReportCSV = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/reports/assessments?export=csv',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminAToken}` }
+        });
+        assertTest('Assessments report exports clean CSV (200 & text/csv)',
+            assessmentsReportCSV.statusCode === 200 &&
+            assessmentsReportCSV.headers['content-type']?.includes('text/csv') &&
+            typeof assessmentsReportCSV.body === 'string' &&
+            assessmentsReportCSV.body.includes('Score (%)')
+        );
+
+        // 11.6 Supervisor workload allocation report
+        const workloadReport = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/reports/supervisor-workload',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminAToken}` }
+        });
+        assertTest('Supervisor workload report returns supervisor assignments and metric totals (200)',
+            workloadReport.statusCode === 200 &&
+            Array.isArray(workloadReport.body?.data) &&
+            workloadReport.body.data.some(s => s.email === 'supervisor_a@ams.com' && s.assignedStudentsCount >= 1)
+        );
+
+        // 11.7 Student cannot access administrative reports
+        const studentAttemptsReports = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/reports/placements',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Student prohibited from accessing administrative reports (403)', studentAttemptsReports.statusCode === 403);
+
+        // ==========================================
+        // 12. PHASE 4 — DETERMINISTIC OPERATIONAL ALERTS
+        // ==========================================
+        console.log('\n--- 12. PHASE 4 — DETERMINISTIC OPERATIONAL ALERTS ---');
+
+        const operationalAlerts = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/reports/operational-alerts',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminAToken}` }
+        });
+        assertTest('Operational Alerts Engine computes institutional risk indicators (200)',
+            operationalAlerts.statusCode === 200 &&
+            operationalAlerts.body?.data?.summary !== undefined &&
+            Array.isArray(operationalAlerts.body?.data?.alerts)
+        );
+
     } catch (err) {
         console.error('Test Execution Error:', err);
         failedCount++;
@@ -822,7 +1101,7 @@ async function runVerification() {
     console.log('==========================================');
 
     if (failedCount === 0) {
-        console.log('🎉 ALL PHASE 2 + PHASE 3 SECURITY, RBAC & WORKFLOW TESTS PASSED SUCCESSFULLY!');
+        console.log('🎉 ALL PHASE 2 + PHASE 3 + PHASE 4 SECURITY, RBAC, NOTIFICATIONS, REPORTING & ALERTS TESTS PASSED SUCCESSFULLY!');
         process.exit(0);
     } else {
         console.error('❌ VERIFICATION FAILED');

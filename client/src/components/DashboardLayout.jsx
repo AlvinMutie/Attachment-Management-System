@@ -4,6 +4,7 @@ import Sidebar from './Sidebar';
 import { Menu, X, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ROLE_DEFINITIONS } from '../config/navigation';
+import NotificationDropdown from './NotificationDropdown';
 
 export const DashboardLayout = ({ children, role: propRole }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -31,19 +32,27 @@ export const DashboardLayout = ({ children, role: propRole }) => {
                         <span className="text-[9px] text-slate-500 uppercase tracking-widest leading-none">{roleDef.label}</span>
                     </div>
                 </div>
-                <button
-                    type="button"
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="p-2 rounded-xl bg-white/5 text-slate-300 hover:text-white transition-colors focus-visible:outline-blue-500"
-                    aria-label={sidebarOpen ? "Close navigation menu" : "Open navigation menu"}
-                    aria-expanded={sidebarOpen}
-                >
-                    {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-                </button>
+                <div className="flex items-center gap-2">
+                    <NotificationDropdown />
+                    <button
+                        type="button"
+                        onClick={() => setSidebarOpen(!sidebarOpen)}
+                        className="p-2 rounded-xl bg-white/5 text-slate-300 hover:text-white transition-colors focus-visible:outline-blue-500"
+                        aria-label={sidebarOpen ? "Close navigation menu" : "Open navigation menu"}
+                        aria-expanded={sidebarOpen}
+                    >
+                        {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+                    </button>
+                </div>
             </header>
 
             {/* Application Shell Sidebar */}
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+            {/* Desktop Top Notification Bar */}
+            <div className="hidden lg:flex fixed top-4 right-8 z-[50] items-center gap-3">
+                <NotificationDropdown />
+            </div>
 
             {/* Main Content Landmark */}
             <main

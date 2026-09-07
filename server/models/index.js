@@ -10,10 +10,19 @@ const Meeting = require('./Meeting');
 const SystemSetting = require('./SystemSetting');
 const Message = require('./Message');
 const Inquiry = require('./Inquiry');
+const Notification = require('./Notification');
 
 // School - User
 School.hasMany(User, { foreignKey: 'schoolId', as: 'users' });
 User.belongsTo(School, { foreignKey: 'schoolId', as: 'school' });
+
+// School - Notification
+School.hasMany(Notification, { foreignKey: 'schoolId', as: 'notifications' });
+Notification.belongsTo(School, { foreignKey: 'schoolId', as: 'school' });
+
+// User - Notification
+User.hasMany(Notification, { foreignKey: 'recipientId', as: 'notifications' });
+Notification.belongsTo(User, { foreignKey: 'recipientId', as: 'recipient' });
 
 // School - Student
 School.hasMany(Student, { foreignKey: 'schoolId', as: 'students' });
@@ -102,5 +111,6 @@ module.exports = {
     AuditLog,
     SystemSetting,
     Message,
-    Inquiry
+    Inquiry,
+    Notification
 };
