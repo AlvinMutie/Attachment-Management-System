@@ -32,32 +32,54 @@ AMS replaces manual paper workflows with a centralized, role-based digital platf
 
 ## System Architecture & Tech Stack
 
-AMS uses a modern single-page application (SPA) frontend communicating with a RESTful API backend and a relational database layer.
+```mermaid
+flowchart TD
+    subgraph Client["Client Applications"]
+        Web["React 19 / Vite 7 Single Page App"]
+        Mobile["Flutter Mobile Client"]
+    end
 
-```
-+-------------------------------------------------------------------------+
-|                              CLIENT LAYER                               |
-|        React 19 (Vite 7) Single Page App  /  Flutter Mobile Client      |
-+-------------------------------------------------------------------------+
-                                    |  HTTPS / REST APIs
-                                    v
-+-------------------------------------------------------------------------+
-|                        SECURITY & GATEWAY LAYER                         |
-|   Helmet Headers  |  CORS  |  Rate Limiters  |  Request Tracing (ID)    |
-+-------------------------------------------------------------------------+
-                                    |
-                                    v
-+-------------------------------------------------------------------------+
-|                         BACKEND SERVICES LAYER                          |
-|   Express 4  |  JWT Auth & RBAC  |  Centralized Academic Policy Service |
-|   Logbook State Engine  |  Analytics & Risk Scorer  |  Document Vault   |
-+-------------------------------------------------------------------------+
-                                    |
-                                    v
-+-------------------------------------------------------------------------+
-|                         DATA & STORAGE LAYER                            |
-|       Sequelize 6 ORM  |  SQLite 3 (ACID)  |  VACUUM Snapshot Vault     |
-+-------------------------------------------------------------------------+
+    subgraph Gateway["API Gateway & Security Layer"]
+        Proxy["Reverse Proxy & SSL/TLS"]
+        Helmet["Helmet Security Headers"]
+        RateLimit["Rate Limiting & CORS"]
+        Trace["Request Tracing (X-Request-ID)"]
+    end
+
+    subgraph Backend["Application Services Layer"]
+        Auth["JWT Authentication & RBAC Engine"]
+        Policy["Academic Policy Service (75% Rule)"]
+        Workflow["Placement & Logbook State Machine"]
+        Analytics["Analytics & Operational Risk Scorer"]
+        DocVault["Secure Document Vault"]
+    end
+
+    subgraph Persistence["Data & Storage Layer"]
+        ORM["Sequelize 6 ORM"]
+        DB[("SQLite 3 Database (ACID)")]
+        Backups["Crash-Consistent Snapshots (VACUUM INTO)"]
+        Uploads["Sanitized Uploads Storage"]
+    end
+
+    Web --> Proxy
+    Mobile --> Proxy
+    Proxy --> Helmet
+    Helmet --> RateLimit
+    RateLimit --> Trace
+    Trace --> Auth
+
+    Auth --> Policy
+    Auth --> Workflow
+    Auth --> Analytics
+    Auth --> DocVault
+
+    Policy --> ORM
+    Workflow --> ORM
+    Analytics --> ORM
+    DocVault --> Uploads
+
+    ORM --> DB
+    DB -. Snapshot .-> Backups
 ```
 
 ### Core Technologies
@@ -137,13 +159,3 @@ After starting the server, you can sign in with any of the following pre-configu
 | **University Supervisor** | `unisup_a@ams.com` | `password123` |
 | **Industry Supervisor** | `supervisor_a@ams.com` | `password123` |
 | **Student** | `student_a@ams.com` | `password123` |
-
----
-
-## Operational Documentation
-
-- [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md): Production Nginx reverse proxy, PM2 process manager, SSL/TLS, and automated backup crons.
-- [.ai/DEVELOPMENT.md](./.ai/DEVELOPMENT.md): Local development setup, design patterns, and architecture.
-- [.ai/TESTING.md](./.ai/TESTING.md): Testing strategy, test runner, and test suite catalog.
-- [.ai/SECURITY.md](./.ai/SECURITY.md): Threat model, security policies, and incident response runbook.
-- [.ai/ROADMAP.md](./.ai/ROADMAP.md): System maturity status and roadmap closure notice.
