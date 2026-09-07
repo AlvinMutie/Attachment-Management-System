@@ -15,6 +15,7 @@ apiClient.interceptors.request.use((config) => {
     return config;
 });
 
+export const getSupervisorWorkspace = () => apiClient.get('/workspace');
 export const getAssignedStudents = () => apiClient.get('/students');
 export const getLivePresence = () => apiClient.get('/presence');
 export const getSupervisorLogbooks = (params) => apiClient.get('/logbooks', { params });

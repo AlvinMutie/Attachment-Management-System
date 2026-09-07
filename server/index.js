@@ -41,6 +41,7 @@ app.use('/api/messages', require('./routes/messageRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/reports', require('./routes/reportRoutes'));
 app.use('/api/coordinator', require('./routes/coordinatorRoutes'));
+app.use('/api/documents', require('./routes/documentRoutes'));
 app.use('/api/the-one', require('./routes/theOneRoutes'));
 app.use('/api/inquiry', require('./routes/inquiryRoutes'));
 

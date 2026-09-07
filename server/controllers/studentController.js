@@ -1,7 +1,8 @@
-const { Logbook, Student, User, Attendance, Assessment } = require('../models');
+const { Logbook, Student, User, Attendance, Assessment, Meeting } = require('../models');
 const { refineSummary } = require('../services/aiService');
 const { Op } = require('sequelize');
 const { notifyPlacementSubmitted, notifyLogbookSubmitted } = require('../services/notificationService');
+const academicPolicyService = require('../services/academicPolicyService');
 
 /**
  * Get student profile with placement and supervisor details
@@ -429,33 +430,284 @@ const getMyLogbooks = async (req, res) => {
 };
 
 /**
- * AI Refine a logbook summary
+ * Get unified Student Workspace
+ * Aggregates attachment status, days tracker, action queue, lifecycle timeline, and completion readiness.
  */
-const refineLogbookSummary = async (req, res) => {
+const getStudentWorkspace = async (req, res) => {
     try {
-        const { summary } = req.body;
-        const student = await Student.findOne({ where: { userId: req.user.id } });
+        const student = await Student.findOne({
+            where: { userId: req.user.id },
+            include: [
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['id', 'name', 'email', 'status']
+                },
+                {
+                    model: User,
+                    as: 'industrySupervisor',
+                    attributes: ['id', 'name', 'email']
+                },
+                {
+                    model: User,
+                    as: 'universitySupervisor',
+                    attributes: ['id', 'name', 'email']
+                },
+                {
+                    model: Attendance,
+                    as: 'attendance'
+                },
+                {
+                    model: Logbook,
+                    as: 'logbooks'
+                },
+                {
+                    model: Assessment,
+                    as: 'assessments'
+                },
+                {
+                    model: Meeting,
+                    as: 'meetings'
+                }
+            ]
+        });
 
         if (!student) {
             return res.status(404).json({ success: false, message: 'Student profile not found' });
         }
 
-        const refinedDraft = await refineSummary(summary, { department: student.department });
+        const policy = academicPolicyService.getAcademicPolicy(student.schoolId || req.schoolId);
+
+        // Day metrics calculation
+        let totalDays = 0;
+        let daysCompleted = 0;
+        let daysRemaining = 0;
+        let percentElapsed = 0;
+
+        if (student.startDate && student.endDate) {
+            const start = new Date(student.startDate);
+            const end = new Date(student.endDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const msPerDay = 1000 * 60 * 60 * 24;
+            totalDays = Math.max(1, Math.round((end - start) / msPerDay) + 1);
+
+            if (today < start) {
+                daysCompleted = 0;
+                daysRemaining = totalDays;
+                percentElapsed = 0;
+            } else if (today >= end) {
+                daysCompleted = totalDays;
+                daysRemaining = 0;
+                percentElapsed = 100;
+            } else {
+                daysCompleted = Math.max(0, Math.round((today - start) / msPerDay));
+                daysRemaining = Math.max(0, totalDays - daysCompleted);
+                percentElapsed = Math.round((daysCompleted / totalDays) * 100);
+            }
+        }
+
+        // Compliance & Readiness evaluations
+        const attendanceStats = academicPolicyService.calculateAttendance(student.attendance || [], policy);
+        const readiness = academicPolicyService.evaluateCompletionReadiness(student, policy);
+        const actionQueue = academicPolicyService.calculateStudentActionQueue(student, policy);
+        const deadlines = academicPolicyService.calculateDeadlines(student, policy);
+
+        // Chronological Lifecycle Timeline
+        const timeline = [
+            {
+                id: 'PLACEMENT_SUBMITTED',
+                title: 'Placement Submitted',
+                date: student.createdAt,
+                completed: student.placementStatus && student.placementStatus !== 'DRAFT',
+                current: student.placementStatus === 'PENDING_APPROVAL'
+            },
+            {
+                id: 'PLACEMENT_APPROVED',
+                title: 'Placement Approved',
+                date: student.placementStatus === 'APPROVED' || student.placementStatus === 'ACTIVE' ? student.updatedAt : null,
+                completed: ['APPROVED', 'ACTIVE', 'COMPLETED'].includes(student.placementStatus),
+                current: student.placementStatus === 'APPROVED' && !student.industrySupervisorId
+            },
+            {
+                id: 'SUPERVISORS_ASSIGNED',
+                title: 'Supervisors Assigned',
+                date: (student.industrySupervisorId && student.universitySupervisorId) ? student.updatedAt : null,
+                completed: Boolean(student.industrySupervisorId && student.universitySupervisorId),
+                current: Boolean(student.industrySupervisorId || student.universitySupervisorId) && !(student.industrySupervisorId && student.universitySupervisorId)
+            },
+            {
+                id: 'ATTACHMENT_STARTED',
+                title: 'Attachment Started',
+                date: student.startDate,
+                completed: Boolean(student.startDate && new Date(student.startDate) <= new Date()),
+                current: Boolean(student.startDate && new Date(student.startDate) <= new Date() && (student.attendance || []).length === 0)
+            },
+            {
+                id: 'LOGBOOK_MILESTONE',
+                title: 'Weekly Logbooks Approved',
+                date: (student.logbooks || []).find(l => l.status === 'approved')?.updatedAt || null,
+                completed: (student.logbooks || []).some(l => l.status === 'approved'),
+                current: (student.logbooks || []).length > 0 && !(student.logbooks || []).some(l => l.status === 'approved')
+            },
+            {
+                id: 'SUPERVISION_VISIT',
+                title: 'Supervision Visit Conducted',
+                date: (student.meetings || []).find(m => ['confirmed', 'completed'].includes(m.status))?.scheduledAt || null,
+                completed: (student.meetings || []).some(m => ['confirmed', 'completed'].includes(m.status)),
+                current: (student.meetings || []).some(m => m.status === 'pending')
+            },
+            {
+                id: 'FINAL_EVALUATION',
+                title: 'Final Assessments Graded',
+                date: (student.assessments || []).find(a => a.score !== null)?.createdAt || null,
+                completed: (student.assessments || []).length >= 2,
+                current: (student.assessments || []).length === 1
+            },
+            {
+                id: 'COMPLETION_SATISFIED',
+                title: 'Attachment Completed',
+                date: student.placementStatus === 'COMPLETED' ? student.updatedAt : null,
+                completed: student.placementStatus === 'COMPLETED' || readiness.ready,
+                current: readiness.ready && student.placementStatus !== 'COMPLETED'
+            }
+        ];
 
         res.json({
             success: true,
             data: {
-                original: summary,
-                refined: refinedDraft
+                student: {
+                    id: student.id,
+                    admissionNumber: student.admissionNumber,
+                    course: student.course,
+                    department: student.department,
+                    placementStatus: student.placementStatus,
+                    rejectionReason: student.rejectionReason,
+                    organizationName: student.organizationName,
+                    organizationAddress: student.organizationAddress,
+                    organizationPhone: student.organizationPhone,
+                    organizationEmail: student.organizationEmail,
+                    contactPerson: student.contactPerson,
+                    startDate: student.startDate,
+                    endDate: student.endDate,
+                    user: student.user,
+                    industrySupervisor: student.industrySupervisor,
+                    universitySupervisor: student.universitySupervisor
+                },
+                dates: {
+                    startDate: student.startDate,
+                    endDate: student.endDate,
+                    totalDays,
+                    daysCompleted,
+                    daysRemaining,
+                    percentElapsed
+                },
+                attendance: attendanceStats,
+                readiness,
+                actionQueue,
+                deadlines,
+                timeline,
+                milestones: timeline,
+                logbooksSummary: {
+                    total: (student.logbooks || []).length,
+                    approved: (student.logbooks || []).filter(l => l.status === 'approved').length,
+                    pending: (student.logbooks || []).filter(l => l.status === 'pending').length,
+                    rejected: (student.logbooks || []).filter(l => l.status === 'rejected').length
+                },
+                assessmentsSummary: {
+                    total: (student.assessments || []).length,
+                    industrySubmitted: (student.assessments || []).some(a => a.evaluatorType === 'industry'),
+                    universitySubmitted: (student.assessments || []).some(a => a.evaluatorType === 'university')
+                }
             }
         });
     } catch (error) {
-        console.error('Refine summary error detailed:', {
-            error: error.message,
-            stack: error.stack,
-            userId: req.user.id
+        console.error('Get student workspace error:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch student workspace' });
+    }
+};
+
+/**
+ * Revise & Update a rejected weekly logbook
+ */
+const updateLogbook = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { summary, dailyEntries } = req.body;
+
+        const student = await Student.findOne({ where: { userId: req.user.id } });
+        if (!student) {
+            return res.status(404).json({ success: false, message: 'Student profile not found' });
+        }
+
+        const logbook = await Logbook.findOne({
+            where: {
+                id,
+                studentId: student.id
+            }
         });
-        res.status(500).json({ success: false, message: `AI Refinement failed: ${error.message}` });
+
+        if (!logbook) {
+            return res.status(404).json({ success: false, message: 'Logbook entry not found' });
+        }
+
+        // Students cannot edit approved logbooks
+        if (logbook.status === 'approved') {
+            return res.status(400).json({
+                success: false,
+                message: 'Approved logbooks are finalized and cannot be modified.'
+            });
+        }
+
+        let parsedDailyEntries = logbook.dailyEntries;
+        if (dailyEntries) {
+            try {
+                parsedDailyEntries = typeof dailyEntries === 'string' ? JSON.parse(dailyEntries) : dailyEntries;
+            } catch (e) {
+                parsedDailyEntries = logbook.dailyEntries;
+            }
+        }
+
+        // Process new attachments if uploaded
+        let newAttachments = logbook.attachments || [];
+        if (req.files && req.files.length > 0) {
+            const uploadedFiles = req.files.map(file => ({
+                url: `/uploads/logbooks/${file.filename}`,
+                name: file.originalname,
+                type: file.mimetype
+            }));
+            newAttachments = [...newAttachments, ...uploadedFiles];
+        }
+
+        await logbook.update({
+            summary: summary !== undefined ? summary : logbook.summary,
+            dailyEntries: parsedDailyEntries,
+            attachments: newAttachments,
+            status: 'pending', // Resets to pending for supervisor review
+            supervisorComment: null
+        });
+
+        // Notify supervisor of resubmission
+        try {
+            await notifyLogbookSubmitted({
+                studentUser: req.user,
+                logbook,
+                industrySupervisorId: student.industrySupervisorId,
+                schoolId: req.schoolId
+            });
+        } catch (notifErr) {
+            console.error('Failed to dispatch logbook resubmission notification:', notifErr.message);
+        }
+
+        res.json({
+            success: true,
+            message: 'Logbook revised and resubmitted for supervisor review.',
+            data: logbook
+        });
+    } catch (error) {
+        console.error('Update logbook error:', error);
+        res.status(500).json({ success: false, message: 'Failed to update logbook' });
     }
 };
 
@@ -468,5 +720,6 @@ module.exports = {
     getStudentAssessments,
     submitLogbook,
     getMyLogbooks,
-    refineLogbookSummary
+    getStudentWorkspace,
+    updateLogbook
 };

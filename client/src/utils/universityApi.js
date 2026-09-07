@@ -19,6 +19,7 @@ apiClient.interceptors.request.use((config) => {
     return config;
 });
 
+export const getUniversityWorkspace = () => apiClient.get('/workspace');
 export const getMyStudents = () => apiClient.get('/my-students');
 export const getStudentOverview = (id) => apiClient.get(`/student/${id}/overview`);
 export const getUniversityAssessments = () => apiClient.get('/assessments');

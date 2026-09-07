@@ -14,6 +14,7 @@ apiClient.interceptors.request.use((config) => {
     return config;
 });
 
+export const getStudentWorkspace = () => apiClient.get('/workspace');
 export const getStudentProfile = () => apiClient.get('/profile');
 export const getStudentPlacement = () => apiClient.get('/placement');
 export const updateStudentPlacement = (data) => apiClient.put('/placement', data);
@@ -24,6 +25,14 @@ export const getStudentAssessments = () => apiClient.get('/assessments');
 
 export const submitLogbook = (formData) => {
     return apiClient.post('/logbooks', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+};
+
+export const updateLogbook = (id, formData) => {
+    return apiClient.put(`/logbooks/${id}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data'
         }

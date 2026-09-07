@@ -3,111 +3,14 @@ const { Op } = require('sequelize');
 const { getInstitutionalOperationalAlerts, evaluateStudentAlerts } = require('../utils/operationalAlerts');
 const { notifySupervisorAssigned, notifySupervisorReassigned } = require('./notificationService');
 const { logAudit } = require('../utils/auditLogger');
+const academicPolicyService = require('./academicPolicyService');
 
 /**
  * Deterministic Completion Readiness Evaluator
- * Evaluates whether a student satisfies all academic & operational requirements for attachment completion.
- * @param {Object} student - Student instance with associations (attendance, logbooks, assessments, meetings)
- * @returns {Object} { ready: boolean, score: number, blockers: string[], checklist: Object }
+ * Delegates to centralized academicPolicyService for authoritative cross-system consistency.
  */
 const evaluateCompletionReadiness = (student) => {
-    const blockers = [];
-    const checklist = {
-        placementApproved: false,
-        industrySupervisorAssigned: false,
-        universitySupervisorAssigned: false,
-        attendanceThresholdMet: false,
-        logbooksSubmittedAndReviewed: false,
-        supervisionCompleted: false,
-        industryAssessmentCompleted: false,
-        universityAssessmentCompleted: false
-    };
-
-    // 1. Placement Status Check
-    if (['APPROVED', 'ACTIVE', 'COMPLETED'].includes(student.placementStatus)) {
-        checklist.placementApproved = true;
-    } else {
-        blockers.push(`Placement status is '${student.placementStatus || 'DRAFT'}' (must be approved or active)`);
-    }
-
-    // 2. Supervisor Allocation Check
-    if (student.industrySupervisorId) {
-        checklist.industrySupervisorAssigned = true;
-    } else {
-        blockers.push('Industry supervisor is not assigned');
-    }
-
-    if (student.universitySupervisorId) {
-        checklist.universitySupervisorAssigned = true;
-    } else {
-        blockers.push('University supervisor is not assigned');
-    }
-
-    // 3. Attendance Compliance Check (at least 1 record & >= 75% rate)
-    const attendanceRecords = student.attendance || [];
-    if (attendanceRecords.length > 0) {
-        const presentOrLate = attendanceRecords.filter(a => ['present', 'late'].includes(a.status)).length;
-        const rate = Math.round((presentOrLate / attendanceRecords.length) * 100);
-        if (rate >= 75) {
-            checklist.attendanceThresholdMet = true;
-        } else {
-            blockers.push(`Attendance compliance is ${rate}% (minimum required threshold is 75%)`);
-        }
-    } else {
-        blockers.push('No verified attendance records logged');
-    }
-
-    // 4. Logbook Progress Check (at least 1 logbook & at least 1 approved & no pending reviews)
-    const logbooks = student.logbooks || [];
-    const approvedLogbooks = logbooks.filter(l => l.status === 'approved');
-    const pendingLogbooks = logbooks.filter(l => l.status === 'pending');
-    if (approvedLogbooks.length > 0 && pendingLogbooks.length === 0) {
-        checklist.logbooksSubmittedAndReviewed = true;
-    } else if (logbooks.length === 0) {
-        blockers.push('No weekly logbook reports submitted');
-    } else if (pendingLogbooks.length > 0) {
-        blockers.push(`${pendingLogbooks.length} logbook submission(s) pending supervisor review`);
-    } else {
-        blockers.push('Logbooks require approved supervisor sign-off');
-    }
-
-    // 5. Supervision Meeting Check
-    const meetings = student.meetings || [];
-    const completedOrConfirmedMeetings = meetings.filter(m => ['confirmed', 'completed'].includes(m.status));
-    if (completedOrConfirmedMeetings.length > 0) {
-        checklist.supervisionCompleted = true;
-    } else {
-        blockers.push('Required academic supervision visit/meeting has not been conducted');
-    }
-
-    // 6. Assessments Check
-    const assessments = student.assessments || [];
-    const industryEval = assessments.find(a => a.evaluatorType === 'industry' && a.score !== null);
-    const universityEval = assessments.find(a => a.evaluatorType === 'university' && a.score !== null);
-
-    if (industryEval) {
-        checklist.industryAssessmentCompleted = true;
-    } else {
-        blockers.push('Final industry supervisor evaluation has not been submitted');
-    }
-
-    if (universityEval) {
-        checklist.universityAssessmentCompleted = true;
-    } else {
-        blockers.push('Final university academic assessment has not been submitted');
-    }
-
-    const totalCriteria = Object.keys(checklist).length;
-    const satisfiedCriteria = Object.values(checklist).filter(Boolean).length;
-    const score = Math.round((satisfiedCriteria / totalCriteria) * 100);
-    const ready = blockers.length === 0;
-
-    return {
-        ready,
-        score,
-        blockers,
-        checklist
-    };
+    return academicPolicyService.evaluateCompletionReadiness(student);
 };
 
 /**

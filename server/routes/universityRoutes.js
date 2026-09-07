@@ -5,12 +5,16 @@ const {
     getMyStudents,
     getStudentOverview,
     getUniversityAssessments,
-    submitUniversityAssessment
+    submitUniversityAssessment,
+    getUniversityWorkspace
 } = require('../controllers/universityController');
 
 // All routes require authentication and university_supervisor role
 router.use(protect);
 router.use(authorize('university_supervisor'));
+
+// Unified University Supervisor Workspace
+router.get('/workspace', getUniversityWorkspace);
 
 // Students
 router.get('/my-students', getMyStudents);

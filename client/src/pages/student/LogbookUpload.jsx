@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     FileText,
     Upload,
@@ -8,11 +8,14 @@ import {
     X,
     Sparkles,
     Wand2,
-    ArrowRight
+    ArrowRight,
+    Edit3,
+    History,
+    RefreshCw
 } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
-
-import { submitLogbook, refineSummary } from '../../utils/studentApi';
+import { submitLogbook, updateLogbook, getMyLogbooks, refineSummary } from '../../utils/studentApi';
+import { Card, Badge, Button, LoadingSkeleton } from '../../components/ui';
 
 const LogbookUpload = () => {
     const [dragActive, setDragActive] = useState(false);
@@ -20,11 +23,17 @@ const LogbookUpload = () => {
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState(null);
+    const [existingLogs, setExistingLogs] = useState([]);
+    const [historyLoading, setHistoryLoading] = useState(true);
+
+    // Revision Mode
+    const [editingLogbookId, setEditingLogbookId] = useState(null);
+    const [supervisorComment, setSupervisorComment] = useState(null);
 
     const [formData, setFormData] = useState({
-        weekNumber: 9,
-        startDate: '2026-01-26',
-        endDate: '2026-01-31',
+        weekNumber: 1,
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: new Date(Date.now() + 6 * 86400000).toISOString().split('T')[0],
         summary: '',
         dailyEntries: {
             monday: '',
@@ -36,10 +45,69 @@ const LogbookUpload = () => {
     });
 
     const [activeDay, setActiveDay] = useState('monday');
-
     const [refining, setRefining] = useState(false);
     const [refinedDraft, setRefinedDraft] = useState(null);
     const [showRefineModal, setShowRefineModal] = useState(false);
+
+    const loadLogbooks = async () => {
+        try {
+            setHistoryLoading(true);
+            const res = await getMyLogbooks();
+            if (res.data?.data) {
+                setExistingLogs(res.data.data);
+                // Default week number to next week if logs exist
+                if (res.data.data.length > 0 && !editingLogbookId) {
+                    const maxWeek = Math.max(...res.data.data.map(l => l.weekNumber || 1));
+                    setFormData(prev => ({ ...prev, weekNumber: maxWeek + 1 }));
+                }
+            }
+        } catch (err) {
+            console.error('Failed to load logbook history:', err);
+        } finally {
+            setHistoryLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        loadLogbooks();
+    }, []);
+
+    const startRevision = (log) => {
+        setEditingLogbookId(log.id);
+        setSupervisorComment(log.supervisorComment);
+        setFormData({
+            weekNumber: log.weekNumber,
+            startDate: log.startDate,
+            endDate: log.endDate,
+            summary: log.summary || '',
+            dailyEntries: log.dailyEntries || {
+                monday: '',
+                tuesday: '',
+                wednesday: '',
+                thursday: '',
+                friday: ''
+            }
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const cancelRevision = () => {
+        setEditingLogbookId(null);
+        setSupervisorComment(null);
+        setFormData({
+            weekNumber: existingLogs.length + 1,
+            startDate: new Date().toISOString().split('T')[0],
+            endDate: new Date(Date.now() + 6 * 86400000).toISOString().split('T')[0],
+            summary: '',
+            dailyEntries: {
+                monday: '',
+                tuesday: '',
+                wednesday: '',
+                thursday: '',
+                friday: ''
+            }
+        });
+    };
 
     const handleDrag = (e) => {
         e.preventDefault();
@@ -114,94 +182,138 @@ const LogbookUpload = () => {
                 data.append('evidenceFiles', file);
             });
 
-            await submitLogbook(data);
+            if (editingLogbookId) {
+                await updateLogbook(editingLogbookId, data);
+            } else {
+                await submitLogbook(data);
+            }
+
             setSubmitted(true);
+            loadLogbooks();
         } catch (err) {
-            setError(err.response?.data?.message || 'Failed to submit logbook evidence');
+            setError(err.response?.data?.message || 'Failed to submit logbook report');
         } finally {
             setLoading(false);
         }
     };
 
-    if (submitted) {
-        return (
-            <DashboardLayout role="student">
-                <div className="max-w-2xl mx-auto py-20 text-center space-y-6">
-                    <div className="w-20 h-20 bg-green-600/20 text-green-400 rounded-full flex items-center justify-center mx-auto animate-bounce">
-                        <CheckCircle2 size={48} />
-                    </div>
-                    <h1 className="text-3xl font-bold text-white">Submission Successful!</h1>
-                    <p className="text-slate-400">Your logbook for Week 9 has been sent to your industry supervisor for review.</p>
-                    <button onClick={() => setSubmitted(false)} className="btn-primary px-8">Return to Dashboard</button>
-                </div>
-            </DashboardLayout>
-        );
-    }
-
     return (
         <DashboardLayout role="student">
-            <div className="max-w-6xl mx-auto space-y-12 animate-fade-in">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-                    <div className="flex items-center gap-6">
-                        <div className="w-20 h-20 bg-blue-600 rounded-[2rem] flex items-center justify-center shadow-2xl shadow-blue-600/30 ring-1 ring-white/20">
-                            <FileText className="text-white" size={40} />
+            <div className="max-w-6xl mx-auto space-y-10 animate-fade-in p-6">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-800">
+                    <div className="flex items-center gap-5">
+                        <div className="w-16 h-16 bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center justify-center text-blue-400">
+                            <FileText size={32} />
                         </div>
                         <div className="space-y-1">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">Activity Reporting</span>
-                            <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Weekly <span className="text-blue-500">Logbook</span></h1>
-                            <p className="text-slate-500 font-medium leading-relaxed max-w-lg">Submit your technical summaries and work evidence for supervisor validation.</p>
+                            <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400">Academic Reporting</span>
+                            <h1 className="text-3xl font-black text-white tracking-tight">Weekly Industrial Logbook</h1>
+                            <p className="text-xs text-slate-400">Record weekly tasks, industrial competencies, and supervisor evidence.</p>
                         </div>
                     </div>
+                    {editingLogbookId && (
+                        <Button
+                            variant="outline"
+                            onClick={cancelRevision}
+                            className="text-xs bg-slate-800 border-slate-700 text-slate-300"
+                        >
+                            Cancel Revision Mode
+                        </Button>
+                    )}
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8">
-                    <div className="md:col-span-2 space-y-6">
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="glass-card p-8 space-y-6">
-                                <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-400 uppercase tracking-widest">Reporting Week</label>
-                                        <select
-                                            value={formData.weekNumber}
-                                            onChange={(e) => setFormData({ ...formData, weekNumber: parseInt(e.target.value) })}
-                                            className="input-field w-full bg-slate-900 border-white/5"
-                                        >
-                                            {[...Array(12).keys()].map(i => (
-                                                <option key={i + 1} value={i + 1}>Week {i + 1}</option>
-                                            ))}
-                                        </select>
+                {submitted ? (
+                    <Card className="max-w-2xl mx-auto py-16 text-center space-y-6 bg-slate-900/80 border-slate-800">
+                        <div className="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto">
+                            <CheckCircle2 size={36} />
+                        </div>
+                        <h2 className="text-2xl font-bold text-white">Logbook Submitted Successfully!</h2>
+                        <p className="text-xs text-slate-400 max-w-md mx-auto">
+                            Your report for Week {formData.weekNumber} has been transmitted to your industry supervisor for verification.
+                        </p>
+                        <Button onClick={() => setSubmitted(false)} className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-6">
+                            Submit Another Entry / View Logbooks
+                        </Button>
+                    </Card>
+                ) : (
+                    <div className="grid lg:grid-cols-12 gap-8">
+                        {/* Form Area */}
+                        <div className="lg:col-span-8 space-y-6">
+                            {editingLogbookId && (
+                                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 space-y-1 text-xs">
+                                    <div className="flex items-center gap-2 font-bold">
+                                        <Edit3 className="w-4 h-4" />
+                                        <span>Revising Week {formData.weekNumber} Logbook</span>
                                     </div>
-                                    <div className="space-y-2">
-                                        <label className="text-sm font-bold text-slate-400 uppercase tracking-widest">Submission Date</label>
-                                        <div className="input-field w-full flex items-center space-x-3 opacity-50 select-none">
-                                            <Calendar size={18} />
-                                            <span>Jan 30, 2026</span>
+                                    {supervisorComment && (
+                                        <p className="text-slate-300 text-[11px] mt-1 italic">
+                                            Supervisor Feedback: "{supervisorComment}"
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+
+                            <form onSubmit={handleSubmit} className="space-y-6">
+                                <Card className="p-6 sm:p-8 space-y-6 bg-slate-900/80 border-slate-800">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Reporting Week</label>
+                                            <select
+                                                value={formData.weekNumber}
+                                                disabled={Boolean(editingLogbookId)}
+                                                onChange={(e) => setFormData({ ...formData, weekNumber: parseInt(e.target.value) })}
+                                                className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
+                                            >
+                                                {[...Array(16).keys()].map(i => (
+                                                    <option key={i + 1} value={i + 1}>Week {i + 1}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Start Date</label>
+                                            <input
+                                                type="date"
+                                                value={formData.startDate}
+                                                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                                                className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
+                                                required
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">End Date</label>
+                                            <input
+                                                type="date"
+                                                value={formData.endDate}
+                                                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                                                className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
+                                                required
+                                            />
                                         </div>
                                     </div>
-                                </div>
 
-                                {/* Daily Entries Section */}
-                                <div className="space-y-4">
-                                    <label className="text-sm font-bold text-slate-400 uppercase tracking-widest">Daily Activity Log</label>
-                                    <div className="flex bg-slate-900 p-1 rounded-xl gap-1 overflow-x-auto no-scrollbar">
-                                        {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day) => (
-                                            <button
-                                                key={day}
-                                                type="button"
-                                                onClick={() => setActiveDay(day)}
-                                                className={`flex-1 py-2 px-4 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeDay === day
-                                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20'
-                                                        : 'text-slate-500 hover:text-white hover:bg-white/5'
+                                    {/* Daily Entries */}
+                                    <div className="space-y-3">
+                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Daily Activity Log</label>
+                                        <div className="flex bg-slate-800/80 p-1 rounded-xl gap-1 overflow-x-auto">
+                                            {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day) => (
+                                                <button
+                                                    key={day}
+                                                    type="button"
+                                                    onClick={() => setActiveDay(day)}
+                                                    className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold uppercase transition ${
+                                                        activeDay === day
+                                                            ? 'bg-blue-600 text-white shadow'
+                                                            : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
                                                     }`}
-                                            >
-                                                {day.slice(0, 3)}
-                                            </button>
-                                        ))}
-                                    </div>
+                                                >
+                                                    {day.slice(0, 3)}
+                                                </button>
+                                            ))}
+                                        </div>
 
-                                    <div className="animate-fade-in relative">
                                         <textarea
-                                            rows={8}
+                                            rows={6}
                                             value={formData.dailyEntries[activeDay]}
                                             onChange={(e) => setFormData({
                                                 ...formData,
@@ -210,227 +322,192 @@ const LogbookUpload = () => {
                                                     [activeDay]: e.target.value
                                                 }
                                             })}
-                                            className="input-field w-full resize-none p-4"
-                                            placeholder={`Detail your technical activities for ${activeDay.charAt(0).toUpperCase() + activeDay.slice(1)}...`}
+                                            className="w-full p-3.5 rounded-xl bg-slate-800/60 border border-slate-700 text-xs text-white placeholder-slate-500 resize-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder={`Detail your technical activities and deliverables for ${activeDay.charAt(0).toUpperCase() + activeDay.slice(1)}...`}
                                         />
-                                        <div className="absolute bottom-4 right-4 text-[10px] font-black text-slate-600 uppercase tracking-widest pointer-events-none">
-                                            {activeDay}
+                                    </div>
+
+                                    {/* Weekly Summary */}
+                                    <div className="space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Weekly Comprehensive Summary</label>
+                                            <button
+                                                type="button"
+                                                onClick={handleRefine}
+                                                disabled={refining}
+                                                className="flex items-center gap-1.5 text-[11px] font-bold text-blue-400 hover:text-blue-300 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20"
+                                            >
+                                                {refining ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                                                <span>{refining ? 'Refining...' : 'AI Refine'}</span>
+                                            </button>
                                         </div>
+                                        <textarea
+                                            rows={5}
+                                            value={formData.summary}
+                                            onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
+                                            className="w-full p-3.5 rounded-xl bg-slate-800/60 border border-slate-700 text-xs text-white placeholder-slate-500 resize-none focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Describe overall competencies acquired, equipment utilized, and technical challenges overcome..."
+                                            required
+                                        />
                                     </div>
-                                </div>
 
-                                <div className="space-y-2">
-                                    <div className="flex items-center justify-between">
-                                        <label className="text-sm font-bold text-slate-400 uppercase tracking-widest">Weekly Summary</label>
-                                        <button
-                                            type="button"
-                                            onClick={handleRefine}
-                                            disabled={refining}
-                                            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-blue-400 hover:text-blue-300 transition-all bg-blue-600/10 px-3 py-1.5 rounded-full border border-blue-500/20 group animate-pulse-slow"
-                                        >
-                                            {refining ? (
-                                                <div className="w-3 h-3 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" />
-                                            ) : (
-                                                <Sparkles size={12} className="group-hover:scale-125 transition-transform" />
-                                            )}
-                                            {refining ? 'Consulting AI...' : 'AI Refine'}
-                                        </button>
-                                    </div>
-                                    <textarea
-                                        rows={6}
-                                        value={formData.summary}
-                                        onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                                        className="input-field w-full resize-none p-4"
-                                        placeholder="Describe your activities, achievements, and challenges this week..."
-                                        required
+                                    {error && (
+                                        <div className="flex items-center gap-2 p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-xs">
+                                            <AlertCircle size={16} className="shrink-0" />
+                                            <span>{error}</span>
+                                        </div>
+                                    )}
+
+                                    <Button
+                                        type="submit"
+                                        disabled={loading}
+                                        className="w-full py-4 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center gap-2"
+                                    >
+                                        <Upload size={16} />
+                                        <span>{loading ? 'Submitting...' : editingLogbookId ? 'Resubmit Revised Logbook' : 'Submit Weekly Logbook'}</span>
+                                    </Button>
+                                </Card>
+                            </form>
+                        </div>
+
+                        {/* Right Column: Evidence Upload & History */}
+                        <div className="lg:col-span-4 space-y-6">
+                            {/* Evidence Vault */}
+                            <Card className="p-6 space-y-4 bg-slate-900/80 border-slate-800">
+                                <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                    <Upload size={16} className="text-blue-400" />
+                                    Evidence Attachments
+                                </h3>
+
+                                <div
+                                    onDragEnter={handleDrag}
+                                    onDragLeave={handleDrag}
+                                    onDragOver={handleDrag}
+                                    onDrop={handleDrop}
+                                    className={`relative border-2 border-dashed rounded-2xl p-6 text-center space-y-2 transition ${
+                                        dragActive ? 'border-blue-500 bg-blue-500/10' : 'border-slate-700 hover:border-blue-500/50'
+                                    }`}
+                                >
+                                    <input
+                                        type="file"
+                                        multiple
+                                        accept="image/*,.pdf"
+                                        onChange={handleFileChange}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     />
+                                    <Upload size={24} className="text-blue-400 mx-auto opacity-80" />
+                                    <p className="text-xs font-semibold text-slate-300">Upload Photos / PDFs</p>
+                                    <p className="text-[10px] text-slate-500">Max 10MB per file</p>
                                 </div>
 
-                                {error && (
-                                    <div className="flex items-center gap-3 p-4 bg-rose-500/10 border border-rose-500/20 rounded-2xl text-rose-400 text-xs font-bold uppercase tracking-widest">
-                                        <AlertCircle size={16} />
-                                        <span>{error}</span>
+                                {files.length > 0 && (
+                                    <div className="space-y-2">
+                                        {files.map((file, idx) => (
+                                            <div key={idx} className="flex items-center justify-between p-2 rounded-lg bg-slate-800 text-xs">
+                                                <span className="text-slate-300 truncate max-w-[180px]">{file.name}</span>
+                                                <button type="button" onClick={() => removeFile(idx)} className="text-slate-400 hover:text-rose-400">
+                                                    <X size={14} />
+                                                </button>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
+                            </Card>
 
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="btn-primary w-full py-5 text-sm flex items-center justify-center gap-3"
-                                >
-                                    {loading ? (
-                                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    ) : (
-                                        <Upload size={20} />
-                                    )}
-                                    {loading ? 'Processing Submission...' : 'Transmit Weekly Report'}
+                            {/* Existing Submissions List */}
+                            <Card className="p-6 space-y-4 bg-slate-900/80 border-slate-800">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                        <History size={16} className="text-purple-400" />
+                                        Logbook Submissions
+                                    </h3>
+                                    <span className="text-[10px] text-slate-500">{existingLogs.length} Records</span>
+                                </div>
+
+                                {historyLoading ? (
+                                    <div className="space-y-2">
+                                        <LoadingSkeleton className="h-10 rounded-lg" />
+                                        <LoadingSkeleton className="h-10 rounded-lg" />
+                                    </div>
+                                ) : existingLogs.length === 0 ? (
+                                    <p className="text-xs text-slate-500 italic text-center py-4">No submissions yet.</p>
+                                ) : (
+                                    <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                                        {existingLogs.map(log => {
+                                            const isApproved = log.status === 'approved';
+                                            const isRejected = log.status === 'rejected';
+
+                                            return (
+                                                <div key={log.id} className="p-3 rounded-xl bg-slate-800/60 border border-slate-700 flex items-center justify-between text-xs">
+                                                    <div>
+                                                        <p className="font-bold text-white">Week {log.weekNumber}</p>
+                                                        <p className="text-[10px] text-slate-400">{log.startDate} to {log.endDate}</p>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <Badge className={isApproved ? 'bg-emerald-500/10 text-emerald-400' : isRejected ? 'bg-rose-500/10 text-rose-400' : 'bg-amber-500/10 text-amber-400'}>
+                                                            {log.status.toUpperCase()}
+                                                        </Badge>
+                                                        {isRejected && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => startRevision(log)}
+                                                                className="text-[10px] font-bold text-amber-400 hover:underline"
+                                                            >
+                                                                Revise
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </Card>
+                        </div>
+                    </div>
+                )}
+
+                {/* AI Refine Modal */}
+                {showRefineModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                        <div className="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                                    <Sparkles className="w-5 h-5 text-blue-400" />
+                                    AI Technical Enhancement
+                                </h3>
+                                <button onClick={() => setShowRefineModal(false)} className="text-slate-400 hover:text-white">
+                                    <X size={18} />
                                 </button>
                             </div>
-                        </form>
-                    </div>
 
-                    <div className="space-y-8">
-                        {/* Evidence Upload Area */}
-                        <div className="glass-card p-8 space-y-6">
-                            <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
-                                <Upload size={18} className="text-blue-500" />
-                                Evidence Vault
-                            </h3>
-
-                            <div
-                                onDragEnter={handleDrag}
-                                onDragLeave={handleDrag}
-                                onDragOver={handleDrag}
-                                onDrop={handleDrop}
-                                className={`relative border-2 border-dashed rounded-3xl p-8 transition-all duration-300 flex flex-col items-center text-center space-y-4 ${dragActive ? 'border-blue-500 bg-blue-500/10 scale-95' : 'border-white/10 hover:border-blue-500/30'
-                                    }`}
-                            >
-                                <input
-                                    type="file"
-                                    multiple
-                                    accept="image/*,.pdf"
-                                    onChange={handleFileChange}
-                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                />
-                                <div className="w-16 h-16 bg-blue-600/10 text-blue-500 rounded-2xl flex items-center justify-center shadow-inner">
-                                    <Upload size={32} />
-                                </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                                 <div className="space-y-1">
-                                    <p className="text-sm font-bold text-white">Drop attachments here</p>
-                                    <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">Images or PDFs • Max 10MB per file</p>
-                                </div>
-                            </div>
-
-                            {/* File List */}
-                            <div className="space-y-3">
-                                {files.map((file, index) => (
-                                    <div key={index} className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5 group animate-in slide-in-from-bottom-2 fade-in">
-                                        <div className="flex items-center gap-3 overflow-hidden">
-                                            <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center flex-shrink-0">
-                                                <FileText size={16} />
-                                            </div>
-                                            <span className="text-xs font-bold text-slate-300 truncate">{file.name}</span>
-                                        </div>
-                                        <button
-                                            onClick={() => removeFile(index)}
-                                            className="text-slate-500 hover:text-rose-500 transition-colors"
-                                        >
-                                            <X size={16} />
-                                        </button>
-                                    </div>
-                                ))}
-                                {files.length === 0 && (
-                                    <div className="text-center py-6">
-                                        <p className="text-[10px] font-black text-slate-700 uppercase tracking-widest leading-relaxed">No evidence artifacts staged</p>
-                                    </div>
-                                )}
-                                <p className="text-[9px] font-black text-slate-600 uppercase tracking-widest text-center pt-2">
-                                    {files.length}/5 Artifacts Staged
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="glass-card p-8 bg-blue-600/5 border-blue-500/10">
-                            <h3 className="text-xs font-black text-blue-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                                <AlertCircle size={14} />
-                                Reporting Guidelines
-                            </h3>
-                            <ul className="space-y-3">
-                                {[
-                                    'Detail high-impact technical tasks',
-                                    'Mention problematic operational nodes',
-                                    'Include visual evidence for audit',
-                                    'Ensure week boundaries are correct'
-                                ].map((step, i) => (
-                                    <li key={i} className="flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                        <div className="w-1 h-1 rounded-full bg-blue-500" />
-                                        {step}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {/* AI Refinement Modal */}
-            {showRefineModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-12 animate-in fade-in duration-300">
-                    <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-xl" onClick={() => setShowRefineModal(false)} />
-
-                    <div className="relative w-full max-w-5xl glass-card !p-0 border-white/10 shadow-[0_0_100px_rgba(37,99,235,0.2)] flex flex-col max-h-[90vh] overflow-hidden animate-in zoom-in-95 duration-500">
-                        {/* Modal Header */}
-                        <div className="p-8 border-b border-white/5 bg-gradient-to-r from-blue-600/10 via-transparent to-transparent flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-blue-600/20 text-blue-500 rounded-2xl flex items-center justify-center">
-                                    <Wand2 size={24} />
-                                </div>
-                                <div>
-                                    <h3 className="text-xl font-black text-white uppercase tracking-tighter">AI Technical Refinement</h3>
-                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-none mt-1">Side-by-side Comparative Analysis</p>
-                                </div>
-                            </div>
-                            <button onClick={() => setShowRefineModal(false)} className="p-3 hover:bg-white/5 rounded-2xl text-slate-500 transition-all">
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        {/* Modal Content */}
-                        <div className="flex-1 overflow-y-auto p-8">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                                {/* Original */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-                                        Student Original Draft
-                                    </div>
-                                    <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/5 text-sm text-slate-400 font-medium leading-relaxed italic">
+                                    <p className="font-bold text-slate-400 uppercase text-[10px]">Your Original Draft</p>
+                                    <div className="p-3 bg-slate-800 rounded-xl text-slate-300 italic max-h-48 overflow-y-auto">
                                         "{formData.summary}"
                                     </div>
                                 </div>
-
-                                {/* Refined */}
-                                <div className="space-y-4 relative">
-                                    <div className="absolute -left-5 top-1/2 -translate-y-1/2 hidden lg:flex w-10 h-10 bg-blue-600 rounded-full items-center justify-center text-white shadow-2xl shadow-blue-600/40 z-10 border-4 border-slate-950">
-                                        <ArrowRight size={20} />
-                                    </div>
-                                    <div className="flex items-center gap-2 text-[10px] font-black text-blue-400 uppercase tracking-[0.2em] mb-4">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_#2563eb]" />
-                                        AI Enhanced Technical Report
-                                    </div>
-                                    <div className="p-6 rounded-3xl bg-blue-600/[0.03] border border-blue-500/20 text-sm text-white font-medium leading-relaxed">
+                                <div className="space-y-1">
+                                    <p className="font-bold text-blue-400 uppercase text-[10px]">Enhanced Version</p>
+                                    <div className="p-3 bg-blue-950/40 border border-blue-500/20 rounded-xl text-white max-h-48 overflow-y-auto">
                                         {refinedDraft}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="mt-10 p-6 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex items-start gap-4">
-                                <AlertCircle size={20} className="text-amber-500 shrink-0 mt-0.5" />
-                                <div>
-                                    <h4 className="text-xs font-black text-amber-500 uppercase tracking-widest mb-1">Academic Integrity Policy</h4>
-                                    <p className="text-[11px] text-slate-500 font-medium">Verify that the AI suggestions accurately represent your actual technical activities. Once applied, this refined text will be submitted to your supervisor for grading.</p>
-                                </div>
+                            <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+                                <Button variant="outline" onClick={() => setShowRefineModal(false)} className="text-xs">
+                                    Discard
+                                </Button>
+                                <Button onClick={applyRefinement} className="bg-blue-600 hover:bg-blue-700 text-white text-xs">
+                                    Apply Refinement
+                                </Button>
                             </div>
                         </div>
-
-                        {/* Modal Footer */}
-                        <div className="p-8 border-t border-white/5 flex items-center justify-end gap-4 bg-slate-900/50">
-                            <button
-                                onClick={() => setShowRefineModal(false)}
-                                className="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest hover:text-white transition-all"
-                            >
-                                Discard Changes
-                            </button>
-                            <button
-                                onClick={applyRefinement}
-                                className="px-10 py-5 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl shadow-blue-600/30 transition-all hover:scale-105 active:scale-95 flex items-center gap-3"
-                            >
-                                <CheckCircle2 size={18} />
-                                Integrate Refinement
-                            </button>
-                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </DashboardLayout>
     );
 };

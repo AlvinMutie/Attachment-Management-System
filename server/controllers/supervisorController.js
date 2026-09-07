@@ -1,6 +1,7 @@
 const { Student, User, Attendance, Logbook, Assessment } = require('../models');
 const { Op } = require('sequelize');
 const { notifyLogbookReviewed, notifyAssessmentSubmitted } = require('../services/notificationService');
+const academicPolicyService = require('../services/academicPolicyService');
 
 /**
  * Get assigned students for the industry supervisor
@@ -442,6 +443,176 @@ const submitSupervisorAssessment = async (req, res) => {
     }
 };
 
+/**
+ * Get Unified Industry Supervisor Workspace
+ * Returns operational metrics, actionable pending review queue, and enriched student compliance cards.
+ */
+const getSupervisorWorkspace = async (req, res) => {
+    try {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const policy = academicPolicyService.getAcademicPolicy(req.schoolId);
+
+        const students = await Student.findAll({
+            where: {
+                industrySupervisorId: req.user.id,
+                schoolId: req.schoolId
+            },
+            include: [
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['id', 'name', 'email', 'status']
+                },
+                {
+                    model: Attendance,
+                    as: 'attendance'
+                },
+                {
+                    model: Logbook,
+                    as: 'logbooks'
+                },
+                {
+                    model: Assessment,
+                    as: 'assessments'
+                }
+            ]
+        });
+
+        // Compute metrics & Action Queue
+        const actionQueue = [];
+        let totalPendingLogbooks = 0;
+        let todayPresentCount = 0;
+        let todayAbsentCount = 0;
+        let todayUnrecordedCount = 0;
+        let pendingAssessmentsCount = 0;
+
+        const studentRoster = students.map(student => {
+            const attStats = academicPolicyService.calculateAttendance(student.attendance || [], policy);
+            const logbooks = student.logbooks || [];
+            const pendingLogs = logbooks.filter(l => l.status === 'pending');
+            const rejectedLogs = logbooks.filter(l => l.status === 'rejected');
+            const approvedLogs = logbooks.filter(l => l.status === 'approved');
+
+            totalPendingLogbooks += pendingLogs.length;
+
+            // Today's attendance status
+            const todayRecord = (student.attendance || []).find(a => a.date === todayStr);
+            if (todayRecord) {
+                if (['present', 'late'].includes(todayRecord.status)) todayPresentCount++;
+                else if (todayRecord.status === 'absent') todayAbsentCount++;
+            } else {
+                todayUnrecordedCount++;
+            }
+
+            // Pending logbook reviews action queue items
+            pendingLogs.forEach(l => {
+                actionQueue.push({
+                    id: `REVIEW_LOGBOOK_${l.id}`,
+                    studentId: student.id,
+                    studentName: student.user?.name,
+                    admissionNumber: student.admissionNumber,
+                    priority: 'HIGH',
+                    type: 'LOGBOOK_REVIEW',
+                    title: `Review Week ${l.weekNumber} Logbook`,
+                    description: `Submitted on ${new Date(l.createdAt).toLocaleDateString()}: "${(l.summary || '').slice(0, 80)}..."`,
+                    link: '/industry/presence',
+                    actionText: 'Review Logbook'
+                });
+            });
+
+            // Assessments
+            const assessments = student.assessments || [];
+            const industryEval = assessments.find(a => a.evaluatorType === 'industry' && a.score !== null);
+
+            // Check if final assessment is due (e.g. <= 14 days from end date or past end date)
+            const msPerDay = 1000 * 60 * 60 * 24;
+            const daysToEnd = student.endDate ? Math.round((new Date(student.endDate) - new Date()) / msPerDay) : null;
+            const isAssessmentDue = !industryEval && daysToEnd !== null && daysToEnd <= policy.assessmentWindowDaysBeforeEnd;
+
+            if (isAssessmentDue) {
+                pendingAssessmentsCount++;
+                actionQueue.push({
+                    id: `SUBMIT_ASSESSMENT_${student.id}`,
+                    studentId: student.id,
+                    studentName: student.user?.name,
+                    admissionNumber: student.admissionNumber,
+                    priority: daysToEnd < 0 ? 'CRITICAL' : 'HIGH',
+                    type: 'ASSESSMENT_DUE',
+                    title: 'Submit Final Industry Evaluation',
+                    description: `Attachment ends on ${new Date(student.endDate).toLocaleDateString()} (${daysToEnd < 0 ? `${Math.abs(daysToEnd)} days overdue` : `${daysToEnd} days remaining`}).`,
+                    link: '/industry/presence',
+                    actionText: 'Grade Assessment'
+                });
+            }
+
+            // Risk triage flag
+            let riskLevel = 'NORMAL';
+            if (attStats.isCritical || (daysToEnd !== null && daysToEnd < 0 && !industryEval)) {
+                riskLevel = 'CRITICAL';
+            } else if (!attStats.isCompliant || rejectedLogs.length > 0 || pendingLogs.length >= 2) {
+                riskLevel = 'WARNING';
+            }
+
+            return {
+                id: student.id,
+                name: student.user?.name,
+                email: student.user?.email,
+                admissionNumber: student.admissionNumber,
+                course: student.course || student.department,
+                organizationName: student.organizationName,
+                startDate: student.startDate,
+                endDate: student.endDate,
+                placementStatus: student.placementStatus,
+                attendance: {
+                    ...attStats,
+                    todayStatus: todayRecord ? todayRecord.status : 'unrecorded'
+                },
+                logbooksSummary: {
+                    total: logbooks.length,
+                    approved: approvedLogs.length,
+                    pending: pendingLogs.length,
+                    rejected: rejectedLogs.length,
+                    latest: logbooks[0] || null
+                },
+                assessment: {
+                    submitted: Boolean(industryEval),
+                    score: industryEval ? industryEval.score : null,
+                    isDue: isAssessmentDue
+                },
+                riskLevel
+            };
+        });
+
+        const summaryMetrics = {
+            totalStudents: students.length,
+            totalAssigned: students.length,
+            activeAttachments: students.filter(s => ['APPROVED', 'ACTIVE'].includes(s.placementStatus)).length,
+            totalPendingLogbooks,
+            pendingLogbooksCount: totalPendingLogbooks,
+            pendingAssessmentsCount,
+            todayPresent: todayPresentCount,
+            todayAttendance: {
+                present: todayPresentCount,
+                absent: todayAbsentCount,
+                unrecorded: todayUnrecordedCount
+            }
+        };
+
+        res.json({
+            success: true,
+            data: {
+                metrics: summaryMetrics,
+                summary: summaryMetrics,
+                actionQueue,
+                students: studentRoster
+            }
+        });
+    } catch (error) {
+        console.error('Get supervisor workspace error:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch supervisor workspace' });
+    }
+};
+
 module.exports = {
     getAssignedStudents,
     getLivePresence,
@@ -450,5 +621,6 @@ module.exports = {
     getSupervisorAttendance,
     markSupervisorAttendance,
     getSupervisorAssessments,
-    submitSupervisorAssessment
+    submitSupervisorAssessment,
+    getSupervisorWorkspace
 };

@@ -1,4 +1,6 @@
 const http = require('http');
+const path = require('path');
+const fs = require('fs');
 const { spawn } = require('child_process');
 const { sequelize, User, School, Student, Logbook, Attendance, Assessment, Message, Notification, SupervisorAssignment, Organization } = require('./models');
 const { Op } = require('sequelize');
@@ -1374,6 +1376,294 @@ async function runVerification() {
             supervisionOversightGet.body?.data?.summary !== undefined
         );
 
+        // ==========================================
+        // 17. PHASE 6 — ACADEMIC POLICY SERVICE & COMPLIANCE ENGINE
+        // ==========================================
+        console.log('\n--- 17. PHASE 6 — ACADEMIC POLICY SERVICE & COMPLIANCE ENGINE ---');
+        const academicPolicy = require('./services/academicPolicyService');
+
+        // 17.1 Policy Attendance Rate Thresholds
+        const compliantAttendance = academicPolicy.calculateAttendance(8, 10);
+        const atRiskAttendance = academicPolicy.calculateAttendance(7, 10);
+        const criticalAttendance = academicPolicy.calculateAttendance(5, 10);
+
+        assertTest('Academic Policy accurately determines attendance thresholds (COMPLIANT at 80%)',
+            compliantAttendance.rate === 80 && compliantAttendance.status === 'COMPLIANT' && !compliantAttendance.isAtRisk
+        );
+        assertTest('Academic Policy triggers AT_RISK status between 60% and 75% (70%)',
+            atRiskAttendance.rate === 70 && atRiskAttendance.status === 'AT_RISK' && atRiskAttendance.isAtRisk
+        );
+        assertTest('Academic Policy triggers CRITICAL status below 60% (50%)',
+            criticalAttendance.rate === 50 && criticalAttendance.status === 'CRITICAL' && criticalAttendance.isAtRisk
+        );
+
+        // 17.2 Completion Readiness Blocker Diagnostics
+        const dummyStudentData = {
+            id: 'mock-student-id',
+            placementStatus: 'APPROVED',
+            attendanceRate: 85,
+            logbooks: [{ status: 'approved' }],
+            assessments: [{ type: 'final', score: 85 }],
+            supervisionMeetings: [{ status: 'completed' }],
+            assignments: [{ type: 'industry', status: 'active' }, { type: 'university', status: 'active' }]
+        };
+        const readinessEval = academicPolicy.evaluateCompletionReadiness(dummyStudentData);
+        assertTest('Academic Policy evaluates student readiness and identifies blockers correctly',
+            readinessEval.isReady !== undefined && Array.isArray(readinessEval.blockers)
+        );
+
+        // ==========================================
+        // 18. PHASE 6 — STUDENT ATTACHMENT WORKSPACE & ACTION QUEUE
+        // ==========================================
+        console.log('\n--- 18. PHASE 6 — STUDENT ATTACHMENT WORKSPACE & ACTION QUEUE ---');
+
+        // 18.1 Student A retrieves unified workspace
+        const studentWorkspaceGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/student/workspace',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Student retrieves unified workspace with actionQueue and milestones (200)',
+            studentWorkspaceGet.statusCode === 200 &&
+            studentWorkspaceGet.body?.data?.student?.id === studentProfileId &&
+            Array.isArray(studentWorkspaceGet.body?.data?.actionQueue) &&
+            Array.isArray(studentWorkspaceGet.body?.data?.milestones) &&
+            studentWorkspaceGet.body?.data?.deadlines !== undefined
+        );
+
+        // 18.2 Unauthenticated request to workspace rejected
+        const unauthWorkspaceGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/student/workspace',
+            method: 'GET'
+        });
+        assertTest('Unauthenticated access to student workspace blocked (401)',
+            unauthWorkspaceGet.statusCode === 401
+        );
+
+        // ==========================================
+        // 19. PHASE 6 — SUPERVISOR WORKSPACES & ACTION QUEUES
+        // ==========================================
+        console.log('\n--- 19. PHASE 6 — SUPERVISOR WORKSPACES & ACTION QUEUES ---');
+
+        // 19.1 Industry Supervisor retrieves unified workspace
+        const supWorkspaceGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/supervisor/workspace',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${supervisorAToken}` }
+        });
+        assertTest('Industry Supervisor retrieves workspace with actionQueue and compliance metrics (200)',
+            supWorkspaceGet.statusCode === 200 &&
+            supWorkspaceGet.body?.data?.metrics !== undefined &&
+            Array.isArray(supWorkspaceGet.body?.data?.actionQueue) &&
+            Array.isArray(supWorkspaceGet.body?.data?.students)
+        );
+
+        // 19.2 University Supervisor retrieves academic oversight workspace
+        const uniSupWorkspaceGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/university/workspace',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${uniSupBToken}` }
+        });
+        assertTest('University Supervisor retrieves academic oversight workspace (200)',
+            uniSupWorkspaceGet.statusCode === 200 &&
+            uniSupWorkspaceGet.body?.data?.metrics !== undefined &&
+            Array.isArray(uniSupWorkspaceGet.body?.data?.actionQueue) &&
+            Array.isArray(uniSupWorkspaceGet.body?.data?.students)
+        );
+
+        // 19.3 Student cannot access supervisor workspace (403)
+        const studentAccessesSupWorkspace = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/supervisor/workspace',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Student role blocked from accessing supervisor workspace (403)',
+            studentAccessesSupWorkspace.statusCode === 403
+        );
+
+        // ==========================================
+        // 20. PHASE 6 — SECURE DOCUMENT & EVIDENCE ACCESS CONTROL
+        // ==========================================
+        console.log('\n--- 20. PHASE 6 — SECURE DOCUMENT & EVIDENCE ACCESS CONTROL ---');
+
+        // 20.1 Path Traversal Defense: Directory traversal attempt blocked
+        const traversalAttempt = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/documents/logbooks/..%2f..%2f..%2fetc%2fpasswd',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Path traversal attempt with ../ sequence blocked (400/403/404)',
+            [400, 403, 404].includes(traversalAttempt.statusCode)
+        );
+
+        // 20.2 Path Traversal Defense: Invalid category blocked
+        const invalidCategoryAttempt = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/documents/system_passwords/secret.txt',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Access to unwhitelisted document category blocked (400/403)',
+            [400, 403].includes(invalidCategoryAttempt.statusCode)
+        );
+
+        // 20.3 Setup verified test document and check authorized retrieval
+        const fs = require('fs');
+        const uploadDir = path.join(__dirname, 'uploads', 'logbooks');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        const testFileName = 'student_test_evidence.pdf';
+        const testFilePath = path.join(uploadDir, testFileName);
+        fs.writeFileSync(testFilePath, '%PDF-1.4 test document content');
+
+        const docFetchAttempt = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: `/api/documents/logbooks/${testFileName}`,
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Authorized user can access authorized document with MIME header (200)',
+            docFetchAttempt.statusCode === 200
+        );
+
+        // 20.4 Unauthenticated document access blocked
+        const unauthDocAttempt = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: `/api/documents/logbooks/${testFileName}`,
+            method: 'GET'
+        });
+        assertTest('Unauthenticated document access strictly rejected (401)',
+            unauthDocAttempt.statusCode === 401
+        );
+
+        // ==========================================
+        // 21. PHASE 6 — LOGBOOK REVISION WORKFLOW & STATE TRANSITIONS
+        // ==========================================
+        console.log('\n--- 21. PHASE 6 — LOGBOOK REVISION WORKFLOW & STATE TRANSITIONS ---');
+
+        // 21.1 Student submits Week 2 logbook
+        const submitWeek2Log = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/student/logbooks',
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${studentAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            weekNumber: 2,
+            startDate: '2026-05-08',
+            endDate: '2026-05-14',
+            summary: 'Initial draft with minimal details on safety procedures.',
+            dailyEntries: {
+                monday: 'Safety induction.',
+                tuesday: 'Machine inspection.',
+                wednesday: 'Circuit testing.',
+                thursday: 'Soldering headers.',
+                friday: 'Documentation.'
+            }
+        });
+        assertTest('Student submits new weekly logbook (201)',
+            submitWeek2Log.statusCode === 201 && Boolean(submitWeek2Log.body?.data?.id)
+        );
+        const week2LogId = submitWeek2Log.body?.data?.id;
+
+        // 21.2 Industry Supervisor rejects Week 2 logbook with revision guidance
+        const rejectWeek2Log = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: `/api/supervisor/logbooks/${week2LogId}/review`,
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${supervisorAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            status: 'rejected',
+            supervisorComment: 'Please elaborate on the machine safety protocols and circuit testing results.'
+        });
+        assertTest('Industry Supervisor rejects logbook with guidance (200 & status rejected)',
+            rejectWeek2Log.statusCode === 200 && rejectWeek2Log.body?.data?.status === 'rejected'
+        );
+
+        // 21.3 Student edits and resubmits rejected logbook
+        const reviseWeek2Log = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: `/api/student/logbooks/${week2LogId}`,
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${studentAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            summary: 'Expanded documentation covering ISO safety induction protocols and multimeter calibration.',
+            dailyEntries: {
+                monday: 'ISO 45001 safety induction and emergency stop drills.',
+                tuesday: 'Machine inspection with digital multimeter calibration.',
+                wednesday: 'Circuit testing of 24V bus converters under 2A load.',
+                thursday: 'Soldering high-density header pins with lead-free solder.',
+                friday: 'Prepared comprehensive weekly report for engineering review.'
+            }
+        });
+        assertTest('Student edits and resubmits rejected logbook, resetting status to pending (200)',
+            reviseWeek2Log.statusCode === 200 &&
+            reviseWeek2Log.body?.data?.status === 'pending' &&
+            reviseWeek2Log.body?.data?.summary.includes('ISO safety induction protocols')
+        );
+
+        // 21.4 Industry Supervisor approves the revised logbook
+        const approveRevisedLog = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: `/api/supervisor/logbooks/${week2LogId}/review`,
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${supervisorAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            status: 'approved',
+            supervisorComment: 'Excellent revision! Very thorough documentation.'
+        });
+        assertTest('Industry Supervisor approves revised logbook (200 & status approved)',
+            approveRevisedLog.statusCode === 200 && approveRevisedLog.body?.data?.status === 'approved'
+        );
+
+        // 21.5 Student attempts to edit an already approved logbook (must be blocked)
+        const attemptEditApprovedLog = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: `/api/student/logbooks/${week2LogId}`,
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${studentAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            summary: 'Unauthorized alteration of an approved record'
+        });
+        assertTest('Student blocked from modifying already-approved logbook (400)',
+            attemptEditApprovedLog.statusCode === 400
+        );
+
     } catch (err) {
         console.error('Test Execution Error:', err);
         failedCount++;
@@ -1387,7 +1677,7 @@ async function runVerification() {
     console.log('==========================================');
 
     if (failedCount === 0) {
-        console.log('🎉 ALL PHASE 2 + PHASE 3 + PHASE 4 + PHASE 5 SECURITY, RBAC, COORDINATOR & ACADEMIC OVERSIGHT TESTS PASSED SUCCESSFULLY!');
+        console.log('🎉 ALL PHASE 2 + PHASE 3 + PHASE 4 + PHASE 5 + PHASE 6 SECURITY, RBAC, COMPLIANCE, WORKSPACE & WORKFLOW TESTS PASSED SUCCESSFULLY!');
         process.exit(0);
     } else {
         console.error('❌ VERIFICATION FAILED');

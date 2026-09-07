@@ -11,12 +11,16 @@ const {
     getStudentAssessments,
     submitLogbook,
     getMyLogbooks,
-    refineLogbookSummary
+    getStudentWorkspace,
+    updateLogbook
 } = require('../controllers/studentController');
 
 // All routes require authentication and student role
 router.use(protect);
 router.use(authorize('student'));
+
+// Unified Student Workspace
+router.get('/workspace', getStudentWorkspace);
 
 // Profile & Placement
 router.get('/profile', getStudentProfile);
@@ -37,6 +41,6 @@ router.get('/assessments', getStudentAssessments);
 // Logbooks
 router.post('/logbooks', uploadLogbook, submitLogbook);
 router.get('/logbooks', getMyLogbooks);
-router.post('/logbooks/refine', refineLogbookSummary);
+router.put('/logbooks/:id', uploadLogbook, updateLogbook);
 
 module.exports = router;

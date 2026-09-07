@@ -9,12 +9,16 @@ const {
     getSupervisorAttendance,
     markSupervisorAttendance,
     getSupervisorAssessments,
-    submitSupervisorAssessment
+    submitSupervisorAssessment,
+    getSupervisorWorkspace
 } = require('../controllers/supervisorController');
 
 // All routes require authentication and industry_supervisor role
 router.use(protect);
 router.use(authorize('industry_supervisor'));
+
+// Unified Industry Supervisor Workspace
+router.get('/workspace', getSupervisorWorkspace);
 
 // Students
 router.get('/students', getAssignedStudents);
