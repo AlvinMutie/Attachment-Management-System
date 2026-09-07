@@ -3,12 +3,17 @@ const models = require('./models');
 
 async function syncDatabase() {
     try {
-        console.log('Starting database synchronization...');
+        if (process.env.NODE_ENV === 'production') {
+            console.error('❌ SAFETY ABORT: Database reset (force: true) is strictly prohibited in production mode.');
+            process.exit(1);
+        }
 
-        // Sync all models
+        console.log('Starting development database synchronization...');
+
+        // Sync all models (development reset only)
         await sequelize.sync({ force: true });
 
-        // Seed super admin
+        // Seed default super admin for initial development bootstrap
         const superAdminExists = await models.User.findOne({ where: { role: 'super_admin' } });
         if (!superAdminExists) {
             await models.User.create({
@@ -20,9 +25,7 @@ async function syncDatabase() {
             console.log('✅ Super admin created (superadmin@ams.com / password123)');
         }
 
-        console.log('✅ Database synchronized successfully!');
-        console.log('All models have been updated with new fields.');
-
+        console.log('✅ Development database synchronized successfully!');
         process.exit(0);
     } catch (error) {
         console.error('❌ Database synchronization failed:', error);

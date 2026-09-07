@@ -1,9 +1,11 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
+const databaseStorage = process.env.DATABASE_PATH || './database.sqlite';
+
 const sequelize = new Sequelize({
     dialect: 'sqlite',
-    storage: './database.sqlite', // Store the database locally in the server directory
+    storage: databaseStorage, // Store the database locally or in configured persistent storage
     logging: false, // Set to console.log to see SQL queries
     pool: {
         max: 5,

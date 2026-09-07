@@ -1883,6 +1883,122 @@ async function runVerification() {
             unauthAnalyticsAttempt.statusCode === 401
         );
 
+        // ==========================================
+        // 27. PHASE 8 — PRODUCTION HEALTH, READINESS & REQUEST TRACING
+        // ==========================================
+        console.log('\n--- 27. PHASE 8 — PRODUCTION HEALTH, READINESS & REQUEST TRACING ---');
+
+        // 27.1 Liveness health check (/health)
+        const healthGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/health',
+            method: 'GET'
+        });
+        assertTest('Liveness health check returns 200 with status healthy and requestId',
+            healthGet.statusCode === 200 &&
+            healthGet.body?.status === 'healthy' &&
+            typeof healthGet.body?.uptime === 'number' &&
+            healthGet.headers['x-request-id'] !== undefined
+        );
+
+        // 27.2 Readiness check (/ready)
+        const readyGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/ready',
+            method: 'GET'
+        });
+        assertTest('Readiness check returns 200 and confirms database connectivity',
+            readyGet.statusCode === 200 &&
+            readyGet.body?.status === 'ready' &&
+            readyGet.body?.database === 'connected'
+        );
+
+        // 27.3 Request Correlation header propagation
+        const customTraceId = 'trace-ams-test-uuid-998877';
+        const customTraceReq = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/health',
+            method: 'GET',
+            headers: { 'X-Request-ID': customTraceId }
+        });
+        assertTest('Custom X-Request-ID is accurately propagated in response header and body',
+            customTraceReq.headers['x-request-id'] === customTraceId &&
+            customTraceReq.body?.requestId === customTraceId
+        );
+
+        // ==========================================
+        // 28. PHASE 8 — TRANSACTIONAL BACKUP & SAFE RESTORATION
+        // ==========================================
+        console.log('\n--- 28. PHASE 8 — TRANSACTIONAL BACKUP & SAFE RESTORATION ---');
+        const { runBackup } = require('./scripts/backup');
+        const { runRestore, verifySqliteHeader } = require('./scripts/restore');
+
+        const testBackupDir = path.join(__dirname, 'backups_test');
+        const backupResult = await runBackup({ backupDir: testBackupDir, maxBackups: 2 });
+        assertTest('Transactional SQLite backup creates valid point-in-time snapshot file',
+            backupResult.success === true &&
+            fs.existsSync(backupResult.targetPath) &&
+            backupResult.sizeBytes > 0
+        );
+
+        const isHeaderValid = verifySqliteHeader(backupResult.targetPath);
+        assertTest('Backup file passes SQLite format 3 magic header verification', isHeaderValid === true);
+
+        // Clean up test backup artifacts
+        if (fs.existsSync(testBackupDir)) {
+            fs.rmSync(testBackupDir, { recursive: true, force: true });
+        }
+
+        // ==========================================
+        // 29. PHASE 8 — ADVERSARIAL ATTACK SIMULATION & NEGATIVE REJECTION
+        // ==========================================
+        console.log('\n--- 29. PHASE 8 — ADVERSARIAL ATTACK SIMULATION & NEGATIVE REJECTION ---');
+
+        // 29.1 Weak password rejected
+        const weakPassReg = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/auth/register',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }, {
+            name: 'Weak Pass User',
+            email: `weak_${Date.now()}@test.com`,
+            password: '123',
+            schoolId: schoolA.id
+        });
+        assertTest('Registration with weak password (<6 chars) rejected with 400', weakPassReg.statusCode === 400);
+
+        // 29.2 Malformed email rejected
+        const malformedEmailReg = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/auth/register',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }, {
+            name: 'Bad Email User',
+            email: 'not-an-email',
+            password: 'password123',
+            schoolId: schoolA.id
+        });
+        assertTest('Registration with invalid email syntax rejected with 400', malformedEmailReg.statusCode === 400);
+
+        // 29.3 Root API status route works cleanly
+        const rootStatusGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/',
+            method: 'GET'
+        });
+        assertTest('Root endpoint returns operational system status (200)',
+            rootStatusGet.statusCode === 200 &&
+            rootStatusGet.body?.status === 'operational'
+        );
+
     } catch (err) {
         console.error('Test Execution Error:', err);
         failedCount++;
@@ -1896,7 +2012,7 @@ async function runVerification() {
     console.log('==========================================');
 
     if (failedCount === 0) {
-        console.log('🎉 ALL PHASE 2 + PHASE 3 + PHASE 4 + PHASE 5 + PHASE 6 + PHASE 7 SECURITY, RBAC, COMPLIANCE, ANALYTICS, RISK SCORING & ML TESTS PASSED SUCCESSFULLY!');
+        console.log('🎉 ALL PHASE 2 + PHASE 3 + PHASE 4 + PHASE 5 + PHASE 6 + PHASE 7 + PHASE 8 TESTS PASSED SUCCESSFULLY! SYSTEM IS PRODUCTION READY!');
         process.exit(0);
     } else {
         console.error('❌ VERIFICATION FAILED');
