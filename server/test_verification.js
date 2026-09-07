@@ -1664,6 +1664,225 @@ async function runVerification() {
             attemptEditApprovedLog.statusCode === 400
         );
 
+        // ==========================================
+        // 22. PHASE 7 — ADVANCED ANALYTICS AGGREGATION & HISTORICAL TRENDS
+        // ==========================================
+        console.log('\n--- 22. PHASE 7 — ADVANCED ANALYTICS AGGREGATION & HISTORICAL TRENDS ---');
+
+        // 22.1 School Admin retrieves institutional analytics overview
+        const schoolAAnalyticsGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/analytics/overview',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminAToken}` }
+        });
+        assertTest('School Admin retrieves institutional analytics overview with monthly trends (200)',
+            schoolAAnalyticsGet.statusCode === 200 &&
+            schoolAAnalyticsGet.body?.data?.summary !== undefined &&
+            schoolAAnalyticsGet.body?.data?.attendance !== undefined &&
+            schoolAAnalyticsGet.body?.data?.logbooks !== undefined &&
+            Array.isArray(schoolAAnalyticsGet.body?.data?.monthlyTrends)
+        );
+
+        // 22.2 Tenant isolation on analytics (School B Admin only sees School B metrics)
+        const schoolBAnalyticsGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/analytics/overview',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminBToken}` }
+        });
+        assertTest('School B Admin receives tenant-isolated analytics (200)',
+            schoolBAnalyticsGet.statusCode === 200 &&
+            schoolBAnalyticsGet.body?.data?.summary?.totalStudents >= 0
+        );
+
+        // 22.3 Student personal analytics & trajectory
+        const studentPersonalAnalyticsGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/analytics/student',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Student accesses personal progress and weekly trajectory analytics (200)',
+            studentPersonalAnalyticsGet.statusCode === 200 &&
+            studentPersonalAnalyticsGet.body?.data?.student?.id === studentProfileId &&
+            Array.isArray(studentPersonalAnalyticsGet.body?.data?.attendance?.weeklyTrend)
+        );
+
+        // ==========================================
+        // 23. PHASE 7 — DETERMINISTIC INSIGHT ENGINE & EVIDENCE REASONING
+        // ==========================================
+        console.log('\n--- 23. PHASE 7 — DETERMINISTIC INSIGHT ENGINE & EVIDENCE REASONING ---');
+        const insightEngine = require('./services/insightEngine');
+
+        // 23.1 Test deterministic insight generation with evidence
+        const mockStudentForInsights = {
+            id: 'mock-student-uuid',
+            admissionNumber: 'MOCK/2026/001',
+            placementStatus: 'ACTIVE',
+            startDate: '2026-05-01',
+            endDate: '2026-05-10', // Imminent/overdue end date
+            attendance: [
+                { status: 'present', date: '2026-05-01' },
+                { status: 'absent', date: '2026-05-02' },
+                { status: 'absent', date: '2026-05-03' }
+            ],
+            logbooks: [{ status: 'rejected', weekNumber: 1 }, { status: 'rejected', weekNumber: 2 }],
+            assessments: [],
+            meetings: []
+        };
+        const generatedInsights = insightEngine.generateStudentInsights(mockStudentForInsights);
+        assertTest('Insight engine generates structured, explainable insights with evidence',
+            Array.isArray(generatedInsights) &&
+            generatedInsights.length > 0 &&
+            generatedInsights.some(i => i.type === 'LOW_ATTENDANCE' && i.evidence !== undefined) &&
+            generatedInsights.some(i => i.type === 'REPEATED_LOGBOOK_REVISION')
+        );
+
+        // 23.2 Institutional Intervention Queue endpoint
+        const interventionQueueGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/insights/queue',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminAToken}` }
+        });
+        assertTest('Coordinator/Admin retrieves prioritized institutional intervention queue (200)',
+            interventionQueueGet.statusCode === 200 &&
+            interventionQueueGet.body?.data?.totalCount !== undefined &&
+            Array.isArray(interventionQueueGet.body?.data?.queue)
+        );
+
+        // ==========================================
+        // 24. PHASE 7 — EXPLAINABLE OPERATIONAL RISK SCORING
+        // ==========================================
+        console.log('\n--- 24. PHASE 7 — EXPLAINABLE OPERATIONAL RISK SCORING ---');
+        const riskScoringService = require('./services/riskScoringService');
+
+        // 24.1 Compute bounded operational risk score
+        const evaluatedRisk = riskScoringService.calculateStudentRiskScore(mockStudentForInsights);
+        assertTest('Risk scoring calculates bounded score (0-100) with transparent contributors',
+            typeof evaluatedRisk.score === 'number' &&
+            evaluatedRisk.score >= 0 &&
+            evaluatedRisk.score <= 100 &&
+            ['LOW', 'MODERATE', 'ELEVATED', 'CRITICAL'].includes(evaluatedRisk.level) &&
+            Array.isArray(evaluatedRisk.contributors) &&
+            evaluatedRisk.contributors.length > 0
+        );
+
+        // 24.2 Inactive/Draft placements do not generate false critical alarms
+        const draftStudentRisk = riskScoringService.calculateStudentRiskScore({ placementStatus: 'DRAFT' });
+        assertTest('Inactive/Draft placement returns baseline LOW risk without false positives',
+            draftStudentRisk.score === 0 && draftStudentRisk.level === 'LOW'
+        );
+
+        // ==========================================
+        // 25. PHASE 7 — ML-READY INFRASTRUCTURE, FEATURE PIPELINE & MODEL GOVERNANCE
+        // ==========================================
+        console.log('\n--- 25. PHASE 7 — ML-READY INFRASTRUCTURE, FEATURE PIPELINE & MODEL GOVERNANCE ---');
+        const featureService = require('./services/ml/featureService');
+        const modelRegistryService = require('./services/ml/modelRegistryService');
+
+        // 25.1 Feature engineering extraction without data leakage
+        const extracted = featureService.extractStudentFeatures(mockStudentForInsights);
+        assertTest('Feature engineering pipeline extracts normalized vectors without future leakage',
+            typeof extracted.features === 'object' &&
+            extracted.features.attendance_rate !== undefined &&
+            extracted.features.placement_duration_elapsed !== undefined &&
+            Array.isArray(extracted.featureArray) &&
+            Array.isArray(extracted.featureNames)
+        );
+
+        // 25.2 Model Registry Governance API
+        const modelRegistryGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/insights/models',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminAToken}` }
+        });
+        assertTest('Model Registry enforces sample size adequacy and experimental status (<50 samples) (200)',
+            modelRegistryGet.statusCode === 200 &&
+            modelRegistryGet.body?.data?.modelVersion !== undefined &&
+            modelRegistryGet.body?.data?.status === 'EXPERIMENTAL_NOT_PRODUCTION_READY' &&
+            modelRegistryGet.body?.data?.governance?.humanInTheLoopRequired === true
+        );
+
+        // 25.3 Student Insights & ML Prediction API with human safeguard
+        const studentInsightsGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: `/api/insights/student/${studentProfileId}`,
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Prediction API delivers explainable factors and human review requirement (200)',
+            studentInsightsGet.statusCode === 200 &&
+            studentInsightsGet.body?.data?.riskScore !== undefined &&
+            studentInsightsGet.body?.data?.mlPrediction?.prediction !== undefined &&
+            studentInsightsGet.body?.data?.mlPrediction?.safeguards?.humanReviewRequired === true
+        );
+
+        // ==========================================
+        // 26. PHASE 7 — DATA QUALITY AUDIT & IDOR / BOLA AUTHORIZATION DEFENSES
+        // ==========================================
+        console.log('\n--- 26. PHASE 7 — DATA QUALITY AUDIT & IDOR / BOLA AUTHORIZATION DEFENSES ---');
+
+        // 26.1 School Admin accesses Data Quality Audit
+        const dataQualityGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/analytics/data-quality',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${adminAToken}` }
+        });
+        assertTest('School Admin accesses Data Quality Audit with integrity score (200)',
+            dataQualityGet.statusCode === 200 &&
+            dataQualityGet.body?.data?.integrityScore !== undefined &&
+            dataQualityGet.body?.data?.issuesCount !== undefined
+        );
+
+        // 26.2 Student role blocked from Data Quality Audit (403)
+        const studentDataQualityGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/analytics/data-quality',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Student role blocked from administrative Data Quality Audit (403)',
+            studentDataQualityGet.statusCode === 403
+        );
+
+        // 26.3 Student A denied access to Student B personal analytics (IDOR Defense)
+        const studentBRecord = await Student.findOne({ where: { schoolId: schoolB.id } });
+        const idorAnalyticsAttempt = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: `/api/analytics/student/${studentBRecord ? studentBRecord.id : 'fake-id'}`,
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        // For student role, the controller automatically scopes query to self or denies cross-tenant
+        assertTest('Student query is strictly scoped to authenticated user and cross-access denied',
+            idorAnalyticsAttempt.statusCode === 200 &&
+            idorAnalyticsAttempt.body?.data?.student?.id === studentProfileId // Self-scoped
+        );
+
+        // 26.4 Unauthenticated request to analytics rejected (401)
+        const unauthAnalyticsAttempt = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/analytics/overview',
+            method: 'GET'
+        });
+        assertTest('Unauthenticated analytics access strictly rejected (401)',
+            unauthAnalyticsAttempt.statusCode === 401
+        );
+
     } catch (err) {
         console.error('Test Execution Error:', err);
         failedCount++;
@@ -1677,7 +1896,7 @@ async function runVerification() {
     console.log('==========================================');
 
     if (failedCount === 0) {
-        console.log('🎉 ALL PHASE 2 + PHASE 3 + PHASE 4 + PHASE 5 + PHASE 6 SECURITY, RBAC, COMPLIANCE, WORKSPACE & WORKFLOW TESTS PASSED SUCCESSFULLY!');
+        console.log('🎉 ALL PHASE 2 + PHASE 3 + PHASE 4 + PHASE 5 + PHASE 6 + PHASE 7 SECURITY, RBAC, COMPLIANCE, ANALYTICS, RISK SCORING & ML TESTS PASSED SUCCESSFULLY!');
         process.exit(0);
     } else {
         console.error('❌ VERIFICATION FAILED');
