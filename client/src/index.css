@@ -4,8 +4,7 @@
   --font-inter: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   --animate-float: float 6s ease-in-out infinite;
-  --animate-fade-in: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-fade-in: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 
   @keyframes float {
@@ -13,86 +12,70 @@
       transform: translateY(0px);
     }
     50% {
-      transform: translateY(-8px);
+      transform: translateY(-6px);
     }
   }
 
   @keyframes fadeIn {
     0% {
       opacity: 0;
-      transform: translateY(4px);
+      transform: translateY(3px);
     }
     100% {
       opacity: 1;
       transform: translateY(0);
     }
   }
-
-  @keyframes shimmer {
-    0% {
-      background-position: -200% 0;
-    }
-    100% {
-      background-position: 200% 0;
-    }
-  }
 }
 
 @layer base {
   :root {
-    /* Stripe-inspired Precision Dark Canvas Tokens */
-    --surface-bg: #080c14;        /* Deep midnight base canvas */
-    --surface-main: #0b0f19;      /* Primary container background */
-    --surface-card: #101626;      /* Precision card surface */
-    --surface-card-hover: #162035;/* Hover card state */
-    --surface-elevated: #1a243b;  /* Modals, menus & popovers */
-    --surface-subtle: rgba(255, 255, 255, 0.02);
+    /* Linear + Figma Graphite Canvas Tokens */
+    --canvas-bg: #0d0e12;         /* Rich graphite obsidian canvas */
+    --surface-main: #111318;       /* Primary panel background */
+    --surface-card: #15171f;       /* Precision craft card surface */
+    --surface-card-hover: #1c1e28; /* Hover card state */
+    --surface-elevated: #1f222e;   /* Modals, menus & popovers */
+    --surface-subtle: rgba(255, 255, 255, 0.03);
 
-    /* Precision 1px Border Tokens */
-    --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-medium: rgba(255, 255, 255, 0.14);
-    --border-strong: rgba(255, 255, 255, 0.25);
-    --border-card: #1f293d;
+    /* 1px Precision Border Tokens */
+    --border-subtle: #22242f;
+    --border-medium: #2e3242;
+    --border-strong: #3f4459;
+    --border-focus: #8b5cf6;
 
-    /* High-Contrast Typography Hierarchy */
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --text-disabled: #475569;
+    /* Typographic Weights & High-Legibility Slate */
+    --text-primary: #f1f3f7;
+    --text-secondary: #9aa0af;
+    --text-muted: #656b7c;
+    --text-disabled: #464a58;
 
-    /* Dynamic Brand Accents */
-    --brand-primary: #4f46e5;
-    --brand-primary-hover: #4338ca;
-    --brand-primary-glow: rgba(79, 70, 229, 0.25);
-    --brand-primary-subtle: rgba(79, 70, 229, 0.12);
+    /* Figma Component & Role Accent Palette */
+    --figma-purple: #8b5cf6;
+    --figma-purple-subtle: rgba(139, 92, 246, 0.12);
+    --figma-purple-border: rgba(139, 92, 246, 0.25);
 
-    /* Attio-Style Status Badges & Accents */
-    --status-success: #10b981;
-    --status-success-bg: rgba(16, 185, 129, 0.12);
-    --status-success-border: rgba(16, 185, 129, 0.25);
+    --figma-blue: #3b82f6;
+    --figma-blue-subtle: rgba(59, 130, 246, 0.12);
+    --figma-blue-border: rgba(59, 130, 246, 0.25);
 
-    --status-warning: #f59e0b;
-    --status-warning-bg: rgba(245, 158, 11, 0.12);
-    --status-warning-border: rgba(245, 158, 11, 0.25);
+    --figma-emerald: #10b981;
+    --figma-emerald-subtle: rgba(16, 185, 129, 0.12);
+    --figma-emerald-border: rgba(16, 185, 129, 0.25);
 
-    --status-danger: #f43f5e;
-    --status-danger-bg: rgba(244, 63, 94, 0.12);
-    --status-danger-border: rgba(244, 63, 94, 0.25);
+    --figma-amber: #f59e0b;
+    --figma-amber-subtle: rgba(245, 158, 11, 0.12);
+    --figma-amber-border: rgba(245, 158, 11, 0.25);
 
-    --status-info: #0ea5e9;
-    --status-info-bg: rgba(14, 165, 233, 0.12);
-    --status-info-border: rgba(14, 165, 233, 0.25);
+    --figma-rose: #f43f5e;
+    --figma-rose-subtle: rgba(244, 63, 94, 0.12);
+    --figma-rose-border: rgba(244, 63, 94, 0.25);
 
-    --status-neutral: #64748b;
-    --status-neutral-bg: rgba(100, 116, 139, 0.12);
-    --status-neutral-border: rgba(100, 116, 139, 0.25);
-
-    /* Radii */
     --radius-sm: 0.375rem;
     --radius-md: 0.5rem;
     --radius-lg: 0.75rem;
     --radius-xl: 1rem;
-    --radius-2xl: 1.5rem;
+    --radius-full: 9999px;
   }
 
   html {
@@ -101,27 +84,26 @@
   }
 
   body {
-    background-color: var(--surface-bg);
+    background-color: var(--canvas-bg);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-family: var(--font-inter);
     min-height: 100vh;
-    background-image: 
-      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.12), transparent 70%),
-      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(14, 165, 233, 0.05), transparent 70%);
+    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
     background-attachment: fixed;
   }
 
   :focus-visible {
-    outline: 2px solid var(--brand-primary);
+    outline: 2px solid var(--figma-purple);
     outline-offset: 2px;
   }
 
-  /* Sleek Custom Scrollbars */
+  /* Linear-Grade Precision Scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
 
   ::-webkit-scrollbar-track {
@@ -129,116 +111,130 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
+    background: #262936;
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.22);
+    background: #393e50;
   }
 }
 
 @layer components {
-  /* Stripe Precision Card Surface */
-  .stripe-card {
-    background-color: var(--surface-card);
-    border: 1px solid var(--border-card);
-    border-radius: var(--radius-xl);
-    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Figma Canvas Dot Grid Surface */
+  .figma-canvas-dots {
+    background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
 
-  .stripe-card:hover {
-    border-color: rgba(255, 255, 255, 0.18);
+  /* Linear-Style Craft Card */
+  .craft-card {
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .craft-card:hover {
+    border-color: var(--border-medium);
     background-color: var(--surface-card-hover);
   }
 
-  /* Attio Bento Card */
-  .bento-card {
-    background: linear-gradient(180deg, rgba(22, 32, 53, 0.7) 0%, rgba(16, 22, 38, 0.9) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+  /* Backward Compatibility Aliases for components */
+  .stripe-card {
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-xl);
-    backdrop-filter: blur(12px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
-    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .bento-card:hover {
-    border-color: rgba(99, 102, 241, 0.35);
-    box-shadow: 0 12px 35px -5px rgba(79, 70, 229, 0.15);
-    transform: translateY(-2px);
+  .stripe-card:hover {
+    border-color: var(--border-medium);
+    background-color: var(--surface-card-hover);
   }
 
-  /* Attio Segmented Pill Tabs */
-  .segmented-tabs {
-    display: inline-flex;
-    padding: 0.25rem;
-    background-color: rgba(15, 23, 42, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 9999px;
-    backdrop-filter: blur(8px);
-  }
-
-  .segmented-tab-btn {
-    padding: 0.375rem 0.875rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    border-radius: 9999px;
-    color: var(--text-secondary);
+  .bento-card {
+    background-color: var(--surface-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
     transition: all 0.2s ease;
   }
 
-  .segmented-tab-btn.active {
-    background-color: rgba(255, 255, 255, 0.1);
+  .bento-card:hover {
+    border-color: var(--border-medium);
+    transform: translateY(-1px);
+  }
+
+  /* Figma Floating Toolbar / Dock */
+  .figma-toolbar {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem;
+    background-color: #12141a;
+    border: 1px solid #22242f;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Linear Segmented Tabs */
+  .segmented-tabs {
+    display: inline-flex;
+    padding: 0.25rem;
+    background-color: #101218;
+    border: 1px solid #22242f;
+    border-radius: var(--radius-md);
+  }
+
+  .segmented-tab-btn {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    transition: all 0.15s ease;
+  }
+
+  .segmented-tab-btn:hover {
     color: #ffffff;
+  }
+
+  .segmented-tab-btn.active {
+    background-color: #1c1e28;
+    color: #ffffff;
+    border: 1px solid #2e3242;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 
-  /* Stripe KPI Metric Tile */
+  /* Linear Precision KPI Metric Tile */
   .kpi-metric-tile {
     display: flex;
     flex-direction: column;
     padding: 1.25rem;
     background-color: var(--surface-card);
-    border: 1px solid var(--border-card);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    transition: border-color 0.15s ease;
+  }
+
+  .kpi-metric-tile:hover {
+    border-color: var(--border-medium);
   }
 
   .kpi-metric-value {
-    font-size: 1.75rem;
+    font-size: 1.625rem;
     font-weight: 700;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.02em;
     color: #ffffff;
     line-height: 1.2;
   }
 
-  .kpi-trend-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-
-  .kpi-trend-up {
-    background-color: rgba(16, 185, 129, 0.15);
-    color: #34d399;
-    border: 1px solid rgba(16, 185, 129, 0.25);
-  }
-
-  .kpi-trend-down {
-    background-color: rgba(244, 63, 94, 0.15);
-    color: #fb7185;
-    border: 1px solid rgba(244, 63, 94, 0.25);
-  }
-
-  /* Shimmer Glass Surface */
   .glass-surface {
-    background: rgba(16, 22, 38, 0.65);
-    backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(19, 21, 28, 0.85);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--border-subtle);
   }
 }

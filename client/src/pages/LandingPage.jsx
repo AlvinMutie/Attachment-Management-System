@@ -1,23 +1,18 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
 import {
     CheckCircle2,
-    BarChart3,
-    Users,
     QrCode,
     FileText,
-    Globe,
-    Shield,
-    Zap,
-    Building2,
     ArrowRight,
     Sparkles,
     ChevronRight,
-    TrendingUp,
     ShieldCheck,
-    Calendar,
-    Clock,
-    Award
+    Check,
+    UserCheck,
+    Briefcase,
+    GraduationCap,
+    School,
+    Compass
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
@@ -32,255 +27,299 @@ const LandingPage = () => {
     const toggleFaq = (i) => setOpenFaq(openFaq === i ? null : i);
 
     const stats = [
-        { label: 'Active Placements', value: '12,450+', change: '+18% this term' },
-        { label: 'Verified Logbooks', value: '98.6%', change: 'Tamper-resistant' },
-        { label: 'Partner Institutions', value: '45+', change: 'Nationwide' },
-        { label: 'Host Organizations', value: '850+', change: 'Verified Directory' }
+        { label: 'Active Placements', value: '12,450', note: 'Enrolled this semester' },
+        { label: 'Verified Logbooks', value: '98.6%', note: 'Weekly reviews complete' },
+        { label: 'Partner Schools', value: '45+', note: 'Institutional nodes' },
+        { label: 'Host Companies', value: '850+', note: 'Active industry mentors' }
     ];
 
     const tabPreviews = {
         student: {
-            title: 'Unified Student Attachment Workspace',
-            subtitle: 'Log daily attendance, draft weekly technical entries, and receive inline supervisor revisions.',
-            badge: 'Student Experience',
-            metrics: [
-                { label: 'Attendance Rate', val: '94.5%', status: 'Compliant' },
-                { label: 'Approved Logbooks', val: '8 / 10 Weeks', status: 'On Track' },
-                { label: 'Academic Risk', val: 'Low (0/100)', status: 'Optimal' }
+            role: 'Student Workspace',
+            color: 'text-violet-400 border-violet-500/30 bg-violet-500/10',
+            icon: GraduationCap,
+            title: 'Daily Check-Ins, Logbooks & Milestones',
+            subtitle: 'Log daily workplace presence, draft weekly technical reflections, and review supervisor feedback in real time.',
+            items: [
+                { title: 'Rotating 30s QR Token', desc: 'Instant presence check-in at workplace host location' },
+                { title: 'Weekly Technical Logbook', desc: 'Draft, submit, and revise weekly reflections with supervisor notes' },
+                { title: 'Completion Checklist', desc: 'Track all 8 university credit sign-off criteria' }
             ],
-            features: [
-                'Time-weighted QR attendance check-in with GPS verification',
-                'Structured weekly logbook editor with instant supervisor feedback loops',
-                'Automated academic milestone and completion countdown'
-            ]
+            mockData: {
+                badge: 'Active Placement • Safaricom PLC',
+                metric1: { label: 'Attendance', val: '94.2%' },
+                metric2: { label: 'Approved Logbooks', val: '8 / 10 Weeks' },
+                metric3: { label: 'Status', val: 'Eligible for Credit' }
+            }
         },
         supervisor: {
-            title: 'Industry & University Supervisor Hub',
-            subtitle: 'Streamline supervisee oversight, approve weekly logbooks with one click, and record visits.',
-            badge: 'Supervisor Cockpit',
-            metrics: [
-                { label: 'Active Supervisees', val: '6 Students', status: 'Optimal Capacity' },
-                { label: 'Pending Reviews', val: '2 Logbooks', status: 'Action Required' },
-                { label: 'Visits Recorded', val: '1 / 2 Complete', status: 'Midterm Done' }
+            role: 'Supervisor Review Portal',
+            color: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10',
+            icon: Briefcase,
+            title: 'Weekly Logbook Approvals & Site Visit Logs',
+            subtitle: 'Review intern reflections with inline revision feedback, log supervisory visits, and grade standardized rubric assessments.',
+            items: [
+                { title: 'One-Click Approvals', desc: 'Approve or return logbooks with specific guidance notes' },
+                { title: 'Site Visit Assessment', desc: 'Document workplace visits and intern progress' },
+                { title: 'Final Rubric Grading', desc: 'Grade standardized criteria directly into student record' }
             ],
-            features: [
-                'One-click weekly logbook approval or revision guidance notes',
-                'Supervision visit scheduling and on-site meeting logs',
-                'Objective grading rubric with standardized assessment forms'
-            ]
+            mockData: {
+                badge: 'Faculty Supervisor • 6 Supervisees',
+                metric1: { label: 'Pending Reviews', val: '2 Logbooks' },
+                metric2: { label: 'Visits Recorded', val: '4 / 6 Complete' },
+                metric3: { label: 'Action Needed', val: '1 Midterm Evaluation' }
+            }
         },
         coordinator: {
-            title: 'Coordinator & Admin Command Center',
-            subtitle: 'Institutional oversight, supervisor allocation, host company directories, and completion readiness.',
-            badge: 'Academic Oversight',
-            metrics: [
-                { label: 'Total Cohort', val: '450 Students', status: 'Multi-Tenant Scoped' },
-                { label: 'Intervention Queue', val: '3 Students', status: 'High Priority' },
-                { label: 'Data Integrity', val: '99.2%', status: 'Audited' }
+            role: 'Coordinator & Admin Command',
+            color: 'text-sky-400 border-sky-500/30 bg-sky-500/10',
+            icon: Compass,
+            title: 'Placement Pipeline & Risk Triage',
+            subtitle: 'Track cohort progress, allocate faculty supervisors with capacity balancing, and intervene early on at-risk students.',
+            items: [
+                { title: 'Risk Intervention Queue', desc: 'Automated early alerts for attendance drops and missing logs' },
+                { title: 'Workload Rebalancing', desc: 'Distribute supervisees across faculty supervisors evenly' },
+                { title: 'CSV & PDF Audit Exports', desc: 'Instant sanitized data exports for university academic boards' }
             ],
-            features: [
-                'Automated early-warning intervention queue for at-risk students',
-                'Supervisor capacity monitoring and auditable reassignment trail',
-                'One-click institutional CSV and PDF reporting engine'
-            ]
+            mockData: {
+                badge: 'Department Coordinator • 450 Students',
+                metric1: { label: 'Placed Students', val: '438 / 450' },
+                metric2: { label: 'Attention Items', val: '3 Risk Cases' },
+                metric3: { label: 'Readiness Rate', val: '88.4%' }
+            }
         }
     };
 
-    const preview = tabPreviews[activeTab];
+    const current = tabPreviews[activeTab];
 
     const faqs = [
         {
-            q: "How fast can an institution onboard students and faculty?",
-            a: "Institutions can onboard within hours. Our multi-tenant architecture supports CSV batch importing of students, department configurations, and supervisor allocations with zero downtime."
+            q: "How does the daily attendance verification work?",
+            a: "Students can either scan a rotating 30-second on-site QR code or log their daily check-in through the secure web portal. The system calculates compliance against the institutional 75% threshold in real time."
         },
         {
-            q: "How does the academic compliance and attendance engine work?",
-            a: "AMS enforces a centralized 75% attendance policy rule. The system automatically computes daily attendance ratios, flags declining trends, and warns coordinators of potential completion blockers weeks before graduation deadlines."
+            q: "How does logbook revision workflow operate?",
+            a: "When a student submits a weekly logbook, their assigned industry supervisor can either approve it or reject it with constructive revision notes. The student can then modify and resubmit the entry. Once approved, the record is locked."
         },
         {
-            q: "Can logbooks be rejected and resubmitted for correction?",
-            a: "Yes. AMS features a full state machine (Submitted -> Rejected with Feedback -> Student Revision -> Resubmitted -> Approved). Approved records are permanently locked against unauthorized tampering."
+            q: "How are faculty supervisors assigned and balanced?",
+            a: "Attachment coordinators have a dedicated console to view all unassigned students, inspect supervisor caseloads, and assign or reassign supervisees with a clear audit history trail."
         },
         {
-            q: "Is institutional data securely isolated between schools?",
-            a: "Yes. Multi-tenancy is enforced at the database and session layer. Each school's data, custom branding, and student records remain strictly isolated with zero cross-tenant leakage."
+            q: "Can we export institutional data for compliance audits?",
+            a: "Yes. Administrators and coordinators can download sanitized, audit-ready CSV exports for placements, attendance logs, weekly logbooks, and graded assessments at any time."
         }
     ];
 
     return (
-        <div className="min-h-screen bg-[#080c14] font-sans text-slate-100 selection:bg-indigo-500/30 overflow-x-hidden">
+        <div className="min-h-screen bg-[#0d0e12] font-sans text-slate-100 selection:bg-violet-500/30 overflow-x-hidden">
             <Navbar />
 
-            {/* Ambient Hero Mesh Background */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-                <div className="absolute top-[-10%] left-[20%] w-[60vw] h-[60vw] bg-indigo-600/10 rounded-full blur-[180px]" />
-                <div className="absolute top-[40%] right-[-10%] w-[50vw] h-[50vw] bg-sky-600/08 rounded-full blur-[180px]" />
-                <div className="absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-purple-600/08 rounded-full blur-[160px]" />
-            </div>
-
-            {/* Hero Section */}
-            <section className="relative pt-32 pb-20 md:pt-40 md:pb-28 max-w-6xl mx-auto px-4 sm:px-6 z-10 text-center">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#101626] border border-[#1f293d] text-xs font-medium text-indigo-300 mb-8 shadow-sm">
-                    <Sparkles size={14} className="text-indigo-400" />
-                    <span>Next-Generation Industrial Attachment Management</span>
-                    <ChevronRight size={14} className="text-slate-500" />
+            {/* Hero Section with Canvas Grid & Figma-style Workspace Frame */}
+            <section className="relative pt-32 pb-16 md:pt-36 md:pb-24 max-w-6xl mx-auto px-4 sm:px-6 text-center">
+                {/* Clean Announcement Pill */}
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#151720] border border-[#262838] text-xs text-slate-300 mb-6 shadow-sm">
+                    <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+                    <span className="font-semibold text-white">Attachment Management System</span>
+                    <span className="text-slate-500">•</span>
+                    <span className="text-slate-400">Production Ready</span>
                 </div>
 
                 <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.1] max-w-4xl mx-auto">
-                    The Modern Platform for <span className="bg-gradient-to-r from-indigo-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">Attachment Operations</span>
+                    A purpose-built workspace for <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-sky-300 to-indigo-300">
+                        student attachments.
+                    </span>
                 </h1>
 
-                <p className="mt-6 text-base sm:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-                    Connect students, industry supervisors, academic coordinators, and university administrators in an enterprise workspace designed for verified attendance, digital logbooks, and academic compliance.
+                <p className="mt-5 text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                    A unified platform for universities, students, and industry hosts. Track verified attendance, manage weekly logbook revisions, and conduct standardized supervisor assessments.
                 </p>
 
                 <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
                     <Link to="/login">
-                        <Button size="lg" className="w-full sm:w-auto shadow-lg shadow-indigo-600/20" endIcon={ArrowRight}>
-                            Access Portal
+                        <Button size="lg" className="w-full sm:w-auto" endIcon={ArrowRight}>
+                            Sign In to Portal
                         </Button>
                     </Link>
-                    <Link to="/request-access">
+                    <Link to="/signup">
                         <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                            Request Institutional Access
+                            Register Institution
                         </Button>
                     </Link>
                 </div>
 
-                {/* Key Metrics Strip */}
-                <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-5xl mx-auto text-left">
+                {/* Key Metrics Ribbon */}
+                <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 max-w-5xl mx-auto text-left">
                     {stats.map((stat, idx) => (
-                        <div key={idx} className="kpi-metric-tile">
-                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">{stat.label}</span>
-                            <span className="kpi-metric-value">{stat.value}</span>
-                            <span className="text-[11px] font-medium text-indigo-300/90 mt-1">{stat.change}</span>
+                        <div key={idx} className="kpi-metric-tile bg-[#13151d] border-[#222430]">
+                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{stat.label}</span>
+                            <span className="kpi-metric-value mt-1">{stat.value}</span>
+                            <span className="text-[11px] text-slate-400 mt-1">{stat.note}</span>
                         </div>
                     ))}
                 </div>
             </section>
 
-            {/* Interactive Product Preview Bento */}
-            <section className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 z-10">
-                <div className="text-center mb-8">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Built for Every Stakeholder</h2>
-                    <p className="text-xs sm:text-sm text-slate-400 mt-1">Switch views to explore the dedicated experiences tailored for each role.</p>
+            {/* Interactive Figma-Style Canvas Workspace Preview */}
+            <section className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10">
+                <div className="text-center mb-6">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">One system, three dedicated workspaces</h2>
+                    <p className="text-xs sm:text-sm text-slate-400 mt-1">Select a role to inspect the tailored workspace view.</p>
 
-                    <div className="mt-6 inline-flex p-1 bg-[#0d1322] border border-[#1f293d] rounded-full">
-                        {['student', 'supervisor', 'coordinator'].map((tab) => (
-                            <button
-                                key={tab}
-                                onClick={() => setActiveTab(tab)}
-                                className={`px-4 py-1.5 text-xs font-medium rounded-full transition-all capitalize cursor-pointer ${
-                                    activeTab === tab
-                                        ? 'bg-indigo-600 text-white font-semibold shadow-sm'
-                                        : 'text-slate-400 hover:text-white'
-                                }`}
-                            >
-                                {tab === 'student' ? 'Student Workspace' : tab === 'supervisor' ? 'Supervisor Portal' : 'Coordinator Cockpit'}
-                            </button>
-                        ))}
+                    {/* Figma Floating Toolbar Selector */}
+                    <div className="mt-5 inline-flex p-1 bg-[#12141c] border border-[#222432] rounded-xl shadow-md">
+                        {[
+                            { id: 'student', label: 'Student Workspace', icon: GraduationCap },
+                            { id: 'supervisor', label: 'Supervisor Review', icon: Briefcase },
+                            { id: 'coordinator', label: 'Coordinator Hub', icon: Compass }
+                        ].map((tab) => {
+                            const Icon = tab.icon;
+                            const isActive = activeTab === tab.id;
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                                        isActive
+                                            ? 'bg-[#1e212d] text-white shadow-sm border border-[#2e3244]'
+                                            : 'text-slate-400 hover:text-slate-200'
+                                    }`}
+                                >
+                                    <Icon size={14} className={isActive ? 'text-violet-400' : ''} />
+                                    <span>{tab.label}</span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
-                {/* Bento Preview Card */}
-                <div className="bento-card p-6 sm:p-8">
-                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-white/[0.06] pb-6">
-                        <div>
-                            <Badge variant="primary" size="sm" dot>{preview.badge}</Badge>
-                            <h3 className="text-xl font-bold text-white mt-2">{preview.title}</h3>
-                            <p className="text-xs text-slate-400 mt-1 max-w-xl">{preview.subtitle}</p>
-                        </div>
-                        <div className="grid grid-cols-3 gap-3">
-                            {preview.metrics.map((m, idx) => (
-                                <div key={idx} className="bg-[#0b0f19] p-3 rounded-xl border border-[#1f293d] text-center">
-                                    <span className="text-[10px] text-slate-400 uppercase tracking-wider block">{m.label}</span>
-                                    <span className="text-sm font-bold text-white block mt-0.5">{m.val}</span>
-                                    <span className="text-[9px] text-emerald-400 font-medium block mt-0.5">{m.status}</span>
+                {/* Figma Canvas Frame Wrapper */}
+                <div className="rounded-2xl bg-[#12141c] border border-[#222432] shadow-2xl p-6 sm:p-8 relative overflow-hidden">
+                    {/* Top Canvas Status Bar */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[#222432]">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                                <current.icon size={20} />
+                            </div>
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-white">{current.role}</span>
+                                    <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+                                        Live View
+                                    </span>
                                 </div>
-                            ))}
+                                <h3 className="text-base sm:text-lg font-bold text-white mt-0.5">{current.title}</h3>
+                            </div>
+                        </div>
+
+                        {/* Quick Stats Pills */}
+                        <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                            <div className="p-2.5 rounded-lg bg-[#181a24] border border-[#252838] text-center min-w-[90px]">
+                                <span className="text-[10px] text-slate-400 block">{current.mockData.metric1.label}</span>
+                                <span className="text-xs font-bold text-white block mt-0.5 font-mono">{current.mockData.metric1.val}</span>
+                            </div>
+                            <div className="p-2.5 rounded-lg bg-[#181a24] border border-[#252838] text-center min-w-[90px]">
+                                <span className="text-[10px] text-slate-400 block">{current.mockData.metric2.label}</span>
+                                <span className="text-xs font-bold text-emerald-400 block mt-0.5 font-mono">{current.mockData.metric2.val}</span>
+                            </div>
+                            <div className="p-2.5 rounded-lg bg-[#181a24] border border-[#252838] text-center min-w-[90px]">
+                                <span className="text-[10px] text-slate-400 block">{current.mockData.metric3.label}</span>
+                                <span className="text-xs font-bold text-violet-400 block mt-0.5 truncate">{current.mockData.metric3.val}</span>
+                            </div>
                         </div>
                     </div>
 
+                    {/* Features List */}
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {preview.features.map((feat, idx) => (
-                            <div key={idx} className="flex items-start gap-3 bg-[#0d1322]/80 p-4 rounded-xl border border-white/[0.04]">
-                                <CheckCircle2 size={16} className="text-indigo-400 flex-shrink-0 mt-0.5" />
-                                <span className="text-xs text-slate-300 leading-relaxed">{feat}</span>
+                        {current.items.map((item, idx) => (
+                            <div key={idx} className="p-4 rounded-xl bg-[#181a24] border border-[#252838] space-y-1 hover:border-[#35394e] transition-colors">
+                                <div className="flex items-center gap-2">
+                                    <Check size={14} className="text-violet-400 shrink-0" />
+                                    <h4 className="text-xs font-bold text-white">{item.title}</h4>
+                                </div>
+                                <p className="text-xs text-slate-400 leading-snug pl-5">{item.desc}</p>
                             </div>
                         ))}
                     </div>
                 </div>
             </section>
 
-            {/* Core Capability Pillars (Attio + Stripe Grid) */}
-            <section className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 z-10">
-                <div className="text-center mb-12">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Enterprise Industrial Operations</h2>
-                    <p className="text-xs sm:text-sm text-slate-400 mt-1">Engineered to eliminate paperwork, verify attendance, and ensure academic compliance.</p>
+            {/* Core Capability Cards */}
+            <section className="relative max-w-6xl mx-auto px-4 sm:px-6 py-14">
+                <div className="text-center mb-10">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Engineered for academic integrity</h2>
+                    <p className="text-xs sm:text-sm text-slate-400 mt-1">Key features designed for real-world institutional operations.</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bento-card p-6 flex flex-col justify-between">
-                        <div>
-                            <div className="w-10 h-10 rounded-xl bg-indigo-500/15 border border-indigo-500/25 flex items-center justify-center text-indigo-400 mb-4">
-                                <QrCode size={20} />
+                    <div className="p-6 rounded-2xl bg-[#12141c] border border-[#222432] flex flex-col justify-between space-y-4 hover:border-[#32364a] transition-all">
+                        <div className="space-y-3">
+                            <div className="w-9 h-9 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                                <QrCode size={18} />
                             </div>
-                            <h4 className="text-base font-bold text-white">Verified Attendance & QR Check-ins</h4>
-                            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                                Time-weighted, tamper-resistant QR check-in protocol allowing supervisors to confirm physical workplace presence with zero manual logbooks.
+                            <h3 className="text-sm font-bold text-white">Verified Attendance & QR Check-Ins</h3>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                30-second rotating QR tokens and daily web check-ins automatically calculate attendance ratios against the institutional 75% policy threshold.
                             </p>
                         </div>
-                        <span className="text-[11px] font-semibold text-indigo-400 mt-4 flex items-center gap-1">75% Policy Enforced <ChevronRight size={12} /></span>
+                        <div className="pt-2 border-t border-[#1e212d] text-[11px] font-semibold text-violet-400">
+                            Automated Compliance Tracking
+                        </div>
                     </div>
 
-                    <div className="bento-card p-6 flex flex-col justify-between">
-                        <div>
-                            <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-emerald-400 mb-4">
-                                <FileText size={20} />
+                    <div className="p-6 rounded-2xl bg-[#12141c] border border-[#222432] flex flex-col justify-between space-y-4 hover:border-[#32364a] transition-all">
+                        <div className="space-y-3">
+                            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                <FileText size={18} />
                             </div>
-                            <h4 className="text-base font-bold text-white">Digital Logbooks & Revisions</h4>
-                            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                                Complete weekly logbook lifecycle with revision state machines. Industry supervisors review, provide inline feedback, and lock approved logs.
+                            <h3 className="text-sm font-bold text-white">Structured Logbook Revisions</h3>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                Complete revision state lifecycle: Draft → Submit → Review / Request Revision → Resubmit → Approve. Approved records are permanently locked.
                             </p>
                         </div>
-                        <span className="text-[11px] font-semibold text-emerald-400 mt-4 flex items-center gap-1">Immutable History <ChevronRight size={12} /></span>
+                        <div className="pt-2 border-t border-[#1e212d] text-[11px] font-semibold text-emerald-400">
+                            Immutable Revision History
+                        </div>
                     </div>
 
-                    <div className="bento-card p-6 flex flex-col justify-between">
-                        <div>
-                            <div className="w-10 h-10 rounded-xl bg-sky-500/15 border border-sky-500/25 flex items-center justify-center text-sky-400 mb-4">
-                                <ShieldCheck size={20} />
+                    <div className="p-6 rounded-2xl bg-[#12141c] border border-[#222432] flex flex-col justify-between space-y-4 hover:border-[#32364a] transition-all">
+                        <div className="space-y-3">
+                            <div className="w-9 h-9 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+                                <ShieldCheck size={18} />
                             </div>
-                            <h4 className="text-base font-bold text-white">Explainable Risk Scoring (0–100)</h4>
-                            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                                Continuous diagnostic risk engine evaluating attendance drops, missing supervisor visits, and pending logbook blockers before graduation deadlines.
+                            <h3 className="text-sm font-bold text-white">Early Risk Intervention Engine</h3>
+                            <p className="text-xs text-slate-400 leading-relaxed">
+                                Deterministic triage engine flags students experiencing attendance drops, unassigned supervisors, or overdue assessments before graduation cutoffs.
                             </p>
                         </div>
-                        <span className="text-[11px] font-semibold text-sky-400 mt-4 flex items-center gap-1">Deterministic Diagnostics <ChevronRight size={12} /></span>
+                        <div className="pt-2 border-t border-[#1e212d] text-[11px] font-semibold text-sky-400">
+                            Proactive Academic Safety
+                        </div>
                     </div>
                 </div>
             </section>
 
-            {/* FAQ Section */}
-            <section className="relative max-w-4xl mx-auto px-4 sm:px-6 py-16 z-10">
-                <div className="text-center mb-10">
-                    <h2 className="text-2xl font-bold text-white tracking-tight">Frequently Asked Questions</h2>
-                    <p className="text-xs text-slate-400 mt-1">Everything you need to know about the AMS architecture and deployment.</p>
+            {/* Frequently Asked Questions */}
+            <section className="relative max-w-3xl mx-auto px-4 sm:px-6 py-12">
+                <div className="text-center mb-8">
+                    <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">Frequently asked questions</h2>
+                    <p className="text-xs text-slate-400 mt-1">Clear answers on how the system works.</p>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                     {faqs.map((faq, idx) => (
-                        <div key={idx} className="bento-card overflow-hidden">
+                        <div key={idx} className="rounded-xl bg-[#12141c] border border-[#222432] overflow-hidden">
                             <button
                                 type="button"
                                 onClick={() => toggleFaq(idx)}
-                                className="w-full flex items-center justify-between p-4 sm:p-5 text-left text-sm font-semibold text-white cursor-pointer select-none"
+                                className="w-full flex items-center justify-between p-4 text-left text-xs sm:text-sm font-semibold text-slate-200 hover:text-white cursor-pointer select-none"
                             >
                                 <span>{faq.q}</span>
-                                <ChevronRight size={16} className={`text-slate-400 transition-transform ${openFaq === idx ? 'rotate-90 text-indigo-400' : ''}`} />
+                                <ChevronRight size={15} className={`text-slate-400 transition-transform ${openFaq === idx ? 'rotate-90 text-violet-400' : ''}`} />
                             </button>
                             {openFaq === idx && (
-                                <div className="px-4 sm:px-5 pb-4 text-xs text-slate-400 leading-relaxed border-t border-white/[0.04] pt-3">
+                                <div className="px-4 pb-4 text-xs text-slate-400 leading-relaxed border-t border-[#1a1c28] pt-3">
                                     {faq.a}
                                 </div>
                             )}
@@ -289,19 +328,19 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* CTA Banner */}
-            <section className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 z-10">
-                <div className="bento-card p-8 sm:p-12 text-center relative overflow-hidden bg-gradient-to-b from-indigo-950/40 to-[#0b0f19]">
-                    <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">Ready to Modernize Your Attachment Lifecycle?</h2>
-                    <p className="text-xs sm:text-sm text-slate-400 max-w-xl mx-auto mt-2 leading-relaxed">
-                        Join leading academic institutions managing student industrial attachments with verified attendance, digital logbooks, and centralized academic compliance.
+            {/* CTA Box */}
+            <section className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12">
+                <div className="p-8 sm:p-12 rounded-2xl bg-[#12141c] border border-[#222432] text-center relative overflow-hidden">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Ready to streamline your attachment program?</h2>
+                    <p className="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto mt-2 leading-relaxed">
+                        Log in with your university credentials or register your school to set up student, supervisor, and coordinator workspaces.
                     </p>
                     <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
                         <Link to="/login">
                             <Button size="lg" endIcon={ArrowRight}>Sign In to Portal</Button>
                         </Link>
-                        <Link to="/request-access">
-                            <Button variant="outline" size="lg">Contact Coordinator</Button>
+                        <Link to="/signup">
+                            <Button variant="outline" size="lg">Register School</Button>
                         </Link>
                     </div>
                 </div>
@@ -313,3 +352,4 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+
