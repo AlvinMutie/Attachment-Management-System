@@ -180,12 +180,68 @@ const notifyAssessmentSubmitted = async (student, assessment) => {
     }
 };
 
+/**
+ * Notify student and supervisors when supervisor is reassigned
+ */
+const notifySupervisorReassigned = async ({
+    studentUserId,
+    studentName,
+    oldSupervisorUserId,
+    newSupervisorUserId,
+    supervisorRole,
+    newSupervisorName,
+    reason,
+    schoolId
+}) => {
+    const roleLabel = supervisorRole === 'industry_supervisor' ? 'Industry' : 'University';
+
+    // 1. Notify Student
+    if (studentUserId) {
+        await createNotification({
+            recipientId: studentUserId,
+            schoolId,
+            type: 'supervisor_reassigned',
+            title: `${roleLabel} Supervisor Updated`,
+            message: `Your ${roleLabel.toLowerCase()} supervisor has been changed to ${newSupervisorName}. Reason: ${reason || 'Administrative reassignment'}.`,
+            entityType: 'user',
+            entityId: newSupervisorUserId
+        });
+    }
+
+    // 2. Notify New Supervisor
+    if (newSupervisorUserId) {
+        await createNotification({
+            recipientId: newSupervisorUserId,
+            schoolId,
+            type: 'student_assigned',
+            title: 'New Student Supervised',
+            message: `Student ${studentName} has been assigned to your supervision roster.`,
+            entityType: 'student',
+            entityId: studentUserId
+        });
+    }
+
+    // 3. Notify Previous Supervisor
+    if (oldSupervisorUserId) {
+        await createNotification({
+            recipientId: oldSupervisorUserId,
+            schoolId,
+            type: 'student_reassigned',
+            title: 'Supervision Assignment Concluded',
+            message: `Supervision of student ${studentName} has been reassigned to ${newSupervisorName}.`,
+            entityType: 'student',
+            entityId: studentUserId
+        });
+    }
+};
+
 module.exports = {
     createNotification,
     notifyPlacementSubmitted,
     notifyPlacementApproved,
     notifyPlacementRejected,
     notifySupervisorAssigned,
+    notifySupervisorReassigned,
     notifyLogbookSubmitted,
     notifyLogbookReviewed,
     notifyAssessmentSubmitted

@@ -32,7 +32,7 @@ exports.register = async (req, res) => {
         }
 
         // Prevent privileged role self-registration
-        const forbiddenRoles = ['super_admin', 'school_admin'];
+        const forbiddenRoles = ['super_admin', 'school_admin', 'attachment_coordinator'];
         if (forbiddenRoles.includes(role)) {
             return res.status(403).json({
                 success: false,

@@ -13,7 +13,10 @@ import {
     History,
     GraduationCap,
     MessageCircle,
-    FileText
+    FileText,
+    AlertTriangle,
+    Briefcase,
+    CheckCircle2
 } from 'lucide-react';
 
 export const ROLE_DEFINITIONS = {
@@ -34,6 +37,12 @@ export const ROLE_DEFINITIONS = {
         badgeColor: 'purple',
         defaultPath: '/university/dashboard',
         prefix: 'university'
+    },
+    attachment_coordinator: {
+        label: 'Attachment Coordinator',
+        badgeColor: 'teal',
+        defaultPath: '/coordinator/dashboard',
+        prefix: 'coordinator'
     },
     school_admin: {
         label: 'School Admin',
@@ -118,6 +127,33 @@ export const ROLE_NAVIGATION = {
         {
             section: 'General',
             items: [
+                { label: 'Settings', path: '/settings', icon: Settings }
+            ]
+        }
+    ],
+
+    attachment_coordinator: [
+        {
+            section: 'Coordination',
+            items: [
+                { label: 'Executive Dashboard', path: '/coordinator/dashboard', icon: LayoutDashboard },
+                { label: 'Attention Queue', path: '/coordinator/attention-queue', icon: AlertTriangle },
+                { label: 'Placement Coordination', path: '/coordinator/placements', icon: BookOpen }
+            ]
+        },
+        {
+            section: 'Oversight & Allocations',
+            items: [
+                { label: 'Supervisor Workload', path: '/coordinator/supervisors', icon: Users },
+                { label: 'Academic Oversight', path: '/coordinator/academic-oversight', icon: CheckCircle2 },
+                { label: 'Host Organizations', path: '/coordinator/organizations', icon: Briefcase },
+                { label: 'Supervision Visits', path: '/coordinator/supervision', icon: MapPin }
+            ]
+        },
+        {
+            section: 'Communication & Settings',
+            items: [
+                { label: 'Messages', path: '/messages', icon: MessageCircle },
                 { label: 'Settings', path: '/settings', icon: Settings }
             ]
         }

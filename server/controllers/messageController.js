@@ -26,8 +26,10 @@ const isAuthorizedToMessage = async (sender, receiverId) => {
         return { allowed: false, reason: 'Cross-tenant communication is not permitted', status: 403 };
     }
 
-    // School Admin can message anyone in their school, and anyone can message School Admin
-    if (sender.role === 'school_admin' || receiver.role === 'school_admin') {
+    // School Admin or Attachment Coordinator can message anyone in their school, and anyone can message them
+    const isSenderPrivileged = ['school_admin', 'attachment_coordinator'].includes(sender.role);
+    const isReceiverPrivileged = ['school_admin', 'attachment_coordinator'].includes(receiver.role);
+    if (isSenderPrivileged || isReceiverPrivileged) {
         return { allowed: true, receiver };
     }
 
@@ -49,7 +51,7 @@ const isAuthorizedToMessage = async (sender, receiverId) => {
 
         return {
             allowed: false,
-            reason: 'Students may only message their assigned supervisors or school administrators',
+            reason: 'Students may only message their assigned supervisors, coordinators, or administrators',
             status: 403
         };
     }
@@ -270,13 +272,13 @@ const getContacts = async (req, res) => {
                 if (student.universitySupervisor) addContact(student.universitySupervisor, { roleLabel: 'University Supervisor' });
             }
 
-            // Also include School Admins in the same school
+            // Also include School Admins and Coordinators in the same school
             if (schoolId) {
-                const schoolAdmins = await User.findAll({
-                    where: { schoolId, role: 'school_admin' },
+                const schoolStaff = await User.findAll({
+                    where: { schoolId, role: { [Op.in]: ['school_admin', 'attachment_coordinator'] } },
                     attributes: ['id', 'name', 'email', 'role']
                 });
-                schoolAdmins.forEach(admin => addContact(admin, { roleLabel: 'School Administrator' }));
+                schoolStaff.forEach(staff => addContact(staff, { roleLabel: staff.role === 'attachment_coordinator' ? 'Attachment Coordinator' : 'School Administrator' }));
             }
 
         } else if (role === 'industry_supervisor' || role === 'university_supervisor') {
@@ -301,16 +303,16 @@ const getContacts = async (req, res) => {
                 }
             });
 
-            // Also include School Admins
+            // Also include School Admins and Coordinators
             if (schoolId) {
-                const schoolAdmins = await User.findAll({
-                    where: { schoolId, role: 'school_admin' },
+                const schoolStaff = await User.findAll({
+                    where: { schoolId, role: { [Op.in]: ['school_admin', 'attachment_coordinator'] } },
                     attributes: ['id', 'name', 'email', 'role']
                 });
-                schoolAdmins.forEach(admin => addContact(admin, { roleLabel: 'School Administrator' }));
+                schoolStaff.forEach(staff => addContact(staff, { roleLabel: staff.role === 'attachment_coordinator' ? 'Attachment Coordinator' : 'School Administrator' }));
             }
 
-        } else if (role === 'school_admin') {
+        } else if (role === 'school_admin' || role === 'attachment_coordinator') {
             const users = await User.findAll({
                 where: {
                     schoolId,

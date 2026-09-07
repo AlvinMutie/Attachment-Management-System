@@ -11,6 +11,8 @@ const SystemSetting = require('./SystemSetting');
 const Message = require('./Message');
 const Inquiry = require('./Inquiry');
 const Notification = require('./Notification');
+const SupervisorAssignment = require('./SupervisorAssignment');
+const Organization = require('./Organization');
 
 // School - User
 School.hasMany(User, { foreignKey: 'schoolId', as: 'users' });
@@ -27,6 +29,26 @@ Notification.belongsTo(User, { foreignKey: 'recipientId', as: 'recipient' });
 // School - Student
 School.hasMany(Student, { foreignKey: 'schoolId', as: 'students' });
 Student.belongsTo(School, { foreignKey: 'schoolId', as: 'school' });
+
+// School - Organization
+School.hasMany(Organization, { foreignKey: 'schoolId', as: 'organizations' });
+Organization.belongsTo(School, { foreignKey: 'schoolId', as: 'school' });
+
+// School - SupervisorAssignment
+School.hasMany(SupervisorAssignment, { foreignKey: 'schoolId', as: 'supervisorAssignments' });
+SupervisorAssignment.belongsTo(School, { foreignKey: 'schoolId', as: 'school' });
+
+// Student - SupervisorAssignment
+Student.hasMany(SupervisorAssignment, { foreignKey: 'studentId', as: 'assignmentHistory' });
+SupervisorAssignment.belongsTo(Student, { foreignKey: 'studentId', as: 'student' });
+
+// Supervisor - SupervisorAssignment
+User.hasMany(SupervisorAssignment, { foreignKey: 'supervisorId', as: 'assignmentsAsSupervisor' });
+SupervisorAssignment.belongsTo(User, { foreignKey: 'supervisorId', as: 'supervisor' });
+
+// Assigner (Coordinator/Admin) - SupervisorAssignment
+User.hasMany(SupervisorAssignment, { foreignKey: 'assignedBy', as: 'assignmentsMade' });
+SupervisorAssignment.belongsTo(User, { foreignKey: 'assignedBy', as: 'assigner' });
 
 // School - Logbook
 School.hasMany(Logbook, { foreignKey: 'schoolId', as: 'logbooks' });
@@ -84,7 +106,7 @@ User.hasMany(Meeting, { foreignKey: 'initiatorId', as: 'initiatedMeetings' });
 Meeting.belongsTo(User, { foreignKey: 'initiatorId', as: 'initiator' });
 
 Student.hasMany(Meeting, { foreignKey: 'studentId', as: 'meetings' });
-Meeting.belongsTo(Student, { foreignKey: 'student' });
+Meeting.belongsTo(Student, { foreignKey: 'studentId', as: 'student' });
 
 User.hasMany(Meeting, { foreignKey: 'industrySupervisorId', as: 'industrySupervisor' });
 Meeting.belongsTo(User, { foreignKey: 'industrySupervisorId', as: 'industrySupervisor' });
@@ -112,5 +134,7 @@ module.exports = {
     SystemSetting,
     Message,
     Inquiry,
-    Notification
+    Notification,
+    SupervisorAssignment,
+    Organization
 };

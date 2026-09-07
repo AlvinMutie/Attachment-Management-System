@@ -63,6 +63,39 @@ const ensureSchemaColumns = async () => {
                 updatedAt DATETIME NOT NULL
             );
         `);
+
+        await sequelize.query(`
+            CREATE TABLE IF NOT EXISTS SupervisorAssignments (
+                id VARCHAR(36) PRIMARY KEY,
+                schoolId VARCHAR(36) NOT NULL REFERENCES Schools(id),
+                studentId VARCHAR(36) NOT NULL REFERENCES Students(id),
+                supervisorId VARCHAR(36) NOT NULL REFERENCES Users(id),
+                supervisorType VARCHAR(50) NOT NULL,
+                assignedBy VARCHAR(36) NOT NULL REFERENCES Users(id),
+                assignedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                endedAt DATETIME,
+                reason TEXT,
+                status VARCHAR(50) DEFAULT 'active',
+                createdAt DATETIME NOT NULL,
+                updatedAt DATETIME NOT NULL
+            );
+        `);
+
+        await sequelize.query(`
+            CREATE TABLE IF NOT EXISTS Organizations (
+                id VARCHAR(36) PRIMARY KEY,
+                schoolId VARCHAR(36) NOT NULL REFERENCES Schools(id),
+                name VARCHAR(255) NOT NULL,
+                address VARCHAR(255),
+                phone VARCHAR(255),
+                email VARCHAR(255),
+                contactPerson VARCHAR(255),
+                industry VARCHAR(255),
+                status VARCHAR(50) DEFAULT 'active',
+                createdAt DATETIME NOT NULL,
+                updatedAt DATETIME NOT NULL
+            );
+        `);
     } catch (e) {
         // Ignored if already exists
     }

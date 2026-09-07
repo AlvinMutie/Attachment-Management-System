@@ -38,6 +38,14 @@ const InstitutionalAnalytics = lazy(() => import('./pages/school_admin/Analytics
 const StudentRegistryManagement = lazy(() => import('./pages/school_admin/StudentManagement'));
 const VisitPortal = lazy(() => import('./pages/VisitPortal'));
 
+// Coordinator (Lazy Loaded)
+const CoordinatorDashboard = lazy(() => import('./pages/coordinator/CoordinatorDashboard'));
+const PlacementCoordination = lazy(() => import('./pages/coordinator/PlacementCoordination'));
+const AcademicOversight = lazy(() => import('./pages/coordinator/AcademicOversight'));
+const SupervisorWorkload = lazy(() => import('./pages/coordinator/SupervisorWorkload'));
+const OrganizationDirectory = lazy(() => import('./pages/coordinator/OrganizationDirectory'));
+const SupervisionVisits = lazy(() => import('./pages/coordinator/SupervisionVisits'));
+
 // Super Admin (Lazy Loaded)
 const SuperadminLayout = lazy(() => import('./components/superadmin/SuperadminLayout'));
 const SuperadminDashboard = lazy(() => import('./pages/superadmin/Dashboard'));
@@ -87,6 +95,16 @@ function AnimatedRoutes() {
                     <Route path="/university/assessments" element={<PrivateRoute roles={['university_supervisor']}><AcademicAssessments /></PrivateRoute>} />
                     <Route path="/university/meetings" element={<PrivateRoute roles={['university_supervisor']}><MeetingScheduler /></PrivateRoute>} />
                     <Route path="/university/messages" element={<PrivateRoute roles={['university_supervisor']}><CommunicationHub /></PrivateRoute>} />
+
+                    {/* Coordinator Routes */}
+                    <Route path="/coordinator/dashboard" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><CoordinatorDashboard /></PrivateRoute>} />
+                    <Route path="/coordinator/attention-queue" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><CoordinatorDashboard /></PrivateRoute>} />
+                    <Route path="/coordinator/placements" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><PlacementCoordination /></PrivateRoute>} />
+                    <Route path="/coordinator/supervisors" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><SupervisorWorkload /></PrivateRoute>} />
+                    <Route path="/coordinator/academic-oversight" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><AcademicOversight /></PrivateRoute>} />
+                    <Route path="/coordinator/organizations" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><OrganizationDirectory /></PrivateRoute>} />
+                    <Route path="/coordinator/supervision" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><SupervisionVisits /></PrivateRoute>} />
+                    <Route path="/messages" element={<PrivateRoute><CommunicationHub /></PrivateRoute>} />
 
                     {/* School Admin Routes */}
                     <Route path="/school_admin/dashboard" element={<PrivateRoute roles={['school_admin']}><AdminDashboard /></PrivateRoute>} />

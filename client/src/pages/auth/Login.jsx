@@ -18,6 +18,7 @@ const Login = () => {
         'student': '/student/dashboard',
         'industry_supervisor': '/industry/dashboard',
         'university_supervisor': '/university/dashboard',
+        'attachment_coordinator': '/coordinator/dashboard',
         'school_admin': '/school_admin/dashboard',
         'super_admin': '/superadmin/dashboard'
     };

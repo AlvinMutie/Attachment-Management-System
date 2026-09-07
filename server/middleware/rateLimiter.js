@@ -9,6 +9,9 @@ const authRateLimiter = ({
     message = 'Too many requests from this IP. Please try again later.'
 } = {}) => {
     return (req, res, next) => {
+        if (process.env.NODE_ENV === 'test') {
+            return next();
+        }
         const clientIp = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
         const now = Date.now();
 

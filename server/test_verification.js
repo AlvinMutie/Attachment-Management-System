@@ -1,6 +1,6 @@
 const http = require('http');
 const { spawn } = require('child_process');
-const { sequelize, User, School, Student, Logbook, Attendance, Assessment, Message, Notification } = require('./models');
+const { sequelize, User, School, Student, Logbook, Attendance, Assessment, Message, Notification, SupervisorAssignment, Organization } = require('./models');
 const { Op } = require('sequelize');
 
 async function ensureColumnsExist() {
@@ -66,6 +66,8 @@ async function setupTestData() {
     const usersToSeed = [
         { email: 'schooladmin_a@ams.com', name: 'Admin Alpha', role: 'school_admin', schoolId: schoolA.id },
         { email: 'schooladmin_b@ams.com', name: 'Admin Beta', role: 'school_admin', schoolId: schoolB.id },
+        { email: 'coordinator_a@ams.com', name: 'Coordinator Alpha', role: 'attachment_coordinator', schoolId: schoolA.id },
+        { email: 'coordinator_b@ams.com', name: 'Coordinator Beta', role: 'attachment_coordinator', schoolId: schoolB.id },
         { email: 'supervisor_a@ams.com', name: 'Supervisor Alpha', role: 'industry_supervisor', schoolId: schoolA.id },
         { email: 'supervisor_b@ams.com', name: 'Supervisor Beta Unassigned', role: 'industry_supervisor', schoolId: schoolA.id },
         { email: 'unisup_a@ams.com', name: 'Uni Supervisor Alpha', role: 'university_supervisor', schoolId: schoolA.id },
@@ -86,6 +88,7 @@ async function setupTestData() {
             await Attendance.destroy({ where: { studentId: studentIds } });
             await Logbook.destroy({ where: { studentId: studentIds } });
             await Assessment.destroy({ where: { studentId: studentIds } });
+            await SupervisorAssignment.destroy({ where: { studentId: studentIds } });
         }
         await Message.destroy({ where: { [Op.or]: [{ senderId: userIds }, { receiverId: userIds }] } });
         await Notification.destroy({ where: { recipientId: userIds } });
@@ -133,7 +136,7 @@ async function runVerification() {
     const TEST_PORT = 5098;
     const serverProcess = spawn('node', ['index.js'], {
         cwd: __dirname,
-        env: { ...process.env, PORT: TEST_PORT, JWT_SECRET: 'test_jwt_secret_ams_2026_phase2' }
+        env: { ...process.env, NODE_ENV: 'test', PORT: TEST_PORT, JWT_SECRET: 'test_jwt_secret_ams_2026_phase2' }
     });
 
     let serverOutput = '';
@@ -1088,6 +1091,289 @@ async function runVerification() {
             Array.isArray(operationalAlerts.body?.data?.alerts)
         );
 
+        // ==========================================
+        // 13. PHASE 5 — COORDINATOR ROLE & RBAC
+        // ==========================================
+        console.log('\n--- 13. PHASE 5 — COORDINATOR ROLE & RBAC ---');
+
+        // 13.1 Coordinator Alpha Login
+        const loginCoordA = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/auth/login',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }, { email: 'coordinator_a@ams.com', password: 'password123' });
+
+        const coordinatorAToken = loginCoordA.body?.token;
+        assertTest('Coordinator Alpha login returns 200 & JWT with attachment_coordinator role',
+            loginCoordA.statusCode === 200 &&
+            loginCoordA.body?.role === 'attachment_coordinator' &&
+            Boolean(coordinatorAToken)
+        );
+
+        // 13.2 Coordinator Beta Login
+        const loginCoordB = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/auth/login',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }, { email: 'coordinator_b@ams.com', password: 'password123' });
+        const coordinatorBToken = loginCoordB.body?.token;
+
+        // 13.3 Public registration as attachment_coordinator must be rejected
+        const regAttemptCoordinator = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/auth/register',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        }, {
+            name: 'Hacker Coordinator',
+            email: 'hacker_coord@ams.com',
+            password: 'password123',
+            role: 'attachment_coordinator',
+            schoolId: schoolA.id
+        });
+        assertTest('Public registration as attachment_coordinator rejected with 403', regAttemptCoordinator.statusCode === 403);
+
+        // 13.4 Coordinator can access Coordinator Dashboard
+        const coordDashboardGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/dashboard',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${coordinatorAToken}` }
+        });
+        assertTest('Coordinator can access /api/coordinator/dashboard (200)',
+            coordDashboardGet.statusCode === 200 &&
+            coordDashboardGet.body?.data?.totalStudents !== undefined
+        );
+
+        // 13.5 Coordinator can access Attention Queue
+        const coordAttentionQueue = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/attention-queue',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${coordinatorAToken}` }
+        });
+        assertTest('Coordinator can access prioritized attention queue (200)',
+            coordAttentionQueue.statusCode === 200 &&
+            Array.isArray(coordAttentionQueue.body?.data?.queue)
+        );
+
+        // 13.6 Students and Supervisors are prohibited from Coordinator routes
+        const studentAttemptsCoordDashboard = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/dashboard',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${studentAToken}` }
+        });
+        assertTest('Student prohibited from /api/coordinator/dashboard (403)', studentAttemptsCoordDashboard.statusCode === 403);
+
+        const supervisorAttemptsCoordDashboard = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/dashboard',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${supervisorAToken}` }
+        });
+        assertTest('Supervisor prohibited from /api/coordinator/dashboard (403)', supervisorAttemptsCoordDashboard.statusCode === 403);
+
+        // ==========================================
+        // 14. PHASE 5 — MULTI-TENANT ISOLATION & IDOR PROTECTION
+        // ==========================================
+        console.log('\n--- 14. PHASE 5 — MULTI-TENANT ISOLATION & IDOR PROTECTION ---');
+
+        // 14.1 Coordinator B list placements (Must only see School B, not School A)
+        const coordBPlacements = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/placements',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${coordinatorBToken}` }
+        });
+        const bStudentsList = coordBPlacements.body?.data || [];
+        const hasLeakAInB = bStudentsList.some(s => s.schoolId === schoolA.id);
+        assertTest('Coordinator B only sees School B placements (Tenant Isolated)',
+            coordBPlacements.statusCode === 200 && !hasLeakAInB
+        );
+
+        // 14.2 Coordinator B IDOR attempt on School A Student Placement Detail
+        const coordBIDORAttempt = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: `/api/coordinator/placements/${studentProfileId}`,
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${coordinatorBToken}` }
+        });
+        assertTest('Coordinator B cannot access School A student details (IDOR 404/403)',
+            [403, 404].includes(coordBIDORAttempt.statusCode)
+        );
+
+        // 14.3 Coordinator A cross-tenant supervisor assignment attempt (assigning School B supervisor to School A student)
+        const crossTenantSupervisorAssign = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/assign-supervisor',
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${coordinatorAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            studentId: studentProfileId,
+            supervisorId: userMap['schooladmin_b@ams.com'].id,
+            type: 'industry'
+        });
+        assertTest('Coordinator cross-tenant supervisor assignment blocked (404/403)',
+            [400, 403, 404].includes(crossTenantSupervisorAssign.statusCode)
+        );
+
+        // ==========================================
+        // 15. PHASE 5 — SUPERVISOR ALLOCATION & REASSIGNMENT WITH HISTORY
+        // ==========================================
+        console.log('\n--- 15. PHASE 5 — SUPERVISOR ALLOCATION & REASSIGNMENT WITH HISTORY ---');
+
+        const uniSupAUser = userMap['unisup_a@ams.com'];
+        const uniSupBUser = userMap['unisup_b@ams.com'];
+
+        // 15.1 Coordinator A reassigns University Supervisor from UniSup A to UniSup B with audit reason
+        const reassignUniSupervisor = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/reassign-supervisor',
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${coordinatorAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            studentId: studentProfileId,
+            supervisorId: uniSupBUser.id,
+            type: 'university',
+            reason: 'Academic department workload re-balancing'
+        });
+        assertTest('Coordinator reassigns supervisor with audit reasoning (200)',
+            reassignUniSupervisor.statusCode === 200 &&
+            reassignUniSupervisor.body?.data?.isReassignment === true
+        );
+
+        // 15.2 Verify Placement Detail shows historical SupervisorAssignment entries
+        const placementHistoryGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: `/api/coordinator/placements/${studentProfileId}`,
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${coordinatorAToken}` }
+        });
+        const historyList = placementHistoryGet.body?.data?.student?.assignmentHistory || [];
+        assertTest('Placement details contain structured supervisor assignment history with timestamps and assigner',
+            placementHistoryGet.statusCode === 200 &&
+            historyList.length >= 1 &&
+            historyList.some(h => h.supervisorId === uniSupBUser.id && h.status === 'active')
+        );
+
+        // 15.3 Coordinator accesses supervisor roster with workload capacity metrics
+        const supervisorsWorkloadGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/supervisors',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${coordinatorAToken}` }
+        });
+        assertTest('Coordinator views supervisor roster with live workload capacity (200)',
+            supervisorsWorkloadGet.statusCode === 200 &&
+            Array.isArray(supervisorsWorkloadGet.body?.data) &&
+            supervisorsWorkloadGet.body.data.some(s => s.id === uniSupBUser.id && s.assignedStudentsCount >= 1)
+        );
+
+        // ==========================================
+        // 16. PHASE 5 — ACADEMIC OVERSIGHT, ORGANIZATIONS & COMPLETION READINESS
+        // ==========================================
+        console.log('\n--- 16. PHASE 5 — ACADEMIC OVERSIGHT, ORGANIZATIONS & COMPLETION READINESS ---');
+
+        // 16.1 Coordinator registers a host organization
+        const createOrgRes = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/organizations',
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${coordinatorAToken}`,
+                'Content-Type': 'application/json'
+            }
+        }, {
+            name: 'TechCorp Robotics Ltd',
+            address: '100 Silicon Boulevard',
+            phone: '+254711223344',
+            email: 'hr@techcorp.com',
+            contactPerson: 'Alice Smith',
+            industry: 'Artificial Intelligence & Robotics'
+        });
+        assertTest('Coordinator registers host company in organization directory (201)',
+            createOrgRes.statusCode === 201 &&
+            createOrgRes.body?.data?.name === 'TechCorp Robotics Ltd'
+        );
+
+        // 16.2 Coordinator queries organization directory
+        const getOrgsRes = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/organizations',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${coordinatorAToken}` }
+        });
+        assertTest('Coordinator retrieves organization directory with intern counts (200)',
+            getOrgsRes.statusCode === 200 &&
+            Array.isArray(getOrgsRes.body?.data) &&
+            getOrgsRes.body.data.some(o => o.name === 'TechCorp Robotics Ltd')
+        );
+
+        // 16.3 Coordinator queries consolidated academic overview
+        const academicOverviewGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/academic-overview',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${coordinatorAToken}` }
+        });
+        assertTest('Coordinator retrieves consolidated academic oversight stream (200)',
+            academicOverviewGet.statusCode === 200 &&
+            Array.isArray(academicOverviewGet.body?.data) &&
+            academicOverviewGet.body.data.some(s => s.id === studentProfileId && s.attendance !== undefined)
+        );
+
+        // 16.4 Coordinator evaluates deterministic completion readiness
+        const completionReadinessGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/completion-readiness',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${coordinatorAToken}` }
+        });
+        assertTest('Completion readiness engine provides explainable blocker diagnostics (200)',
+            completionReadinessGet.statusCode === 200 &&
+            completionReadinessGet.body?.data?.summary !== undefined &&
+            Array.isArray(completionReadinessGet.body?.data?.blockedStudents)
+        );
+
+        // 16.5 Coordinator supervision & meetings oversight
+        const supervisionOversightGet = await makeRequest({
+            hostname: 'localhost',
+            port: TEST_PORT,
+            path: '/api/coordinator/supervision',
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${coordinatorAToken}` }
+        });
+        assertTest('Coordinator monitors academic supervision meetings & scheduled visits (200)',
+            supervisionOversightGet.statusCode === 200 &&
+            supervisionOversightGet.body?.data?.summary !== undefined
+        );
+
     } catch (err) {
         console.error('Test Execution Error:', err);
         failedCount++;
@@ -1101,7 +1387,7 @@ async function runVerification() {
     console.log('==========================================');
 
     if (failedCount === 0) {
-        console.log('🎉 ALL PHASE 2 + PHASE 3 + PHASE 4 SECURITY, RBAC, NOTIFICATIONS, REPORTING & ALERTS TESTS PASSED SUCCESSFULLY!');
+        console.log('🎉 ALL PHASE 2 + PHASE 3 + PHASE 4 + PHASE 5 SECURITY, RBAC, COORDINATOR & ACADEMIC OVERSIGHT TESTS PASSED SUCCESSFULLY!');
         process.exit(0);
     } else {
         console.error('❌ VERIFICATION FAILED');
