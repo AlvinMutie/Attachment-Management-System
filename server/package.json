@@ -8,6 +8,9 @@
         "dev": "nodemon index.js",
         "test": "node test_verification.js"
     },
+    "engines": {
+        "node": ">=20.0.0"
+    },
     "dependencies": {
         "@sequelize/core": "^7.0.0-alpha.47",
         "bcryptjs": "^2.4.3",

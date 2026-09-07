@@ -148,6 +148,7 @@ startServer();
 // Graceful Shutdown Handling
 const gracefulShutdown = (signal) => {
     console.log(`\n🛑 Received ${signal}. Initiating graceful shutdown sequence...`);
+    const isFatal = signal === 'uncaughtException';
 
     if (server) {
         server.close(async () => {
@@ -156,7 +157,7 @@ const gracefulShutdown = (signal) => {
                 await sequelize.close();
                 console.log('  2. Database connection closed safely.');
                 console.log('✅ Graceful shutdown completed.');
-                process.exit(0);
+                process.exit(isFatal ? 1 : 0);
             } catch (err) {
                 console.error('❌ Error during database teardown:', err);
                 process.exit(1);
@@ -169,7 +170,7 @@ const gracefulShutdown = (signal) => {
             process.exit(1);
         }, 10000).unref();
     } else {
-        process.exit(0);
+        process.exit(isFatal ? 1 : 0);
     }
 };
 

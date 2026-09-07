@@ -1,24 +1,25 @@
-# Attachment Management System (AMS) — Production Deployment Guide
+# Attachment Management System (AMS) — Production Deployment & Operations Guide
 
-This document outlines the protocol for deploying the Attachment Management System (AMS) to an institutional production environment.
+This document outlines the protocol for deploying and operating the Attachment Management System (AMS) in an institutional production environment.
 
 ---
 
-## 1. Prerequisites
-- **Operating System**: Linux (Ubuntu 22.04 LTS / Debian 12 recommended)
-- **Node.js**: v18.x or v20.x LTS
-- **Web Server / Reverse Proxy**: Nginx with SSL/TLS (Certbot / Let's Encrypt)
+## 1. Prerequisites & System Requirements
+- **Operating System**: Linux (Ubuntu 22.04 LTS / Ubuntu 24.04 LTS recommended)
+- **Node.js**: v20.x or v22.x LTS (`node >= 20.0.0`)
+- **Web Server / Reverse Proxy**: Nginx with SSL/TLS (Let's Encrypt / Certbot)
 - **Process Manager**: PM2 or systemd
+- **Storage**: Persistent storage directory for SQLite database files and uploaded document attachments.
 
 ---
 
-## 2. Backend Deployment
+## 2. Backend Deployment Architecture
 
 ### A. Environment Configuration
 1. Clone the repository to `/var/www/ams`.
 2. Navigate to `/var/www/ams/server` and install dependencies:
    ```bash
-   npm ci --production
+   npm ci --omit=dev
    ```
 3. Create the production `.env` file based on `.env.example`:
    ```env
@@ -51,7 +52,7 @@ pm2 startup
 
 ### A. Build Production Bundle
 1. Navigate to `/var/www/ams/client`.
-2. Set API base URL:
+2. Set the production API base URL:
    ```env
    VITE_API_URL=https://ams.university.ac.ke/api
    ```
@@ -60,7 +61,7 @@ pm2 startup
    npm ci
    npm run build
    ```
-4. Output directory `dist/` contains the optimized static assets ready for Nginx.
+4. Output directory `dist/` contains the optimized static assets ready for Nginx serving.
 
 ---
 
@@ -109,7 +110,7 @@ server {
         client_max_body_size 15M;
     }
 
-    # Health & Readiness Endpoints
+    # Health & Readiness Observability Endpoints
     location ~ ^/(health|ready)$ {
         proxy_pass http://127.0.0.1:5000;
         proxy_set_header Host $host;
@@ -121,21 +122,34 @@ server {
 
 ## 5. Automated Backup & Disaster Recovery
 
-### Daily Backup Cron Job
-Add the following cron entry (`crontab -e`) to take non-blocking daily backups at 2:00 AM:
+### A. Crash-Consistent Database Snapshotting
+The database backup script (`server/scripts/backup.js`) utilizes SQLite `VACUUM INTO` to generate crash-consistent, non-locking point-in-time database snapshot files with an automatic 7-day retention cleanup.
+
+### B. Daily Backup Automation (Cron)
+Add the following cron entry (`crontab -e`) to execute daily snapshot backups at 2:00 AM:
 ```bash
 0 2 * * * cd /var/www/ams/server && /usr/bin/node scripts/backup.js >> /var/log/ams_backup.log 2>&1
 ```
 
-### Emergency Database Recovery
+### C. Disaster Recovery Objectives & Procedure
+- **RPO (Recovery Point Objective)**: Up to 24 hours under the configured daily snapshot schedule.
+- **RTO (Recovery Time Objective)**: The automated restoration procedure is tested and designed for rapid recovery; actual production recovery duration depends on server storage conditions.
+
+#### Emergency Database Restoration Procedure
 ```bash
-# 1. Stop backend service
+# 1. Stop backend service to prevent write conflicts
 pm2 stop ams-backend
 
-# 2. Restore database from latest verified snapshot
+# 2. Restore database from latest verified snapshot (includes header verification and safety copy)
 node /var/www/ams/server/scripts/restore.js
 
 # 3. Verify health and restart
 pm2 start ams-backend
-curl https://ams.university.ac.ke/ready
+curl http://127.0.0.1:5000/ready
 ```
+
+---
+
+## 6. Architecture & Scalability Considerations
+- **Single-Server Deployment**: SQLite 3 is validated for the project's single-server institutional deployment model.
+- **High-Concurrency Clustering**: For future multi-server active-active deployments requiring distributed write coordination, migrating the Sequelize dialect to PostgreSQL or MySQL is recommended.
