@@ -1,35 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import {
     Users,
-    MapPin,
     ClipboardCheck,
-    MessageSquare,
-    FilePlus,
-    ArrowUpRight,
-    Filter,
     TrendingUp,
-    Calendar,
     GraduationCap,
-    BookOpen,
     AlertTriangle,
     ShieldAlert,
-    CheckCircle2
+    ArrowUpRight
 } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import { getUniversityWorkspace, getMyStudents, getUniversityAssessments } from '../../utils/universityApi';
-
-const StatCard = ({ icon: Icon, label, value, color }) => (
-    <div className="glass-card p-8 flex flex-col justify-between h-full bg-gradient-to-br from-white/[0.04] to-transparent border-white/5 hover:border-blue-500/20 transition-all group rounded-m3-large overflow-hidden relative">
-        <div className="flex justify-between items-center mb-6 relative z-10">
-            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.25em]">{label}</p>
-            <div className={`p-3 rounded-2xl bg-white/5 ${color} shadow-inner group-hover:scale-110 transition-transform duration-500`}>
-                <Icon size={20} />
-            </div>
-        </div>
-        <p className="text-4xl font-black text-white tracking-tighter relative z-10">{value}</p>
-        <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-600/5 blur-xl rounded-full" />
-    </div>
-);
+import { Badge, Button, LoadingSkeleton } from '../../components/ui';
 
 const UniversitySupervisorDashboard = () => {
     const [workspace, setWorkspace] = useState(null);
@@ -65,6 +46,23 @@ const UniversitySupervisorDashboard = () => {
         loadDashboard();
     }, []);
 
+    if (loading) {
+        return (
+            <DashboardLayout role="university_supervisor">
+                <div className="space-y-4 p-6 sm:p-8 max-w-7xl mx-auto">
+                    <LoadingSkeleton className="h-20 rounded-lg" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <LoadingSkeleton className="h-24 rounded-lg" />
+                        <LoadingSkeleton className="h-24 rounded-lg" />
+                        <LoadingSkeleton className="h-24 rounded-lg" />
+                        <LoadingSkeleton className="h-24 rounded-lg" />
+                    </div>
+                    <LoadingSkeleton className="h-80 rounded-lg" />
+                </div>
+            </DashboardLayout>
+        );
+    }
+
     const totalStudents = workspace?.metrics?.totalAssigned ?? students.length;
     const activePlacements = workspace?.metrics?.activePlacements ?? students.filter(s => ['APPROVED', 'ACTIVE'].includes(s.placementStatus)).length;
     const totalAssessments = workspace?.metrics?.completedAssessments ?? assessments.length;
@@ -72,63 +70,123 @@ const UniversitySupervisorDashboard = () => {
 
     return (
         <DashboardLayout role="university_supervisor">
-            <div className="space-y-10 animate-fade-in pb-12">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-8 bg-blue-600/5 p-10 rounded-m3-xl border border-blue-600/10 backdrop-blur-md">
-                    <div className="flex items-center gap-8">
-                        <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-600/40 ring-1 ring-white/20">
-                            <GraduationCap className="text-white" size={44} />
+            <div className="space-y-5 p-6 sm:p-8 max-w-7xl mx-auto pb-16 font-sans">
+                {/* Header Banner */}
+                <div className="craft-card p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-lg bg-violet-600/15 border border-violet-500/25 flex items-center justify-center text-violet-300">
+                            <GraduationCap size={24} />
                         </div>
-                        <div className="space-y-1.5">
-                            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-blue-400 opacity-70">Academic Oversight</span>
-                            <h1 className="text-4xl font-black text-white tracking-tighter uppercase leading-none">University <span className="text-blue-500">Supervisor</span></h1>
-                            <p className="text-slate-500 font-medium leading-relaxed max-w-md text-sm">Monitoring student academic progress, scheduling assessments, and verifying compliance.</p>
+                        <div>
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-300 text-[11px] font-medium mb-1">
+                                Faculty Assessment & Oversight
+                            </div>
+                            <h1 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
+                                University Supervisor Workspace
+                            </h1>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                                Academic grading, supervision site visit records, and mentee cohort monitoring.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <a href="/university/assessments">
+                            <Button variant="primary" className="text-xs py-2 px-3.5 flex items-center gap-1.5">
+                                <ClipboardCheck size={14} />
+                                <span>Record Assessment</span>
+                            </Button>
+                        </a>
+                    </div>
+                </div>
+
+                {/* Academic Metrics Row */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div className="craft-card p-4">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                            <span className="font-medium">Assigned Mentees</span>
+                            <Users className="w-3.5 h-3.5 text-violet-400" />
+                        </div>
+                        <div className="kpi-metric-value mt-2">{totalStudents}</div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                            <span>Faculty cohort</span>
+                            <span className="font-mono text-slate-300">{totalStudents} students</span>
+                        </div>
+                    </div>
+
+                    <div className="craft-card p-4">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                            <span className="font-medium">Active Placements</span>
+                            <ClipboardCheck className="w-3.5 h-3.5 text-emerald-400" />
+                        </div>
+                        <div className="kpi-metric-value text-emerald-400 mt-2">{activePlacements}</div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                            <span>In-progress attachments</span>
+                            <span className="font-mono text-emerald-400">{activePlacements} active</span>
+                        </div>
+                    </div>
+
+                    <div className="craft-card p-4">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                            <span className="font-medium">Evaluations Graded</span>
+                            <TrendingUp className="w-3.5 h-3.5 text-sky-400" />
+                        </div>
+                        <div className="kpi-metric-value text-sky-400 mt-2">{totalAssessments}</div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                            <span>Submitted reports</span>
+                            <span className="font-mono text-sky-300">{totalAssessments} graded</span>
+                        </div>
+                    </div>
+
+                    <div className="craft-card p-4">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                            <span className="font-medium">Academic Deficiencies</span>
+                            <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
+                        </div>
+                        <div className="kpi-metric-value text-rose-400 mt-2">{atRiskCount}</div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                            <span>Require intervention</span>
+                            <span className="font-mono text-rose-300">{atRiskCount} flagged</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Academic Metrics */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <StatCard icon={Users} label="Supervised Mentees" value={totalStudents} color="text-blue-400" />
-                    <StatCard icon={ClipboardCheck} label="Active Placements" value={activePlacements} color="text-emerald-400" />
-                    <StatCard icon={TrendingUp} label="Completed Evaluations" value={totalAssessments} color="text-purple-400" />
-                    <StatCard icon={ShieldAlert} label="Academic Deficiencies" value={atRiskCount} color="text-rose-400" />
-                </div>
-
                 {/* Academic Action Queue */}
                 {actionQueue.length > 0 && (
-                    <div className="glass-card p-8 rounded-m3-xl border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-transparent space-y-4">
+                    <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20 space-y-3">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <AlertTriangle className="text-amber-400" size={22} />
-                                <h3 className="text-lg font-black text-white tracking-tight uppercase">Supervision Action Queue</h3>
+                            <div className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                                    <AlertTriangle className="w-3 h-3" />
+                                </div>
+                                <h3 className="text-xs font-semibold text-amber-300 uppercase tracking-wide">
+                                    Supervision Action Queue ({actionQueue.length})
+                                </h3>
                             </div>
-                            <span className="text-[10px] font-black uppercase px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full border border-amber-500/30">
-                                {actionQueue.length} pending academic tasks
-                            </span>
                         </div>
-                        <div className="grid md:grid-cols-2 gap-4 pt-2">
+                        <div className="grid md:grid-cols-2 gap-2.5">
                             {actionQueue.map((item, idx) => (
-                                <div key={idx} className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-start justify-between gap-4">
-                                    <div className="space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
-                                                item.priority === 'urgent' ? 'bg-rose-600/20 text-rose-400 border border-rose-500/20' :
-                                                item.priority === 'high' ? 'bg-amber-600/20 text-amber-400 border border-amber-500/20' :
-                                                'bg-blue-600/20 text-blue-400 border border-blue-500/20'
-                                            }`}>
+                                <div key={idx} className="p-3 rounded-md bg-[#12141c] border border-[#22242f] flex items-start justify-between gap-3">
+                                    <div className="space-y-0.5">
+                                        <div className="flex items-center gap-1.5">
+                                            <Badge
+                                                variant={item.priority === 'urgent' ? 'danger' : item.priority === 'high' ? 'warning' : 'indigo'}
+                                                size="sm"
+                                            >
                                                 {item.priority}
-                                            </span>
-                                            <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                                            </Badge>
+                                            <h4 className="text-xs font-medium text-slate-200">{item.title}</h4>
                                         </div>
-                                        <p className="text-xs text-slate-400">{item.description}</p>
+                                        <p className="text-[11px] text-slate-400 leading-normal">{item.description}</p>
                                     </div>
                                     <a
                                         href={item.actionUrl || '/university/assessments'}
-                                        className="btn-primary px-3 py-1.5 text-[10px] uppercase tracking-wider shrink-0 flex items-center gap-1"
+                                        className="shrink-0"
                                     >
-                                        <span>Action</span>
-                                        <ArrowUpRight size={12} />
+                                        <Button size="sm" variant="outline" className="text-[11px] py-1 px-2.5">
+                                            <span>Action</span>
+                                            <ArrowUpRight size={11} className="ml-1" />
+                                        </Button>
                                     </a>
                                 </div>
                             ))}
@@ -136,72 +194,66 @@ const UniversitySupervisorDashboard = () => {
                     </div>
                 )}
 
-                {/* Main Table: Student Monitoring */}
-                <div className="glass-card !rounded-m3-xl overflow-hidden bg-gradient-to-br from-white/[0.02] to-transparent">
-                    <div className="p-10 border-b border-white/5 flex items-center justify-between">
-                        <div className="flex items-center space-x-5">
-                            <GraduationCap className="text-blue-500" size={28} />
-                            <h3 className="text-2xl font-black text-white tracking-tighter uppercase">Supervised Student Cohort</h3>
-                        </div>
-                        <a href="/university/assessments" className="btn-primary px-6 py-2.5 text-xs">
-                            Academic Assessments
+                {/* Main Table: Supervised Student Cohort */}
+                <div className="craft-card p-5 space-y-3">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-[#22242f]">
+                        <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Supervised Student Cohort</h3>
+                        <a href="/university/assessments" className="text-violet-400 text-xs font-medium hover:underline">
+                            Academic Assessments →
                         </a>
                     </div>
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-white/[0.02]">
-                                <tr className="text-slate-500 text-[10px] uppercase font-black tracking-[0.3em]">
-                                    <th className="px-10 py-6">Mentee Identity</th>
-                                    <th className="px-10 py-6">Industry Placement</th>
-                                    <th className="px-10 py-6">Attendance</th>
-                                    <th className="px-10 py-6">Logbooks Submitted</th>
-                                    <th className="px-10 py-6 text-right">Academic Standing</th>
+                    <div className="overflow-x-auto -mx-5">
+                        <table className="w-full text-left text-xs">
+                            <thead className="bg-[#12141c] text-slate-400 font-medium border-b border-[#22242f]">
+                                <tr>
+                                    <th className="py-2.5 px-5">Student</th>
+                                    <th className="py-2.5 px-5">Host Organization</th>
+                                    <th className="py-2.5 px-5">Attendance</th>
+                                    <th className="py-2.5 px-5">Logbooks</th>
+                                    <th className="py-2.5 px-5 text-right">Academic Standing</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5 font-medium">
+                            <tbody className="divide-y divide-[#22242f]">
                                 {students.length > 0 ? (
                                     students.map((s) => (
-                                        <tr key={s.id} className="hover:bg-white/[0.03] transition-all group">
-                                            <td className="px-10 py-8">
-                                                <div className="flex items-center space-x-4">
-                                                    <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-                                                    <div>
-                                                        <p className="text-lg font-black text-white tracking-tighter">{s.user?.name}</p>
-                                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mt-0.5">{s.admissionNumber} • {s.course || s.department}</p>
-                                                    </div>
+                                        <tr key={s.id} className="hover:bg-[#181a24] transition-colors">
+                                            <td className="py-2.5 px-5">
+                                                <div>
+                                                    <p className="font-medium text-white">{s.user?.name}</p>
+                                                    <p className="text-[10px] text-slate-500 font-mono">{s.admissionNumber} • {s.course || s.department}</p>
                                                 </div>
                                             </td>
-                                            <td className="px-10 py-8 text-slate-300 text-sm font-extrabold uppercase tracking-widest">
-                                                {s.organizationName || 'Not Assigned'}
+                                            <td className="py-2.5 px-5 text-slate-300">
+                                                {s.organizationName || 'Unassigned'}
                                             </td>
-                                            <td className="px-10 py-8 text-slate-300 text-sm font-bold">
-                                                <div className="flex items-center gap-2">
-                                                    <span>{s.attendanceRate !== undefined ? `${s.attendanceRate}%` : `${s.attendance?.length || 0} Days`}</span>
+                                            <td className="py-2.5 px-5 text-slate-300">
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="font-mono">{s.attendanceRate !== undefined ? `${s.attendanceRate}%` : `${s.attendance?.length || 0} days`}</span>
                                                     {s.complianceStatus?.status === 'CRITICAL' && (
-                                                        <span className="text-[9px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">Critical</span>
+                                                        <Badge variant="danger" size="sm">Critical</Badge>
                                                     )}
                                                     {s.complianceStatus?.status === 'AT_RISK' && (
-                                                        <span className="text-[9px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">At Risk</span>
+                                                        <Badge variant="warning" size="sm">At Risk</Badge>
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-10 py-8 text-slate-300 text-sm font-bold">
-                                                {s.logbooksCount !== undefined ? `${s.logbooksCount} Reports` : `${s.logbooks?.length || 0} Reports`}
+                                            <td className="py-2.5 px-5 text-slate-300 font-mono">
+                                                {s.logbooksCount !== undefined ? `${s.logbooksCount} entries` : `${s.logbooks?.length || 0} entries`}
                                             </td>
-                                            <td className="px-10 py-8 text-right">
-                                                <span className={`text-[10px] font-black uppercase tracking-[0.1em] px-4 py-1.5 rounded-full border ${s.placementStatus === 'APPROVED' || s.placementStatus === 'ACTIVE'
-                                                        ? 'bg-emerald-600/20 text-emerald-400 border-emerald-500/20'
-                                                        : 'bg-amber-600/20 text-amber-400 border-amber-500/20'
-                                                    }`}>
+                                            <td className="py-2.5 px-5 text-right">
+                                                <Badge
+                                                    variant={s.placementStatus === 'APPROVED' || s.placementStatus === 'ACTIVE' ? 'success' : 'warning'}
+                                                    size="sm"
+                                                >
                                                     {s.placementStatus || 'DRAFT'}
-                                                </span>
+                                                </Badge>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan={5} className="text-center py-8 text-slate-500 text-xs font-bold uppercase tracking-widest">
-                                            No students currently assigned to your supervision.
+                                        <td colSpan={5} className="text-center py-6 text-slate-500 text-xs">
+                                            No students currently allocated to your academic supervision.
                                         </td>
                                     </tr>
                                 )}

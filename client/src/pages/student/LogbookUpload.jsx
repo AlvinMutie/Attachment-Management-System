@@ -7,15 +7,15 @@ import {
     AlertCircle,
     X,
     Sparkles,
-    Wand2,
-    ArrowRight,
     Edit3,
     History,
-    RefreshCw
+    RefreshCw,
+    Lock,
+    ArrowRight
 } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import { submitLogbook, updateLogbook, getMyLogbooks, refineSummary } from '../../utils/studentApi';
-import { Card, Badge, Button, LoadingSkeleton } from '../../components/ui';
+import { Badge, Button, LoadingSkeleton } from '../../components/ui';
 
 const LogbookUpload = () => {
     const [dragActive, setDragActive] = useState(false);
@@ -55,7 +55,6 @@ const LogbookUpload = () => {
             const res = await getMyLogbooks();
             if (res.data?.data) {
                 setExistingLogs(res.data.data);
-                // Default week number to next week if logs exist
                 if (res.data.data.length > 0 && !editingLogbookId) {
                     const maxWeek = Math.max(...res.data.data.map(l => l.weekNumber || 1));
                     setFormData(prev => ({ ...prev, weekNumber: maxWeek + 1 }));
@@ -142,7 +141,7 @@ const LogbookUpload = () => {
 
     const handleRefine = async () => {
         if (!formData.summary || formData.summary.length < 10) {
-            setError('Please provide a basic summary before refining');
+            setError('Please provide an initial technical summary before refining');
             return;
         }
 
@@ -153,7 +152,7 @@ const LogbookUpload = () => {
             setRefinedDraft(response.data.data.refined);
             setShowRefineModal(true);
         } catch (err) {
-            const errorMsg = err.response?.data?.message || 'AI Refinement failed. Please try again.';
+            const errorMsg = err.response?.data?.message || 'Refinement service unavailable. Please check text and retry.';
             setError(errorMsg);
         } finally {
             setRefining(false);
@@ -199,24 +198,24 @@ const LogbookUpload = () => {
 
     return (
         <DashboardLayout role="student">
-            <div className="max-w-6xl mx-auto space-y-10 animate-fade-in p-6">
+            <div className="max-w-6xl mx-auto space-y-6 p-6 font-sans">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-slate-800">
-                    <div className="flex items-center gap-5">
-                        <div className="w-16 h-16 bg-blue-600/20 border border-blue-500/30 rounded-2xl flex items-center justify-center text-blue-400">
-                            <FileText size={32} />
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[#22242f]">
+                    <div className="flex items-center gap-3.5">
+                        <div className="w-10 h-10 bg-violet-600/15 border border-violet-500/25 rounded-lg flex items-center justify-center text-violet-300">
+                            <FileText size={20} />
                         </div>
-                        <div className="space-y-1">
-                            <span className="text-[10px] font-bold uppercase tracking-widest text-blue-400">Academic Reporting</span>
-                            <h1 className="text-3xl font-black text-white tracking-tight">Weekly Industrial Logbook</h1>
-                            <p className="text-xs text-slate-400">Record weekly tasks, industrial competencies, and supervisor evidence.</p>
+                        <div>
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-violet-400">Academic Reporting</span>
+                            <h1 className="text-xl font-semibold text-white tracking-tight">Weekly Industrial Logbook</h1>
+                            <p className="text-xs text-slate-400 mt-0.5">Record daily technical tasks, equipment competencies, and supervisor evidence.</p>
                         </div>
                     </div>
                     {editingLogbookId && (
                         <Button
                             variant="outline"
                             onClick={cancelRevision}
-                            className="text-xs bg-slate-800 border-slate-700 text-slate-300"
+                            className="text-xs py-1.5 px-3"
                         >
                             Cancel Revision Mode
                         </Button>
@@ -224,96 +223,99 @@ const LogbookUpload = () => {
                 </div>
 
                 {submitted ? (
-                    <Card className="max-w-2xl mx-auto py-16 text-center space-y-6 bg-slate-900/80 border-slate-800">
-                        <div className="w-16 h-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto">
-                            <CheckCircle2 size={36} />
+                    <div className="craft-card max-w-xl mx-auto py-12 px-6 text-center space-y-4">
+                        <div className="w-12 h-12 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-lg flex items-center justify-center mx-auto">
+                            <CheckCircle2 size={24} />
                         </div>
-                        <h2 className="text-2xl font-bold text-white">Logbook Submitted Successfully!</h2>
-                        <p className="text-xs text-slate-400 max-w-md mx-auto">
-                            Your report for Week {formData.weekNumber} has been transmitted to your industry supervisor for verification.
-                        </p>
-                        <Button onClick={() => setSubmitted(false)} className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-6">
-                            Submit Another Entry / View Logbooks
+                        <div className="space-y-1">
+                            <h2 className="text-lg font-semibold text-white">Logbook Submitted Successfully</h2>
+                            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                                Your report for Week {formData.weekNumber} has been submitted for industry supervisor review.
+                            </p>
+                        </div>
+                        <Button
+                            onClick={() => { setSubmitted(false); setEditingLogbookId(null); }}
+                            className="text-xs py-2 px-4"
+                        >
+                            Create Another Entry
                         </Button>
-                    </Card>
+                    </div>
                 ) : (
-                    <div className="grid lg:grid-cols-12 gap-8">
+                    <div className="grid lg:grid-cols-12 gap-5">
                         {/* Form Area */}
-                        <div className="lg:col-span-8 space-y-6">
+                        <div className="lg:col-span-8 space-y-4">
                             {editingLogbookId && (
-                                <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 space-y-1 text-xs">
-                                    <div className="flex items-center gap-2 font-bold">
-                                        <Edit3 className="w-4 h-4" />
+                                <div className="p-3.5 rounded-lg bg-amber-500/5 border border-amber-500/20 text-amber-300 space-y-1 text-xs">
+                                    <div className="flex items-center gap-1.5 font-semibold">
+                                        <Edit3 className="w-3.5 h-3.5" />
                                         <span>Revising Week {formData.weekNumber} Logbook</span>
                                     </div>
                                     {supervisorComment && (
-                                        <p className="text-slate-300 text-[11px] mt-1 italic">
+                                        <p className="text-slate-300 text-[11px] leading-normal italic">
                                             Supervisor Feedback: "{supervisorComment}"
                                         </p>
                                     )}
                                 </div>
                             )}
 
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                <Card className="p-6 sm:p-8 space-y-6 bg-slate-900/80 border-slate-800">
-                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                        <div className="space-y-1.5">
-                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Reporting Week</label>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <div className="craft-card p-5 space-y-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-medium text-slate-300">Reporting Week</label>
                                             <select
                                                 value={formData.weekNumber}
                                                 disabled={Boolean(editingLogbookId)}
                                                 onChange={(e) => setFormData({ ...formData, weekNumber: parseInt(e.target.value) })}
-                                                className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
+                                                className="w-full p-2 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white outline-none focus:border-violet-500"
                                             >
                                                 {[...Array(16).keys()].map(i => (
                                                     <option key={i + 1} value={i + 1}>Week {i + 1}</option>
                                                 ))}
                                             </select>
                                         </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Start Date</label>
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-medium text-slate-300">Start Date</label>
                                             <input
                                                 type="date"
                                                 value={formData.startDate}
                                                 onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                                                className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
+                                                className="w-full p-2 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white outline-none focus:border-violet-500"
                                                 required
                                             />
                                         </div>
-                                        <div className="space-y-1.5">
-                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">End Date</label>
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-medium text-slate-300">End Date</label>
                                             <input
                                                 type="date"
                                                 value={formData.endDate}
                                                 onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                                                className="w-full p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white"
+                                                className="w-full p-2 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white outline-none focus:border-violet-500"
                                                 required
                                             />
                                         </div>
                                     </div>
 
                                     {/* Daily Entries */}
-                                    <div className="space-y-3">
-                                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Daily Activity Log</label>
-                                        <div className="flex bg-slate-800/80 p-1 rounded-xl gap-1 overflow-x-auto">
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-medium text-slate-300">Daily Technical Tasks</label>
+                                        <div className="segmented-tabs w-full flex">
                                             {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map((day) => (
                                                 <button
                                                     key={day}
                                                     type="button"
                                                     onClick={() => setActiveDay(day)}
-                                                    className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold uppercase transition ${
-                                                        activeDay === day
-                                                            ? 'bg-blue-600 text-white shadow'
-                                                            : 'text-slate-400 hover:text-white hover:bg-slate-700/50'
+                                                    className={`segmented-tab-btn flex-1 text-center capitalize ${
+                                                        activeDay === day ? 'active' : ''
                                                     }`}
                                                 >
-                                                    {day.slice(0, 3)}
+                                                    {day}
                                                 </button>
                                             ))}
                                         </div>
 
                                         <textarea
-                                            rows={6}
+                                            rows={5}
                                             value={formData.dailyEntries[activeDay]}
                                             onChange={(e) => setFormData({
                                                 ...formData,
@@ -322,38 +324,38 @@ const LogbookUpload = () => {
                                                     [activeDay]: e.target.value
                                                 }
                                             })}
-                                            className="w-full p-3.5 rounded-xl bg-slate-800/60 border border-slate-700 text-xs text-white placeholder-slate-500 resize-none focus:ring-2 focus:ring-blue-500"
-                                            placeholder={`Detail your technical activities and deliverables for ${activeDay.charAt(0).toUpperCase() + activeDay.slice(1)}...`}
+                                            className="w-full p-3 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white placeholder-slate-500 resize-none outline-none focus:border-violet-500 font-sans"
+                                            placeholder={`Detail tasks and deliverables completed on ${activeDay.charAt(0).toUpperCase() + activeDay.slice(1)}...`}
                                         />
                                     </div>
 
                                     {/* Weekly Summary */}
-                                    <div className="space-y-2">
+                                    <div className="space-y-1.5">
                                         <div className="flex items-center justify-between">
-                                            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Weekly Comprehensive Summary</label>
+                                            <label className="text-xs font-medium text-slate-300">Weekly Reflection & Summary</label>
                                             <button
                                                 type="button"
                                                 onClick={handleRefine}
                                                 disabled={refining}
-                                                className="flex items-center gap-1.5 text-[11px] font-bold text-blue-400 hover:text-blue-300 bg-blue-500/10 px-3 py-1 rounded-full border border-blue-500/20"
+                                                className="flex items-center gap-1 text-[11px] font-medium text-violet-400 hover:text-violet-300 bg-violet-500/10 px-2.5 py-0.5 rounded border border-violet-500/20"
                                             >
                                                 {refining ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                                                <span>{refining ? 'Refining...' : 'AI Refine'}</span>
+                                                <span>{refining ? 'Enhancing...' : 'Refine Summary'}</span>
                                             </button>
                                         </div>
                                         <textarea
-                                            rows={5}
+                                            rows={4}
                                             value={formData.summary}
                                             onChange={(e) => setFormData({ ...formData, summary: e.target.value })}
-                                            className="w-full p-3.5 rounded-xl bg-slate-800/60 border border-slate-700 text-xs text-white placeholder-slate-500 resize-none focus:ring-2 focus:ring-blue-500"
-                                            placeholder="Describe overall competencies acquired, equipment utilized, and technical challenges overcome..."
+                                            className="w-full p-3 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white placeholder-slate-500 resize-none outline-none focus:border-violet-500 font-sans"
+                                            placeholder="Summarize key learning objectives, equipment used, challenges solved, and skills developed..."
                                             required
                                         />
                                     </div>
 
                                     {error && (
-                                        <div className="flex items-center gap-2 p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-400 text-xs">
-                                            <AlertCircle size={16} className="shrink-0" />
+                                        <div className="flex items-center gap-2 p-2.5 bg-rose-500/10 border border-rose-500/20 rounded-md text-rose-300 text-xs">
+                                            <AlertCircle size={14} className="shrink-0 text-rose-400" />
                                             <span>{error}</span>
                                         </div>
                                     )}
@@ -361,21 +363,21 @@ const LogbookUpload = () => {
                                     <Button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full py-4 text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-xl flex items-center justify-center gap-2"
+                                        className="w-full py-2.5 text-xs font-semibold rounded-md flex items-center justify-center gap-2"
                                     >
-                                        <Upload size={16} />
+                                        <Upload size={14} />
                                         <span>{loading ? 'Submitting...' : editingLogbookId ? 'Resubmit Revised Logbook' : 'Submit Weekly Logbook'}</span>
                                     </Button>
-                                </Card>
+                                </div>
                             </form>
                         </div>
 
-                        {/* Right Column: Evidence Upload & History */}
-                        <div className="lg:col-span-4 space-y-6">
-                            {/* Evidence Vault */}
-                            <Card className="p-6 space-y-4 bg-slate-900/80 border-slate-800">
-                                <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                                    <Upload size={16} className="text-blue-400" />
+                        {/* Right Column: Evidence Vault & Submission History */}
+                        <div className="lg:col-span-4 space-y-4">
+                            {/* Evidence Upload */}
+                            <div className="craft-card p-4 space-y-3">
+                                <h3 className="text-xs font-semibold text-white uppercase tracking-wide flex items-center gap-1.5">
+                                    <Upload size={14} className="text-violet-400" />
                                     Evidence Attachments
                                 </h3>
 
@@ -384,8 +386,8 @@ const LogbookUpload = () => {
                                     onDragLeave={handleDrag}
                                     onDragOver={handleDrag}
                                     onDrop={handleDrop}
-                                    className={`relative border-2 border-dashed rounded-2xl p-6 text-center space-y-2 transition ${
-                                        dragActive ? 'border-blue-500 bg-blue-500/10' : 'border-slate-700 hover:border-blue-500/50'
+                                    className={`relative border border-dashed rounded-lg p-5 text-center space-y-1.5 transition ${
+                                        dragActive ? 'border-violet-500 bg-violet-500/10' : 'border-[#22242f] hover:border-slate-500'
                                     }`}
                                 >
                                     <input
@@ -395,30 +397,30 @@ const LogbookUpload = () => {
                                         onChange={handleFileChange}
                                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     />
-                                    <Upload size={24} className="text-blue-400 mx-auto opacity-80" />
-                                    <p className="text-xs font-semibold text-slate-300">Upload Photos / PDFs</p>
+                                    <Upload size={20} className="text-violet-400 mx-auto opacity-80" />
+                                    <p className="text-xs font-medium text-slate-300">Upload Photos or PDFs</p>
                                     <p className="text-[10px] text-slate-500">Max 10MB per file</p>
                                 </div>
 
                                 {files.length > 0 && (
-                                    <div className="space-y-2">
+                                    <div className="space-y-1.5">
                                         {files.map((file, idx) => (
-                                            <div key={idx} className="flex items-center justify-between p-2 rounded-lg bg-slate-800 text-xs">
-                                                <span className="text-slate-300 truncate max-w-[180px]">{file.name}</span>
-                                                <button type="button" onClick={() => removeFile(idx)} className="text-slate-400 hover:text-rose-400">
-                                                    <X size={14} />
+                                            <div key={idx} className="flex items-center justify-between p-2 rounded-md bg-[#181a24] border border-[#22242f] text-xs">
+                                                <span className="text-slate-300 truncate max-w-[160px] text-[11px]">{file.name}</span>
+                                                <button type="button" onClick={() => removeFile(idx)} className="text-slate-400 hover:text-rose-400 p-0.5">
+                                                    <X size={13} />
                                                 </button>
                                             </div>
                                         ))}
                                     </div>
                                 )}
-                            </Card>
+                            </div>
 
                             {/* Existing Submissions List */}
-                            <Card className="p-6 space-y-4 bg-slate-900/80 border-slate-800">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                                        <History size={16} className="text-purple-400" />
+                            <div className="craft-card p-4 space-y-3">
+                                <div className="flex items-center justify-between pb-2 border-b border-[#22242f]">
+                                    <h3 className="text-xs font-semibold text-white uppercase tracking-wide flex items-center gap-1.5">
+                                        <History size={14} className="text-violet-400" />
                                         Logbook Submissions
                                     </h3>
                                     <span className="text-[10px] text-slate-500">{existingLogs.length} Records</span>
@@ -426,32 +428,39 @@ const LogbookUpload = () => {
 
                                 {historyLoading ? (
                                     <div className="space-y-2">
-                                        <LoadingSkeleton className="h-10 rounded-lg" />
-                                        <LoadingSkeleton className="h-10 rounded-lg" />
+                                        <LoadingSkeleton className="h-9 rounded-md" />
+                                        <LoadingSkeleton className="h-9 rounded-md" />
                                     </div>
                                 ) : existingLogs.length === 0 ? (
-                                    <p className="text-xs text-slate-500 italic text-center py-4">No submissions yet.</p>
+                                    <p className="text-xs text-slate-500 text-center py-4">No logbooks submitted yet.</p>
                                 ) : (
-                                    <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                                    <div className="space-y-2 max-h-80 overflow-y-auto pr-0.5">
                                         {existingLogs.map(log => {
                                             const isApproved = log.status === 'approved';
                                             const isRejected = log.status === 'rejected';
 
                                             return (
-                                                <div key={log.id} className="p-3 rounded-xl bg-slate-800/60 border border-slate-700 flex items-center justify-between text-xs">
+                                                <div key={log.id} className="p-2.5 rounded-md bg-[#181a24] border border-[#22242f] flex items-center justify-between text-xs">
                                                     <div>
-                                                        <p className="font-bold text-white">Week {log.weekNumber}</p>
-                                                        <p className="text-[10px] text-slate-400">{log.startDate} to {log.endDate}</p>
+                                                        <div className="flex items-center gap-1.5">
+                                                            <p className="font-medium text-white">Week {log.weekNumber}</p>
+                                                            {isApproved && <Lock size={11} className="text-emerald-400" title="Locked" />}
+                                                        </div>
+                                                        <p className="text-[10px] text-slate-500">{log.startDate} to {log.endDate}</p>
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <Badge className={isApproved ? 'bg-emerald-500/10 text-emerald-400' : isRejected ? 'bg-rose-500/10 text-rose-400' : 'bg-amber-500/10 text-amber-400'}>
-                                                            {log.status.toUpperCase()}
+                                                        <Badge
+                                                            variant={isApproved ? 'success' : isRejected ? 'danger' : 'warning'}
+                                                            size="sm"
+                                                            dot={true}
+                                                        >
+                                                            {isApproved ? 'Approved' : isRejected ? 'Revision Required' : 'Under Review'}
                                                         </Badge>
                                                         {isRejected && (
                                                             <button
                                                                 type="button"
                                                                 onClick={() => startRevision(log)}
-                                                                className="text-[10px] font-bold text-amber-400 hover:underline"
+                                                                className="text-[11px] font-medium text-amber-400 hover:text-amber-300"
                                                             >
                                                                 Revise
                                                             </button>
@@ -462,46 +471,46 @@ const LogbookUpload = () => {
                                         })}
                                     </div>
                                 )}
-                            </Card>
+                            </div>
                         </div>
                     </div>
                 )}
 
                 {/* AI Refine Modal */}
                 {showRefineModal && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                        <div className="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-4">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                                    <Sparkles className="w-5 h-5 text-blue-400" />
-                                    AI Technical Enhancement
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+                        <div className="w-full max-w-xl bg-[#12141c] border border-[#22242f] rounded-xl p-5 space-y-4 shadow-2xl">
+                            <div className="flex items-center justify-between pb-2 border-b border-[#22242f]">
+                                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                                    <Sparkles className="w-4 h-4 text-violet-400" />
+                                    Technical Summary Enhancement
                                 </h3>
-                                <button onClick={() => setShowRefineModal(false)} className="text-slate-400 hover:text-white">
-                                    <X size={18} />
+                                <button onClick={() => setShowRefineModal(false)} className="text-slate-400 hover:text-white p-1">
+                                    <X size={15} />
                                 </button>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                                 <div className="space-y-1">
-                                    <p className="font-bold text-slate-400 uppercase text-[10px]">Your Original Draft</p>
-                                    <div className="p-3 bg-slate-800 rounded-xl text-slate-300 italic max-h-48 overflow-y-auto">
+                                    <p className="font-medium text-slate-400 uppercase text-[10px]">Original Draft</p>
+                                    <div className="p-3 bg-[#181a24] rounded-md text-slate-300 max-h-40 overflow-y-auto text-[11px] leading-relaxed border border-[#22242f]">
                                         "{formData.summary}"
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="font-bold text-blue-400 uppercase text-[10px]">Enhanced Version</p>
-                                    <div className="p-3 bg-blue-950/40 border border-blue-500/20 rounded-xl text-white max-h-48 overflow-y-auto">
+                                    <p className="font-medium text-violet-400 uppercase text-[10px]">Enhanced Version</p>
+                                    <div className="p-3 bg-violet-950/20 border border-violet-500/20 rounded-md text-slate-100 max-h-40 overflow-y-auto text-[11px] leading-relaxed">
                                         {refinedDraft}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
-                                <Button variant="outline" onClick={() => setShowRefineModal(false)} className="text-xs">
+                            <div className="flex justify-end gap-2 pt-2 border-t border-[#22242f]">
+                                <Button variant="secondary" onClick={() => setShowRefineModal(false)} className="text-xs py-1.5 px-3">
                                     Discard
                                 </Button>
-                                <Button onClick={applyRefinement} className="bg-blue-600 hover:bg-blue-700 text-white text-xs">
-                                    Apply Refinement
+                                <Button onClick={applyRefinement} className="text-xs py-1.5 px-3">
+                                    Apply Enhancement
                                 </Button>
                             </div>
                         </div>

@@ -1,17 +1,19 @@
 import React from 'react';
 import {
-    Settings as SettingsIcon,
     Bell,
     Shield,
     Smartphone,
-    Globe,
     Moon,
     Sun,
     HelpCircle,
-    Save
+    UserCheck,
+    Check
 } from 'lucide-react';
 import DashboardLayout from '../components/DashboardLayout';
 import { useAuth } from '../context/AuthContext';
+import Card from '../components/ui/Card';
+import Badge from '../components/ui/Badge';
+import Button from '../components/ui/Button';
 
 const Settings = () => {
     const { user } = useAuth();
@@ -19,38 +21,46 @@ const Settings = () => {
 
     return (
         <DashboardLayout role={role}>
-            <div className="space-y-12 animate-fade-in">
+            <div className="space-y-6 max-w-5xl mx-auto p-6">
                 {/* Header */}
-                <div className="space-y-2">
-                    <span className="section-label">Configuration</span>
-                    <h1 className="text-4xl font-black text-white tracking-tighter">System Settings</h1>
-                    <p className="text-slate-500 font-medium leading-relaxed">Customize your platform experience and security preferences.</p>
+                <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-violet-400">System Preferences</span>
+                            <Badge variant="neutral">{user?.role?.replace(/_/g, ' ')}</Badge>
+                        </div>
+                        <h1 className="text-2xl font-bold text-slate-100 tracking-tight mt-0.5">Account & Workspace Settings</h1>
+                        <p className="text-xs text-slate-400 mt-0.5">Manage notification triggers, user interface themes, and multi-factor security.</p>
+                    </div>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-10">
-                    <div className="lg:col-span-2 space-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="md:col-span-2 space-y-6">
                         {/* Notifications */}
-                        <div className="glass-card p-10 space-y-8">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-blue-600/10 text-blue-500 rounded-xl flex items-center justify-center">
-                                    <Bell size={20} />
+                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 space-y-5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-lg bg-violet-600/10 border border-violet-500/20 text-violet-400 flex items-center justify-center">
+                                    <Bell size={18} />
                                 </div>
-                                <h3 className="text-xl font-black text-white tracking-tight">Notification Center</h3>
+                                <div>
+                                    <h3 className="text-base font-bold text-slate-100">Notification Triggers</h3>
+                                    <p className="text-xs text-slate-400">Configure real-time dispatch alerts</p>
+                                </div>
                             </div>
 
-                            <div className="space-y-6">
+                            <div className="divide-y divide-[#22242f]">
                                 {[
-                                    { label: 'Push Notifications', desc: 'Receive real-time alerts on your device.', active: true },
-                                    { label: 'Email Reports', desc: 'Weekly summary of your attachment progress.', active: true },
-                                    { label: 'System Announcements', desc: 'Important platform updates and maintenance news.', active: false },
+                                    { label: 'Weekly Logbook Reminders', desc: 'Alerts before Friday submission cutoff times.', active: true },
+                                    { label: 'Evaluation & Review Notifications', desc: 'Instant dispatch when a supervisor marks an entry or assessment.', active: true },
+                                    { label: 'System & Institutional Announcements', desc: 'Academic calendar updates and coordinator directives.', active: false },
                                 ].map((item, i) => (
-                                    <div key={i} className="flex items-center justify-between p-2">
-                                        <div className="space-y-1">
-                                            <p className="text-sm font-black text-white">{item.label}</p>
-                                            <p className="text-xs text-slate-500 font-medium">{item.desc}</p>
+                                    <div key={i} className="flex items-center justify-between py-3.5">
+                                        <div className="pr-4">
+                                            <p className="text-xs font-semibold text-slate-200">{item.label}</p>
+                                            <p className="text-[11px] text-slate-400 mt-0.5">{item.desc}</p>
                                         </div>
-                                        <div className={`w-12 h-6 rounded-full cursor-pointer flex items-center px-1 transition-colors ${item.active ? 'bg-blue-600 justify-end' : 'bg-white/10 justify-start border border-white/5'}`}>
-                                            <div className="w-4 h-4 bg-white rounded-full shadow-lg" />
+                                        <div className={`w-10 h-5 rounded-full cursor-pointer flex items-center px-0.5 transition-colors ${item.active ? 'bg-violet-600 justify-end' : 'bg-[#181a24] justify-start border border-[#22242f]'}`}>
+                                            <div className="w-4 h-4 bg-white rounded-full shadow" />
                                         </div>
                                     </div>
                                 ))}
@@ -58,66 +68,77 @@ const Settings = () => {
                         </div>
 
                         {/* Appearance */}
-                        <div className="glass-card p-10 space-y-8">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 bg-purple-600/10 text-purple-500 rounded-xl flex items-center justify-center">
-                                    <Moon size={20} />
+                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 space-y-5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-lg bg-violet-600/10 border border-violet-500/20 text-violet-400 flex items-center justify-center">
+                                    <Moon size={18} />
                                 </div>
-                                <h3 className="text-xl font-black text-white tracking-tight">Appearance</h3>
+                                <div>
+                                    <h3 className="text-base font-bold text-slate-100">Interface Theme</h3>
+                                    <p className="text-xs text-slate-400">Select canvas visual tone</p>
+                                </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <button className="p-6 rounded-[2rem] border-2 border-blue-600 bg-slate-900 flex flex-col items-center space-y-3 transition-all">
-                                    <Moon className="text-blue-500" size={24} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-white">High Contrast Dark</span>
+                                <button className="p-4 rounded-xl border-2 border-violet-600 bg-[#12141c] flex flex-col items-center space-y-2 text-left">
+                                    <div className="flex items-center justify-between w-full">
+                                        <Moon className="text-violet-400" size={20} />
+                                        <Badge variant="success">Active</Badge>
+                                    </div>
+                                    <div className="w-full pt-2">
+                                        <p className="text-xs font-semibold text-slate-200">Figma Obsidian Dark</p>
+                                        <p className="text-[10px] text-slate-500">Curated institutional palette</p>
+                                    </div>
                                 </button>
-                                <button className="p-6 rounded-[2rem] border-2 border-transparent bg-white/5 flex flex-col items-center space-y-3 hover:bg-white/10 transition-all">
-                                    <Sun className="text-slate-500" size={24} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Modern Light</span>
+                                <button className="p-4 rounded-xl border border-[#22242f] bg-[#12141c] flex flex-col items-center space-y-2 opacity-60 hover:opacity-100 transition-opacity text-left">
+                                    <div className="flex items-center justify-between w-full">
+                                        <Sun className="text-slate-400" size={20} />
+                                        <span className="text-[10px] text-slate-500">Available</span>
+                                    </div>
+                                    <div className="w-full pt-2">
+                                        <p className="text-xs font-semibold text-slate-300">Clean Institutional Light</p>
+                                        <p className="text-[10px] text-slate-500">Daytime classroom mode</p>
+                                    </div>
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <div className="lg:col-span-1 space-y-8">
+                    <div className="space-y-6">
                         {/* Security */}
-                        <div className="glass-card p-8 space-y-6 bg-gradient-to-b from-blue-600/10 to-transparent">
-                            <div className="flex items-center space-x-3">
-                                <Shield className="text-blue-500" size={20} />
-                                <h3 className="text-xs font-black text-white uppercase tracking-widest leading-none">Access Control</h3>
+                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 space-y-4">
+                            <div className="flex items-center gap-2">
+                                <Shield className="text-violet-400" size={18} />
+                                <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">Access Security</h3>
                             </div>
-                            <p className="text-xs text-slate-500 font-medium leading-relaxed">Manage your biometric login and multi-factor authentication settings.</p>
-                            <button className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all flex items-center justify-center space-x-2">
-                                <Smartphone size={14} />
-                                <span>Setup 2FA</span>
-                            </button>
+                            <p className="text-xs text-slate-400 leading-relaxed">Two-factor authentication adds an institutional hardware key or authenticator layer.</p>
+                            <Button variant="outline" className="w-full" icon={Smartphone}>
+                                Configure 2FA Authenticator
+                            </Button>
                         </div>
 
-                        {/* Help & Support */}
-                        <div className="glass-card p-8 space-y-6">
-                            <div className="flex items-center space-x-3 text-slate-400">
-                                <HelpCircle size={20} />
-                                <h3 className="text-xs font-black uppercase tracking-widest leading-none">Support</h3>
+                        {/* Profile Info */}
+                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 space-y-3">
+                            <div className="flex items-center gap-2">
+                                <UserCheck className="text-violet-400" size={18} />
+                                <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">Identity Details</h3>
                             </div>
-                            <div className="space-y-4">
-                                <button className="w-full text-left text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-blue-500 transition-colors">Documentation</button>
-                                <button className="w-full text-left text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-blue-500 transition-colors">API Reference</button>
-                                <button className="w-full text-left text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-blue-500 transition-colors">Contact Engineering</button>
+                            <div className="space-y-1.5 text-xs">
+                                <div className="flex justify-between text-slate-400">
+                                    <span>Account:</span>
+                                    <span className="text-slate-200 font-medium">{user?.name}</span>
+                                </div>
+                                <div className="flex justify-between text-slate-400">
+                                    <span>Email:</span>
+                                    <span className="text-slate-200 font-mono text-[11px]">{user?.email}</span>
+                                </div>
+                                <div className="flex justify-between text-slate-400">
+                                    <span>Role:</span>
+                                    <span className="text-violet-400 capitalize">{user?.role?.replace(/_/g, ' ')}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                {/* Save Footer */}
-                <div className="flex items-center justify-between p-8 bg-blue-600/5 rounded-[2.5rem] border border-blue-600/10 border-dashed">
-                    <p className="text-xs font-black text-blue-500 uppercase tracking-widest flex items-center space-x-3">
-                        <Globe size={16} />
-                        <span>Changes are synchronized across all regions</span>
-                    </p>
-                    <button className="btn-primary px-10 py-4 text-xs font-black uppercase tracking-widest flex items-center space-x-3">
-                        <Save size={18} />
-                        <span>Commit Changes</span>
-                    </button>
                 </div>
             </div>
         </DashboardLayout>

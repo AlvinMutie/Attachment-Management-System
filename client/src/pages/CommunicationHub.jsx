@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import DashboardLayout from '../components/DashboardLayout';
-import { Send, User, MessageCircle, Clock, Search, MoreVertical, Phone, Video } from 'lucide-react';
+import { Send, MessageCircle, Clock, Search, MoreVertical, Phone, Video, User } from 'lucide-react';
+import Badge from '../components/ui/Badge';
+import Button from '../components/ui/Button';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -15,6 +17,7 @@ const CommunicationHub = () => {
     const [loading, setLoading] = useState(true);
     const messagesEndRef = useRef(null);
     const [sending, setSending] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         fetchContacts();
@@ -23,7 +26,6 @@ const CommunicationHub = () => {
     useEffect(() => {
         if (selectedContact) {
             fetchMessages(selectedContact.id);
-            // Set up polling for new messages every 5 seconds
             const interval = setInterval(() => {
                 fetchMessages(selectedContact.id, true);
             }, 5000);
@@ -42,11 +44,7 @@ const CommunicationHub = () => {
     const fetchContacts = async () => {
         try {
             const response = await axios.get(`${API_URL}/messages/contacts`);
-            setContacts(response.data.data);
-            if (response.data.data.length > 0 && !selectedContact) {
-                // Optionally select the first contact
-                // setSelectedContact(response.data.data[0]);
-            }
+            setContacts(response.data.data || []);
         } catch (error) {
             console.error('Failed to fetch contacts:', error);
         } finally {
@@ -57,9 +55,7 @@ const CommunicationHub = () => {
     const fetchMessages = async (contactId, isPolling = false) => {
         try {
             const response = await axios.get(`${API_URL}/messages/${contactId}`);
-            // If polling, only update if there are new messages or length changed
-            // For simplicity, just setting state now. Optimized approach would check diff.
-            setMessages(response.data.data);
+            setMessages(response.data.data || []);
         } catch (error) {
             if (!isPolling) console.error('Failed to fetch messages:', error);
         }
@@ -90,59 +86,62 @@ const CommunicationHub = () => {
     };
 
     const role = user?.role || 'student';
+    const filteredContacts = contacts.filter(c =>
+        c.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.role?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <DashboardLayout role={role}>
-            <div className="h-[calc(100vh-8rem)] flex gap-6 animate-fade-in">
-                {/* Contacts List */}
-                <div className="w-full md:w-80 glass-card !rounded-[32px] overflow-hidden flex flex-col bg-white/[0.02] border-white/5">
-                    <div className="p-6 border-b border-white/5">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-black text-white tracking-tight">Messages</h2>
-                            <div className="w-8 h-8 rounded-full bg-blue-600/10 flex items-center justify-center text-blue-400">
-                                <MessageCircle size={18} />
-                            </div>
+            <div className="h-[calc(100vh-7.5rem)] flex gap-4 max-w-7xl mx-auto">
+                {/* Contacts Column */}
+                <div className="w-80 bg-[#15171f] border border-[#22242f] rounded-xl overflow-hidden flex flex-col flex-shrink-0">
+                    <div className="p-4 border-b border-[#22242f]">
+                        <div className="flex items-center justify-between mb-3">
+                            <h2 className="text-base font-bold text-slate-100 tracking-tight">Messages</h2>
+                            <Badge variant="neutral">{contacts.length} Contacts</Badge>
                         </div>
                         <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={14} />
                             <input
                                 type="text"
                                 placeholder="Search contacts..."
-                                className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 transition-colors"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-[#12141c] border border-[#22242f] rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500"
                             />
                         </div>
                     </div>
 
-                    <div className="flex-1 overflow-y-auto no-scrollbar p-3 space-y-2">
+                    <div className="flex-1 overflow-y-auto p-2 space-y-1">
                         {loading ? (
-                            <div className="text-center py-8 text-slate-500 text-sm">Loading contacts...</div>
-                        ) : contacts.length === 0 ? (
-                            <div className="text-center py-8 text-slate-500 text-sm font-medium">No contacts found</div>
+                            <div className="text-center py-8 text-slate-500 text-xs">Loading contacts...</div>
+                        ) : filteredContacts.length === 0 ? (
+                            <div className="text-center py-8 text-slate-500 text-xs font-medium">No contacts found</div>
                         ) : (
-                            contacts.map(contact => (
+                            filteredContacts.map(contact => (
                                 <div
                                     key={contact.id}
                                     onClick={() => setSelectedContact(contact)}
-                                    className={`p-3 rounded-2xl cursor-pointer transition-all flex items-center gap-3 border ${selectedContact?.id === contact.id
-                                        ? 'bg-blue-600/10 border-blue-600/20 shadow-lg shadow-blue-900/20'
-                                        : 'hover:bg-white/5 border-transparent'
+                                    className={`p-2.5 rounded-lg cursor-pointer transition-colors flex items-center gap-3 border ${selectedContact?.id === contact.id
+                                        ? 'bg-violet-600/10 border-violet-500/30 text-slate-100'
+                                        : 'hover:bg-[#181a24] border-transparent text-slate-300'
                                         }`}
                                 >
-                                    <div className="relative">
-                                        <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white font-bold border border-white/10">
-                                            {contact.name.charAt(0)}
+                                    <div className="relative flex-shrink-0">
+                                        <div className="w-9 h-9 rounded-full bg-[#181a24] border border-[#22242f] flex items-center justify-center text-xs font-semibold text-violet-400">
+                                            {contact.name?.charAt(0) || 'U'}
                                         </div>
-                                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-slate-950 rounded-full" />
+                                        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-[#15171f] rounded-full" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-center mb-0.5">
-                                            <h3 className={`font-bold text-sm truncate ${selectedContact?.id === contact.id ? 'text-white' : 'text-slate-300'}`}>
+                                            <h3 className="font-semibold text-xs truncate">
                                                 {contact.name}
                                             </h3>
-                                            <span className="text-[10px] text-slate-500">12:30</span>
                                         </div>
-                                        <p className="text-xs text-slate-500 truncate">
-                                            {contact.role.replace(/_/g, ' ')}
+                                        <p className="text-[11px] text-slate-500 truncate capitalize">
+                                            {contact.role?.replace(/_/g, ' ')}
                                         </p>
                                     </div>
                                 </div>
@@ -151,90 +150,81 @@ const CommunicationHub = () => {
                     </div>
                 </div>
 
-                {/* Chat Area */}
-                <div className="flex-1 glass-card !rounded-[32px] overflow-hidden flex flex-col bg-white/[0.02] border-white/5 relative">
+                {/* Conversation Thread */}
+                <div className="flex-1 bg-[#15171f] border border-[#22242f] rounded-xl overflow-hidden flex flex-col relative">
                     {!selectedContact ? (
-                        <div className="flex-1 flex flex-col items-center justify-center text-center p-8 opacity-50">
-                            <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6 animate-pulse">
-                                <MessageCircle size={48} className="text-slate-500" />
+                        <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
+                            <div className="w-16 h-16 rounded-2xl bg-violet-600/10 border border-violet-500/20 text-violet-400 flex items-center justify-center mb-4">
+                                <MessageCircle size={32} />
                             </div>
-                            <h3 className="text-xl font-bold text-white mb-2">Communication Hub</h3>
-                            <p className="text-slate-500 max-w-sm">Select a contact from the list to start messaging. All conversations are secure and monitored.</p>
+                            <h3 className="text-base font-bold text-slate-200 mb-1">Direct Communication Channel</h3>
+                            <p className="text-xs text-slate-500 max-w-sm">Select a contact from the roster to review correspondence with your supervisors, students, or coordinators.</p>
                         </div>
                     ) : (
                         <>
-                            {/* Chat Header */}
-                            <div className="p-4 px-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
-                                <div className="flex items-center gap-4">
-                                    <div className="relative">
-                                        <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-black shadow-lg shadow-blue-600/20">
-                                            {selectedContact.name.charAt(0)}
-                                        </div>
-                                        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-slate-950 rounded-full" />
+                            {/* Thread Header */}
+                            <div className="p-4 px-5 border-b border-[#22242f] flex items-center justify-between bg-[#12141c]">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-full bg-[#181a24] border border-[#22242f] flex items-center justify-center text-xs font-semibold text-violet-400">
+                                        {selectedContact.name?.charAt(0) || 'U'}
                                     </div>
                                     <div>
-                                        <h3 className="font-black text-white tracking-tight">{selectedContact.name}</h3>
+                                        <h3 className="font-bold text-sm text-slate-100">{selectedContact.name}</h3>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-[10px] uppercase tracking-widest text-blue-400 font-bold">{selectedContact.role.replace(/_/g, ' ')}</span>
-                                            <div className="w-1 h-1 rounded-full bg-slate-500" />
-                                            <span className="text-[10px] text-emerald-500 font-bold">Online</span>
+                                            <span className="text-[11px] text-slate-400 capitalize">{selectedContact.role?.replace(/_/g, ' ')}</span>
+                                            <span className="w-1 h-1 rounded-full bg-slate-600" />
+                                            <span className="text-[10px] text-emerald-400 font-medium">Online</span>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button className="p-2 hover:bg-white/5 rounded-full text-slate-400 hover:text-white transition-colors">
-                                        <Phone size={18} />
-                                    </button>
-                                    <button className="p-2 hover:bg-white/5 rounded-full text-slate-400 hover:text-white transition-colors">
-                                        <Video size={18} />
-                                    </button>
-                                    <button className="p-2 hover:bg-white/5 rounded-full text-slate-400 hover:text-white transition-colors">
-                                        <MoreVertical size={18} />
-                                    </button>
                                 </div>
                             </div>
 
-                            {/* Messages */}
-                            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                                {messages.map((msg, index) => {
-                                    const isMe = msg.senderId === user.id;
-                                    return (
-                                        <div key={index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                                            <div className={`flex flex-col max-w-[70%] ${isMe ? 'items-end' : 'items-start'}`}>
-                                                <div className={`p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${isMe
-                                                    ? 'bg-blue-600 text-white rounded-tr-sm'
-                                                    : 'bg-slate-800 text-slate-200 rounded-tl-sm border border-white/5'
-                                                    }`}>
-                                                    {msg.content}
+                            {/* Message Feed */}
+                            <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                                {messages.length === 0 ? (
+                                    <div className="text-center py-12 text-xs text-slate-500">No messages in this thread yet. Send a note below.</div>
+                                ) : (
+                                    messages.map((msg, index) => {
+                                        const isMe = msg.senderId === user.id;
+                                        return (
+                                            <div key={index} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                                                <div className={`flex flex-col max-w-[70%] ${isMe ? 'items-end' : 'items-start'}`}>
+                                                    <div className={`px-4 py-2.5 rounded-xl text-xs leading-relaxed ${isMe
+                                                        ? 'bg-violet-600 text-white rounded-br-sm'
+                                                        : 'bg-[#181a24] text-slate-200 border border-[#22242f] rounded-bl-sm'
+                                                        }`}>
+                                                        {msg.content}
+                                                    </div>
+                                                    <span className="text-[10px] text-slate-500 mt-1 px-1">
+                                                        {formatTime(msg.createdAt)}
+                                                    </span>
                                                 </div>
-                                                <span className="text-[10px] font-medium text-slate-500 mt-1 px-1">
-                                                    {formatTime(msg.createdAt)}
-                                                </span>
                                             </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    })
+                                )}
                                 <div ref={messagesEndRef} />
                             </div>
 
-                            {/* Input */}
-                            <div className="p-4 px-6 border-t border-white/5 bg-white/[0.02]">
-                                <form onSubmit={handleSendMessage} className="flex items-center gap-3">
+                            {/* Input Form */}
+                            <div className="p-3.5 px-5 border-t border-[#22242f] bg-[#12141c]">
+                                <form onSubmit={handleSendMessage} className="flex items-center gap-2">
                                     <input
                                         type="text"
                                         placeholder="Type your message..."
-                                        className="flex-1 bg-slate-950/50 border border-white/10 rounded-xl py-3 px-4 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/50 focus:bg-slate-900 transition-all"
+                                        className="flex-1 bg-[#15171f] border border-[#22242f] rounded-lg px-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500"
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         disabled={sending}
                                     />
-                                    <button
+                                    <Button
                                         type="submit"
+                                        variant="primary"
                                         disabled={!newMessage.trim() || sending}
-                                        className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-blue-600/20 group"
+                                        icon={Send}
                                     >
-                                        <Send size={20} className={`transform transition-transform ${sending ? 'translate-x-1 opacity-50' : 'group-hover:-translate-y-0.5 group-hover:translate-x-0.5'}`} />
-                                    </button>
+                                        Send
+                                    </Button>
                                 </form>
                             </div>
                         </>

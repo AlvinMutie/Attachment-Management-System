@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Search, Filter, Shield, Clock, Hash, Activity } from 'lucide-react';
+import { Search, Filter, Shield, Clock, Hash, ChevronLeft, ChevronRight } from 'lucide-react';
 import { getAuditLogs } from '../../utils/superadminApi';
+import Badge from '../../components/ui/Badge';
+import Button from '../../components/ui/Button';
 
 const AuditLogs = () => {
     const [logs, setLogs] = useState([]);
@@ -11,7 +13,7 @@ const AuditLogs = () => {
         startDate: '',
         endDate: ''
     });
-    const [pagination, setPagination] = useState({ page: 1, limit: 20 });
+    const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, totalPages: 1 });
 
     useEffect(() => {
         fetchLogs();
@@ -34,142 +36,135 @@ const AuditLogs = () => {
         }
     };
 
-    const getActionBadge = (action) => {
-        const colors = {
-            CREATE: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-            UPDATE: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-            DELETE: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-            LOCK: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
-            UNLOCK: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-        };
-
-        const actionType = action.split('_')[0];
-        return (
-            <span className={`px-2 py-1 text-[9px] font-bold uppercase tracking-widest rounded-lg border ${colors[actionType] || 'bg-slate-500/10 text-slate-400 border-slate-500/20'}`}>
-                {action.replace(/_/g, ' ')}
-            </span>
-        );
+    const getActionBadgeVariant = (action) => {
+        if (action.startsWith('CREATE')) return 'success';
+        if (action.startsWith('UPDATE') || action.startsWith('UNLOCK')) return 'info';
+        if (action.startsWith('DELETE') || action.startsWith('LOCK')) return 'danger';
+        return 'neutral';
     };
 
     return (
-        <div className="space-y-12">
-            <div className="flex flex-col md:flex-row justify-between items-end gap-8 animate-fade-in">
-                <div className="flex items-center gap-6">
-                    <div className="w-20 h-20 bg-amber-600 rounded-[2rem] flex items-center justify-center shadow-2xl shadow-amber-600/30 ring-1 ring-white/20">
-                        <Shield size={40} className="text-white" />
+        <div className="space-y-6 max-w-7xl mx-auto p-6">
+            <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-violet-400">Security Ledger</span>
+                        <Badge variant="neutral">Immutable Stream</Badge>
                     </div>
-                    <div className="space-y-1">
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-amber-400">Security Ledger</span>
-                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase">System <span className="text-amber-500">Audit</span></h1>
-                        <p className="text-slate-500 font-medium leading-relaxed max-w-lg">Immutable session and action logs monitoring platform-wide administrative activity.</p>
-                    </div>
+                    <h1 className="text-2xl font-bold text-slate-100 tracking-tight mt-0.5">Platform Audit Logs</h1>
+                    <p className="text-xs text-slate-400 mt-0.5">Comprehensive audit trail of institutional operations, role elevations, and access modifications.</p>
                 </div>
             </div>
 
             {/* Filters */}
-            <div className="glass-card p-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <select
-                        value={filters.action}
-                        onChange={(e) => setFilters({ ...filters, action: e.target.value })}
-                        className="input-field cursor-pointer text-xs font-semibold"
-                    >
-                        <option value="">Events: All Activities</option>
-                        <option value="CREATE_SCHOOL">Create Institution</option>
-                        <option value="UPDATE_SCHOOL">Update Institution</option>
-                        <option value="TOGGLE_SCHOOL_STATUS">Toggle Node State</option>
-                        <option value="UPDATE_USER_ROLE">Assign Role</option>
-                        <option value="RESET_USER_PASSWORD">Security Reset</option>
-                        <option value="LOCK_USER">Session Terminated</option>
-                        <option value="UNLOCK_USER">Session Restored</option>
-                    </select>
-                    <select
-                        value={filters.targetType}
-                        onChange={(e) => setFilters({ ...filters, targetType: e.target.value })}
-                        className="input-field cursor-pointer text-xs font-semibold"
-                    >
-                        <option value="">Targets: All Entities</option>
-                        <option value="School">Entity: Institutions</option>
-                        <option value="User">Entity: Identities</option>
-                        <option value="Student">Entity: Academic Node</option>
-                    </select>
-                    <input
-                        type="date"
-                        value={filters.startDate}
-                        onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-                        className="input-field [color-scheme:dark] text-xs font-semibold"
-                    />
-                    <input
-                        type="date"
-                        value={filters.endDate}
-                        onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-                        className="input-field [color-scheme:dark] text-xs font-semibold"
-                    />
+            <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Action Type</label>
+                        <select
+                            value={filters.action}
+                            onChange={(e) => setFilters({ ...filters, action: e.target.value })}
+                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
+                        >
+                            <option value="">All Actions</option>
+                            <option value="CREATE_SCHOOL">Create Institution</option>
+                            <option value="UPDATE_SCHOOL">Update Institution</option>
+                            <option value="TOGGLE_SCHOOL_STATUS">Toggle Node State</option>
+                            <option value="UPDATE_USER_ROLE">Assign Role</option>
+                            <option value="RESET_USER_PASSWORD">Password Reset</option>
+                            <option value="LOCK_USER">Account Locked</option>
+                            <option value="UNLOCK_USER">Account Unlocked</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Target Entity</label>
+                        <select
+                            value={filters.targetType}
+                            onChange={(e) => setFilters({ ...filters, targetType: e.target.value })}
+                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
+                        >
+                            <option value="">All Entities</option>
+                            <option value="School">Institution</option>
+                            <option value="User">User Identity</option>
+                            <option value="Student">Student Record</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Start Date</label>
+                        <input
+                            type="date"
+                            value={filters.startDate}
+                            onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500 [color-scheme:dark]"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">End Date</label>
+                        <input
+                            type="date"
+                            value={filters.endDate}
+                            onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500 [color-scheme:dark]"
+                        />
+                    </div>
                 </div>
             </div>
 
-            {/* Logs List - Cards for Mobile, Table for Desktop */}
-            <div className="glass-card overflow-hidden border-white/5">
+            {/* Logs Table */}
+            <div className="bg-[#15171f] border border-[#22242f] rounded-xl overflow-hidden">
                 {loading ? (
-                    <div className="flex items-center justify-center h-64 text-amber-500">
-                        <div className="w-12 h-12 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin"></div>
+                    <div className="flex items-center justify-center h-64">
+                        <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
                     </div>
+                ) : logs.length === 0 ? (
+                    <div className="text-center py-12 text-xs text-slate-400">No audit events match the selected criteria.</div>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left">
+                        <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="border-b border-white/5 bg-white/5">
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Timestamp</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Originator</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Action Protocol</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Target Entity</th>
-                                    <th className="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Endpoint IP</th>
+                                <tr className="border-b border-[#22242f] bg-[#12141c]">
+                                    <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Timestamp</th>
+                                    <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Originator</th>
+                                    <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Action</th>
+                                    <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Target Entity</th>
+                                    <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Client IP</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5">
+                            <tbody className="divide-y divide-[#22242f]">
                                 {logs.map((log) => (
-                                    <tr key={log.id} className="hover:bg-white/[0.02] transition-colors group">
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-slate-800 border border-white/5 flex items-center justify-center text-amber-500/50">
-                                                    <Clock size={14} />
-                                                </div>
+                                    <tr key={log.id} className="hover:bg-[#181a24]/50 transition-colors">
+                                        <td className="px-5 py-3.5">
+                                            <div className="flex items-center gap-2">
+                                                <Clock size={13} className="text-slate-500" />
                                                 <div>
-                                                    <p className="font-bold text-white text-sm tracking-tight">{new Date(log.createdAt).toLocaleTimeString()}</p>
-                                                    <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest">{new Date(log.createdAt).toLocaleDateString()}</p>
+                                                    <p className="text-xs font-medium text-slate-200">{new Date(log.createdAt).toLocaleTimeString()}</p>
+                                                    <p className="text-[10px] text-slate-500">{new Date(log.createdAt).toLocaleDateString()}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/5 flex items-center justify-center text-xs font-bold text-indigo-400">
-                                                    {log.user?.name ? log.user.name.charAt(0) : 'S'}
-                                                </div>
-                                                <div>
-                                                    <p className="text-sm font-bold text-slate-200">{log.user?.name || 'System Engine'}</p>
-                                                    <p className="text-[10px] text-slate-500">{log.user?.email || 'INTERNAL_PROCESS'}</p>
-                                                </div>
+                                        <td className="px-5 py-3.5">
+                                            <div>
+                                                <p className="text-xs font-semibold text-slate-200">{log.user?.name || 'System'}</p>
+                                                <p className="text-[11px] text-slate-500">{log.user?.email || 'INTERNAL_DAEMON'}</p>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            {getActionBadge(log.action)}
+                                        <td className="px-5 py-3.5">
+                                            <Badge variant={getActionBadgeVariant(log.action)}>
+                                                {log.action.replace(/_/g, ' ')}
+                                            </Badge>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-xs font-bold text-slate-300 uppercase tracking-tighter">{log.targetType || 'SYSTEM'}</span>
+                                        <td className="px-5 py-3.5">
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="text-xs font-medium text-slate-300">{log.targetType || 'SYSTEM'}</span>
                                                 {log.targetId && (
-                                                    <div className="flex items-center gap-1 text-[9px] bg-slate-800 px-1.5 py-0.5 rounded border border-white/5 text-slate-500 font-mono">
-                                                        <Hash size={10} />
-                                                        {log.targetId.substring(0, 8)}
-                                                    </div>
+                                                    <span className="text-[10px] font-mono text-slate-500 bg-[#12141c] px-1.5 py-0.5 rounded border border-[#22242f]">
+                                                        #{log.targetId.substring(0, 8)}
+                                                    </span>
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
-                                                <div className="w-2 h-2 rounded-full bg-blue-500/50" />
-                                                {log.ipAddress || '0.0.0.0'}
-                                            </div>
+                                        <td className="px-5 py-3.5">
+                                            <span className="text-[11px] font-mono text-slate-400">{log.ipAddress || '127.0.0.1'}</span>
                                         </td>
                                     </tr>
                                 ))}
@@ -177,32 +172,39 @@ const AuditLogs = () => {
                         </table>
                     </div>
                 )}
-            </div>
 
-            {/* Pagination */}
-            {!loading && logs.length > 0 && (
-                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">
-                        Audit Depth: {((pagination.page - 1) * pagination.limit) + 1} - {Math.min(pagination.page * pagination.limit, pagination.total)} OF {pagination.total} RECORDED EVENTS
-                    </p>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
-                            disabled={pagination.page === 1}
-                            className="px-6 py-2 glass-card rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-20 hover:bg-white/10 transition-colors"
-                        >
-                            Back
-                        </button>
-                        <button
-                            onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
-                            disabled={pagination.page >= pagination.totalPages}
-                            className="px-6 py-2 glass-card rounded-xl text-xs font-black uppercase tracking-widest disabled:opacity-20 hover:bg-white/10 transition-colors"
-                        >
-                            Next
-                        </button>
+                {/* Pagination */}
+                {!loading && logs.length > 0 && (
+                    <div className="p-4 bg-[#12141c] border-t border-[#22242f] flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-400">
+                        <span>
+                            Showing {((pagination.page - 1) * pagination.limit) + 1} - {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} events
+                        </span>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+                                disabled={pagination.page === 1}
+                                icon={ChevronLeft}
+                            >
+                                Previous
+                            </Button>
+                            <span className="px-3 py-1 bg-[#15171f] border border-[#22242f] rounded text-xs font-semibold text-slate-300">
+                                {pagination.page} / {pagination.totalPages || 1}
+                            </span>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+                                disabled={pagination.page >= pagination.totalPages}
+                                icon={ChevronRight}
+                            >
+                                Next
+                            </Button>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
     );
 };

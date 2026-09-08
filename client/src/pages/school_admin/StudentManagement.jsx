@@ -1,25 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Users,
-    Search,
-    Plus,
-    Upload,
-    Mail,
-    UserCheck,
-    ShieldAlert,
-    MoreVertical,
-    FileSpreadsheet,
-    CheckCircle,
-    XCircle,
-    Loader2,
-    Briefcase,
-    GraduationCap,
-    Check,
-    X,
-    UserPlus,
-    Filter
+    Users, Search, Plus, Upload, Mail,
+    UserCheck, FileSpreadsheet, CheckCircle,
+    XCircle, Loader2, Check, X
 } from 'lucide-react';
 import * as adminApi from '../../utils/adminApi';
+import Badge from '../../components/ui/Badge';
+import Button from '../../components/ui/Button';
 
 const StudentManagement = () => {
     const [students, setStudents] = useState([]);
@@ -125,7 +112,7 @@ const StudentManagement = () => {
             }
         } catch (error) {
             console.error('Bulk upload failed:', error);
-            alert('Bulk onboarding protocol failed. Verify CSV structure.');
+            alert('Bulk onboarding failed. Please verify CSV column headers.');
         } finally {
             setUploading(false);
         }
@@ -169,73 +156,76 @@ const StudentManagement = () => {
         }
     };
 
-    const statusBadgeClass = (status) => {
+    const getPlacementBadgeVariant = (status) => {
         switch (status) {
             case 'APPROVED':
             case 'ACTIVE':
-                return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+                return 'success';
             case 'PENDING_APPROVAL':
             case 'SUBMITTED':
-                return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+                return 'warning';
             case 'REJECTED':
-                return 'bg-rose-500/20 text-rose-400 border-rose-500/30';
+                return 'danger';
             default:
-                return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+                return 'neutral';
         }
     };
 
     return (
-        <div className="space-y-12 pb-12">
+        <div className="space-y-6 max-w-7xl mx-auto p-6">
             {/* Header Section */}
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8 bg-emerald-600/5 p-10 rounded-m3-xl border border-emerald-600/10 backdrop-blur-md">
-                <div className="flex items-center gap-8">
-                    <div className="w-20 h-20 bg-emerald-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-emerald-600/40">
-                        <Users size={44} className="text-white" />
+            <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-violet-600/10 border border-violet-500/20 text-violet-400 flex items-center justify-center">
+                        <Users size={24} />
                     </div>
-                    <div className="space-y-1.5">
-                        <span className="text-[11px] font-black uppercase tracking-[0.4em] text-emerald-400">Personnel & Placement Ops</span>
-                        <h1 className="text-4xl font-black text-white tracking-tighter uppercase leading-none">Student <span className="text-emerald-500">Registry</span></h1>
-                        <p className="text-slate-500 font-medium max-w-md text-sm">Review placement applications, assign academic/industry supervisors, and onboard students.</p>
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-violet-400">School Administration</span>
+                            <span className="text-xs text-slate-400">Total Enrolled: {students.length}</span>
+                        </div>
+                        <h1 className="text-2xl font-bold text-slate-100 tracking-tight mt-0.5">Student & Placement Registry</h1>
+                        <p className="text-xs text-slate-400 mt-0.5">Review attachment placements, manage supervisor pairings, and onboard student cohorts.</p>
                     </div>
                 </div>
-                <div className="flex gap-4">
-                    <button
+                <div className="flex items-center gap-2.5">
+                    <Button
                         onClick={() => setShowUploadModal(true)}
-                        className="btn-primary px-8 py-4 group bg-slate-900 border-white/10 hover:bg-slate-800 !rounded-2xl flex items-center gap-2"
+                        variant="outline"
+                        icon={Upload}
                     >
-                        <Upload size={18} className="group-hover:translate-y-[-2px] transition-transform" />
-                        <span className="text-xs font-black uppercase tracking-[0.2em]">Bulk Onboard</span>
-                    </button>
-                    <button
+                        Bulk CSV Onboard
+                    </Button>
+                    <Button
                         onClick={() => setShowCreateModal(true)}
-                        className="btn-primary px-8 py-4 group !rounded-2xl flex items-center gap-2"
+                        variant="primary"
+                        icon={Plus}
                     >
-                        <Plus size={18} className="group-hover:rotate-90 transition-transform" />
-                        <span className="text-xs font-black uppercase tracking-[0.2em]">New Student</span>
-                    </button>
+                        New Student
+                    </Button>
                 </div>
             </div>
 
             {/* Filter Hub */}
-            <div className="grid md:grid-cols-3 gap-4">
-                <div className="md:col-span-2 relative">
-                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-500" size={18} />
+            <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-4 flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={15} />
                     <input
                         type="text"
-                        placeholder="Search student by identity, email or admission registry..."
+                        placeholder="Search student by name, email, or admission number..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="input-field pl-12 h-14 w-full"
+                        className="w-full bg-[#12141c] border border-[#22242f] rounded-lg pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500"
                     />
                 </div>
-                <div>
+                <div className="w-full sm:w-60">
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="input-field h-14 w-full"
+                        className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
                     >
                         <option value="">All Placement Statuses</option>
-                        <option value="PENDING_APPROVAL">Pending Review</option>
+                        <option value="PENDING_APPROVAL">Pending Approval</option>
                         <option value="APPROVED">Approved Placements</option>
                         <option value="REJECTED">Rejected Placements</option>
                         <option value="DRAFT">Draft</option>
@@ -244,92 +234,97 @@ const StudentManagement = () => {
             </div>
 
             {/* Table Section */}
-            <div className="glass-card overflow-hidden !rounded-m3-xl shadow-2xl border-white/5">
+            <div className="bg-[#15171f] border border-[#22242f] rounded-xl overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left">
+                    <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b border-white/5 bg-white/5">
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Student Identity</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Host Organization</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Supervisors</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">Placement State</th>
-                                <th className="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-slate-500">Actions</th>
+                            <tr className="border-b border-[#22242f] bg-[#12141c]">
+                                <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Student</th>
+                                <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Host Company</th>
+                                <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Supervisors</th>
+                                <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                                <th className="px-5 py-3 text-right text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-white/5">
-                            {students.length > 0 ? (
+                        <tbody className="divide-y divide-[#22242f]">
+                            {loading ? (
+                                Array(4).fill(0).map((_, i) => (
+                                    <tr key={i} className="animate-pulse">
+                                        <td colSpan={5} className="px-5 py-4"><div className="h-4 bg-[#181a24] rounded w-full"></div></td>
+                                    </tr>
+                                ))
+                            ) : students.length > 0 ? (
                                 students.map((student) => (
-                                    <tr key={student.id} className="hover:bg-white/[0.02] transition-colors group">
-                                        <td className="px-6 py-5">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-xl bg-slate-900 border border-white/10 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
-                                                    <UserCheck size={24} />
+                                    <tr key={student.id} className="hover:bg-[#181a24]/50 transition-colors">
+                                        <td className="px-5 py-3.5">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-[#181a24] border border-[#22242f] flex items-center justify-center text-xs font-semibold text-violet-400">
+                                                    {student.user?.name?.charAt(0) || 'S'}
                                                 </div>
                                                 <div>
-                                                    <p className="font-bold text-white tracking-tight">{student.user?.name}</p>
-                                                    <p className="text-[10px] text-slate-500 font-bold">{student.admissionNumber} • {student.course || student.department}</p>
-                                                    <div className="flex items-center gap-1.5 text-[9px] text-slate-500 font-black uppercase tracking-widest mt-0.5">
-                                                        <Mail size={10} className="text-emerald-500" />
-                                                        {student.user?.email}
-                                                    </div>
+                                                    <p className="text-xs font-semibold text-slate-200">{student.user?.name}</p>
+                                                    <p className="text-[11px] text-slate-400 font-mono">{student.admissionNumber} • {student.course || student.department}</p>
+                                                    <p className="text-[10px] text-slate-500">{student.user?.email}</p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-bold text-slate-300">{student.organizationName || 'No Organization'}</p>
-                                                <p className="text-[10px] text-slate-500">{student.contactPerson || student.organizationAddress || '---'}</p>
+                                        <td className="px-5 py-3.5">
+                                            <div>
+                                                <p className="text-xs font-medium text-slate-200">{student.organizationName || 'No Organization'}</p>
+                                                <p className="text-[11px] text-slate-500">{student.contactPerson || student.organizationAddress || '---'}</p>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5 space-y-1.5">
-                                            <div>
-                                                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">Industry</span>
+                                        <td className="px-5 py-3.5 space-y-1">
+                                            <div className="text-[11px]">
+                                                <span className="text-slate-500 mr-1.5">Industry:</span>
                                                 {student.industrySupervisor ? (
-                                                    <span className="text-xs text-emerald-400 font-bold">{student.industrySupervisor.name}</span>
+                                                    <span className="text-emerald-400 font-medium">{student.industrySupervisor.name}</span>
                                                 ) : (
-                                                    <span className="text-xs text-slate-500 italic">Unassigned</span>
+                                                    <span className="text-slate-500 italic">Unassigned</span>
                                                 )}
                                             </div>
-                                            <div>
-                                                <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">University</span>
+                                            <div className="text-[11px]">
+                                                <span className="text-slate-500 mr-1.5">University:</span>
                                                 {student.universitySupervisor ? (
-                                                    <span className="text-xs text-purple-400 font-bold">{student.universitySupervisor.name}</span>
+                                                    <span className="text-violet-400 font-medium">{student.universitySupervisor.name}</span>
                                                 ) : (
-                                                    <span className="text-xs text-slate-500 italic">Unassigned</span>
+                                                    <span className="text-slate-500 italic">Unassigned</span>
                                                 )}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-5">
-                                            <span className={`text-[9px] font-black uppercase px-3 py-1 rounded-full border ${statusBadgeClass(student.placementStatus)}`}>
+                                        <td className="px-5 py-3.5">
+                                            <Badge variant={getPlacementBadgeVariant(student.placementStatus)}>
                                                 {student.placementStatus || 'DRAFT'}
-                                            </span>
+                                            </Badge>
                                         </td>
-                                        <td className="px-6 py-5 text-right space-x-2">
+                                        <td className="px-5 py-3.5 text-right space-x-2">
                                             {student.placementStatus === 'PENDING_APPROVAL' && (
-                                                <button
+                                                <Button
+                                                    size="sm"
+                                                    variant="primary"
                                                     onClick={() => setSelectedStudentForReview(student)}
-                                                    className="px-3 py-1.5 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 text-xs font-bold uppercase tracking-widest"
                                                 >
                                                     Review
-                                                </button>
+                                                </Button>
                                             )}
-                                            <button
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
                                                 onClick={() => {
                                                     setSelectedStudentForAssign(student);
                                                     setAssignType('industry');
                                                     setAssignSupervisorId(student.industrySupervisorId || '');
                                                 }}
-                                                className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 hover:bg-blue-500/20 text-xs font-bold uppercase tracking-widest"
                                             >
                                                 Assign
-                                            </button>
+                                            </Button>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={5} className="text-center py-8 text-slate-500 text-xs font-bold uppercase tracking-widest">
-                                        No student records found.
+                                    <td colSpan={5} className="text-center py-8 text-slate-400 text-xs">
+                                        No student records found matching your filters.
                                     </td>
                                 </tr>
                             )}
@@ -340,68 +335,68 @@ const StudentManagement = () => {
 
             {/* Placement Review Modal */}
             {selectedStudentForReview && (
-                <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-xl flex items-center justify-center z-[100] p-4 animate-in fade-in">
-                    <div className="glass-card w-full max-w-xl p-8 space-y-6 border-amber-500/20 shadow-2xl">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                    <div className="bg-[#15171f] border border-[#22242f] rounded-xl w-full max-w-lg shadow-2xl p-6 space-y-4">
+                        <div className="flex items-center justify-between border-b border-[#22242f] pb-3">
                             <div>
-                                <h3 className="text-xl font-black text-white">Review Attachment Placement</h3>
+                                <h3 className="text-base font-bold text-slate-100">Review Placement Application</h3>
                                 <p className="text-xs text-slate-400">Student: {selectedStudentForReview.user?.name}</p>
                             </div>
-                            <button onClick={() => setSelectedStudentForReview(null)} className="text-slate-500 hover:text-white">
-                                <X size={20} />
+                            <button onClick={() => setSelectedStudentForReview(null)} className="text-slate-400 hover:text-slate-200">
+                                <X size={18} />
                             </button>
                         </div>
 
-                        <div className="space-y-4 text-xs">
-                            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
+                        <div className="space-y-3 text-xs">
+                            <div className="p-3.5 rounded-lg bg-[#12141c] border border-[#22242f] space-y-2">
                                 <div className="flex justify-between">
-                                    <span className="text-slate-500 font-bold uppercase">Organization:</span>
-                                    <span className="text-white font-bold">{selectedStudentForReview.organizationName}</span>
+                                    <span className="text-slate-400">Organization:</span>
+                                    <span className="text-slate-200 font-semibold">{selectedStudentForReview.organizationName}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-slate-500 font-bold uppercase">Address:</span>
+                                    <span className="text-slate-400">Address:</span>
                                     <span className="text-slate-300">{selectedStudentForReview.organizationAddress || '---'}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-slate-500 font-bold uppercase">Contact:</span>
+                                    <span className="text-slate-400">Contact Person:</span>
                                     <span className="text-slate-300">{selectedStudentForReview.contactPerson} ({selectedStudentForReview.organizationPhone})</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-slate-500 font-bold uppercase">Duration:</span>
+                                    <span className="text-slate-400">Duration:</span>
                                     <span className="text-slate-300">{selectedStudentForReview.startDate} to {selectedStudentForReview.endDate}</span>
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Rejection Reason (if declining)</label>
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Rejection Reason (if declining)</label>
                                 <textarea
                                     rows={3}
                                     value={rejectionReason}
                                     onChange={(e) => setRejectionReason(e.target.value)}
-                                    placeholder="Explain why the placement details need revision..."
-                                    className="input-field w-full p-3 resize-none"
+                                    placeholder="Explain why the placement details require revision..."
+                                    className="w-full bg-[#12141c] border border-[#22242f] rounded-lg p-3 text-xs text-slate-200 focus:outline-none focus:border-violet-500 resize-none"
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/5">
-                            <button
+                        <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#22242f]">
+                            <Button
                                 type="button"
+                                variant="danger"
                                 disabled={reviewingPlacement}
                                 onClick={() => handlePlacementReview('REJECTED')}
-                                className="px-6 py-3 rounded-xl bg-rose-600/10 text-rose-400 border border-rose-600/20 hover:bg-rose-600/20 text-xs font-bold uppercase tracking-widest"
                             >
-                                Reject
-                            </button>
-                            <button
+                                Decline
+                            </Button>
+                            <Button
                                 type="button"
+                                variant="primary"
                                 disabled={reviewingPlacement}
                                 onClick={() => handlePlacementReview('APPROVED')}
-                                className="btn-primary px-8 py-3 text-xs flex items-center gap-2"
+                                icon={Check}
                             >
-                                <Check size={16} />
-                                <span>{reviewingPlacement ? 'Processing...' : 'Approve Placement'}</span>
-                            </button>
+                                {reviewingPlacement ? 'Processing...' : 'Approve Placement'}
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -409,48 +404,48 @@ const StudentManagement = () => {
 
             {/* Assign Supervisor Modal */}
             {selectedStudentForAssign && (
-                <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-xl flex items-center justify-center z-[100] p-4 animate-in fade-in">
-                    <div className="glass-card w-full max-w-md p-8 space-y-6 border-blue-500/20 shadow-2xl">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                    <div className="bg-[#15171f] border border-[#22242f] rounded-xl w-full max-w-md shadow-2xl p-6 space-y-4">
+                        <div className="flex items-center justify-between border-b border-[#22242f] pb-3">
                             <div>
-                                <h3 className="text-xl font-black text-white">Assign Supervisor</h3>
+                                <h3 className="text-base font-bold text-slate-100">Assign Supervisor</h3>
                                 <p className="text-xs text-slate-400">Student: {selectedStudentForAssign.user?.name}</p>
                             </div>
-                            <button onClick={() => setSelectedStudentForAssign(null)} className="text-slate-500 hover:text-white">
-                                <X size={20} />
+                            <button onClick={() => setSelectedStudentForAssign(null)} className="text-slate-400 hover:text-slate-200">
+                                <X size={18} />
                             </button>
                         </div>
 
                         <form onSubmit={handleAssignSupervisor} className="space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Supervisor Type</label>
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Supervisor Type</label>
                                 <div className="grid grid-cols-2 gap-2">
                                     <button
                                         type="button"
                                         onClick={() => { setAssignType('industry'); setAssignSupervisorId(''); }}
-                                        className={`py-2 px-4 rounded-xl text-xs font-bold uppercase ${assignType === 'industry' ? 'bg-emerald-600 text-white' : 'bg-white/5 text-slate-400'}`}
+                                        className={`py-2 px-3 rounded-lg text-xs font-semibold transition-colors ${assignType === 'industry' ? 'bg-violet-600 text-white' : 'bg-[#12141c] text-slate-400 border border-[#22242f]'}`}
                                     >
-                                        Industry
+                                        Industry Supervisor
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => { setAssignType('university'); setAssignSupervisorId(''); }}
-                                        className={`py-2 px-4 rounded-xl text-xs font-bold uppercase ${assignType === 'university' ? 'bg-purple-600 text-white' : 'bg-white/5 text-slate-400'}`}
+                                        className={`py-2 px-3 rounded-lg text-xs font-semibold transition-colors ${assignType === 'university' ? 'bg-violet-600 text-white' : 'bg-[#12141c] text-slate-400 border border-[#22242f]'}`}
                                     >
-                                        University
+                                        University Supervisor
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Select Supervisor</label>
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Select Supervisor</label>
                                 <select
                                     value={assignSupervisorId}
                                     onChange={(e) => setAssignSupervisorId(e.target.value)}
-                                    className="input-field w-full"
+                                    className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
                                     required
                                 >
-                                    <option value="">Select a registered supervisor...</option>
+                                    <option value="">Choose a registered supervisor...</option>
                                     {supervisors
                                         .filter(s => s.role === `${assignType}_supervisor`)
                                         .map(s => (
@@ -459,21 +454,21 @@ const StudentManagement = () => {
                                 </select>
                             </div>
 
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/5">
-                                <button
+                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#22242f]">
+                                <Button
                                     type="button"
+                                    variant="outline"
                                     onClick={() => setSelectedStudentForAssign(null)}
-                                    className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 text-xs font-bold uppercase tracking-widest"
                                 >
                                     Cancel
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     type="submit"
+                                    variant="primary"
                                     disabled={assigning || !assignSupervisorId}
-                                    className="btn-primary px-8 py-3 text-xs"
                                 >
                                     {assigning ? 'Assigning...' : 'Confirm Assignment'}
-                                </button>
+                                </Button>
                             </div>
                         </form>
                     </div>
@@ -482,86 +477,88 @@ const StudentManagement = () => {
 
             {/* Create Single Student Modal */}
             {showCreateModal && (
-                <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-xl flex items-center justify-center z-[100] p-4 animate-in fade-in">
-                    <div className="glass-card w-full max-w-md p-8 space-y-6 border-white/10 shadow-2xl">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
-                            <h3 className="text-xl font-black text-white">Onboard New Student</h3>
-                            <button onClick={() => setShowCreateModal(false)} className="text-slate-500 hover:text-white">
-                                <X size={20} />
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                    <div className="bg-[#15171f] border border-[#22242f] rounded-xl w-full max-w-md shadow-2xl p-6 space-y-4">
+                        <div className="flex items-center justify-between border-b border-[#22242f] pb-3">
+                            <h3 className="text-base font-bold text-slate-100">Onboard New Student</h3>
+                            <button onClick={() => setShowCreateModal(false)} className="text-slate-400 hover:text-slate-200">
+                                <X size={18} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleCreateStudent} className="space-y-4">
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Full Name</label>
+                        <form onSubmit={handleCreateStudent} className="space-y-3">
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Full Name</label>
                                 <input
                                     type="text"
                                     required
                                     value={createForm.name}
                                     onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
-                                    className="input-field w-full"
+                                    className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
                                     placeholder="e.g. John Kamau"
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Institutional Email</label>
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Institutional Email</label>
                                 <input
                                     type="email"
                                     required
                                     value={createForm.email}
                                     onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                                    className="input-field w-full"
+                                    className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
                                     placeholder="e.g. j.kamau@student.edu"
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Admission Number</label>
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Admission Number</label>
                                 <input
                                     type="text"
                                     required
                                     value={createForm.admissionNumber}
                                     onChange={(e) => setCreateForm({ ...createForm, admissionNumber: e.target.value })}
-                                    className="input-field w-full"
+                                    className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
                                     placeholder="e.g. ADM-2026-001"
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Department</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={createForm.department}
-                                    onChange={(e) => setCreateForm({ ...createForm, department: e.target.value })}
-                                    className="input-field w-full"
-                                    placeholder="e.g. Computer Science"
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Course / Degree</label>
-                                <input
-                                    type="text"
-                                    value={createForm.course}
-                                    onChange={(e) => setCreateForm({ ...createForm, course: e.target.value })}
-                                    className="input-field w-full"
-                                    placeholder="e.g. BSc Software Engineering"
-                                />
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Department</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={createForm.department}
+                                        onChange={(e) => setCreateForm({ ...createForm, department: e.target.value })}
+                                        className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
+                                        placeholder="Computer Science"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Course</label>
+                                    <input
+                                        type="text"
+                                        value={createForm.course}
+                                        onChange={(e) => setCreateForm({ ...createForm, course: e.target.value })}
+                                        className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
+                                        placeholder="BSc Software Eng"
+                                    />
+                                </div>
                             </div>
 
-                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/5">
-                                <button
+                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#22242f]">
+                                <Button
                                     type="button"
+                                    variant="outline"
                                     onClick={() => setShowCreateModal(false)}
-                                    className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 text-xs font-bold uppercase tracking-widest"
                                 >
                                     Cancel
-                                </button>
-                                <button
+                                </Button>
+                                <Button
                                     type="submit"
+                                    variant="primary"
                                     disabled={creating}
-                                    className="btn-primary px-8 py-3 text-xs"
                                 >
                                     {creating ? 'Onboarding...' : 'Create Account'}
-                                </button>
+                                </Button>
                             </div>
                         </form>
                     </div>
@@ -570,93 +567,93 @@ const StudentManagement = () => {
 
             {/* Bulk Upload Modal */}
             {showUploadModal && (
-                <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-xl flex items-center justify-center z-[100] p-4">
-                    <div className="glass-card w-full max-w-xl animate-fade-in border-emerald-500/20 shadow-2xl">
-                        <div className="p-8 border-b border-white/5 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-600/20">
-                                    <FileSpreadsheet size={24} className="text-white" />
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                    <div className="bg-[#15171f] border border-[#22242f] rounded-xl w-full max-w-lg shadow-2xl p-6 space-y-4">
+                        <div className="flex items-center justify-between border-b border-[#22242f] pb-3">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-lg bg-violet-600/10 border border-violet-500/20 text-violet-400 flex items-center justify-center">
+                                    <FileSpreadsheet size={18} />
                                 </div>
-                                <h3 className="text-2xl font-black text-white tracking-tighter uppercase">Bulk Onboard students</h3>
+                                <div>
+                                    <h3 className="text-base font-bold text-slate-100">Bulk Onboard Students</h3>
+                                    <p className="text-xs text-slate-400">Import student roster via structured CSV</p>
+                                </div>
                             </div>
-                            <button onClick={() => setShowUploadModal(false)} className="text-slate-500 hover:text-white transition-colors">
-                                <XCircle size={28} />
+                            <button onClick={() => setShowUploadModal(false)} className="text-slate-400 hover:text-slate-200">
+                                <X size={18} />
                             </button>
                         </div>
 
-                        <div className="p-8 space-y-8">
-                            {!uploadResults ? (
-                                <div className="space-y-6">
-                                    <div className="p-10 border-2 border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center space-y-4 hover:border-emerald-500/50 transition-all cursor-pointer relative group">
-                                        <input
-                                            type="file"
-                                            accept=".csv"
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                            onChange={(e) => setFile(e.target.files[0])}
-                                        />
-                                        <div className="w-16 h-16 rounded-3xl bg-slate-900 flex items-center justify-center text-slate-600 group-hover:text-emerald-500 transition-colors">
-                                            <Upload size={32} />
-                                        </div>
-                                        <div className="text-center">
-                                            <p className="text-sm font-bold text-white uppercase tracking-widest">{file ? file.name : "Select Institutional CSV"}</p>
-                                            <p className="text-[10px] text-slate-500 uppercase font-black mt-1">Maximum Scale: 2,000 Nodes</p>
-                                        </div>
+                        {!uploadResults ? (
+                            <div className="space-y-4">
+                                <div className="p-6 border-2 border-dashed border-[#22242f] rounded-xl flex flex-col items-center justify-center space-y-3 hover:border-violet-500/50 transition-colors cursor-pointer relative">
+                                    <input
+                                        type="file"
+                                        accept=".csv"
+                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                        onChange={(e) => setFile(e.target.files[0])}
+                                    />
+                                    <Upload size={24} className="text-slate-400" />
+                                    <div className="text-center">
+                                        <p className="text-xs font-semibold text-slate-200">{file ? file.name : "Select Institutional CSV File"}</p>
+                                        <p className="text-[11px] text-slate-500 mt-0.5">Click or drag file here</p>
                                     </div>
+                                </div>
 
-                                    <div className="bg-emerald-500/5 border border-emerald-500/10 p-6 rounded-2xl space-y-3">
-                                        <h4 className="text-[10px] font-black text-emerald-400 uppercase tracking-widest flex items-center gap-2">
-                                            <ShieldAlert size={14} />
-                                            Data Protocol Requirements
-                                        </h4>
-                                        <p className="text-[10px] text-slate-400 leading-relaxed uppercase">CSV must include headers: <span className="text-white font-bold">name, email, admissionNumber, department</span>. Default password: <span className="text-white font-bold">ChangeMe123!</span>.</p>
-                                    </div>
+                                <div className="bg-[#12141c] border border-[#22242f] p-3.5 rounded-lg text-xs text-slate-400 space-y-1">
+                                    <p className="font-semibold text-slate-300">CSV Structure Requirements:</p>
+                                    <p>Headers: <span className="font-mono text-violet-400">name, email, admissionNumber, department</span></p>
+                                    <p>Default initial password: <span className="font-mono text-slate-300">ChangeMe123!</span></p>
+                                </div>
 
-                                    <button
+                                <div className="flex justify-end gap-2 pt-2">
+                                    <Button variant="outline" onClick={() => setShowUploadModal(false)}>Cancel</Button>
+                                    <Button
+                                        variant="primary"
                                         disabled={!file || uploading}
                                         onClick={handleBulkUpload}
-                                        className="w-full btn-primary py-5 !rounded-2xl transition-all disabled:opacity-50"
                                     >
-                                        {uploading ? <Loader2 className="animate-spin" size={24} /> : <CheckCircle size={20} />}
-                                        <span className="text-xs font-black uppercase tracking-[0.2em]">{uploading ? "Deploying..." : "Execute Deployment"}</span>
-                                    </button>
+                                        {uploading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle size={16} />}
+                                        <span className="ml-1.5">{uploading ? "Importing..." : "Process Import"}</span>
+                                    </Button>
                                 </div>
-                            ) : (
-                                <div className="space-y-6 animate-fade-in">
-                                    <div className="flex items-center justify-between p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl">
-                                        <div className="space-y-1">
-                                            <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Successful Nodes</p>
-                                            <h4 className="text-4xl font-black text-white tracking-tighter">{uploadResults.successful}</h4>
-                                        </div>
-                                        <CheckCircle size={40} className="text-emerald-500 opacity-50" />
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center justify-between">
+                                    <div>
+                                        <p className="text-xs text-emerald-400 font-semibold">Successfully Onboarded</p>
+                                        <p className="text-2xl font-bold text-slate-100 mt-0.5">{uploadResults.successful} records</p>
                                     </div>
-
-                                    {uploadResults.failed > 0 && (
-                                        <div className="p-6 bg-rose-500/10 border border-rose-500/20 rounded-2xl space-y-4">
-                                            <div className="flex items-center justify-between">
-                                                <p className="text-[10px] font-black text-rose-400 uppercase tracking-widest">Failed Nodes</p>
-                                                <h4 className="text-2xl font-black text-white tracking-tighter">{uploadResults.failed}</h4>
-                                            </div>
-                                            <div className="max-h-32 overflow-y-auto space-y-2 no-scrollbar">
-                                                {uploadResults.errors.map((err, i) => (
-                                                    <p key={i} className="text-[9px] text-rose-400 uppercase font-black opacity-80">{err}</p>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    <button
-                                        onClick={() => {
-                                            setShowUploadModal(false);
-                                            setUploadResults(null);
-                                            setFile(null);
-                                        }}
-                                        className="w-full py-4 glass-card rounded-2xl text-[10px] font-black text-white uppercase tracking-widest hover:bg-white/10 transition-all"
-                                    >
-                                        Finalize Protocol
-                                    </button>
+                                    <CheckCircle size={28} className="text-emerald-500" />
                                 </div>
-                            )}
-                        </div>
+
+                                {uploadResults.failed > 0 && (
+                                    <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-lg space-y-2">
+                                        <div className="flex items-center justify-between">
+                                            <p className="text-xs text-rose-400 font-semibold">Failed Records: {uploadResults.failed}</p>
+                                        </div>
+                                        <div className="max-h-28 overflow-y-auto space-y-1 text-xs text-rose-300 font-mono">
+                                            {uploadResults.errors?.map((err, i) => (
+                                                <p key={i}>{err}</p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                <Button
+                                    variant="primary"
+                                    className="w-full"
+                                    onClick={() => {
+                                        setShowUploadModal(false);
+                                        setUploadResults(null);
+                                        setFile(null);
+                                    }}
+                                >
+                                    Done
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

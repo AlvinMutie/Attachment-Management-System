@@ -5,14 +5,13 @@ import {
     Filter,
     UserPlus,
     MoreVertical,
-    Mail,
-    Shield,
     CheckCircle2,
-    XCircle,
     Download,
     Settings
 } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
+import Badge from '../../components/ui/Badge';
+import Button from '../../components/ui/Button';
 
 const UserDirectory = () => {
     const [activeTab, setActiveTab] = useState('students');
@@ -32,136 +31,129 @@ const UserDirectory = () => {
         { name: 'Prof. Alice Wang', role: 'University Supervisor', dept: 'Informatics', email: 'a.wang@mut.edu', students: 12 },
     ];
 
+    const filteredStudents = students.filter(s =>
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+    const filteredStaff = staff.filter(s =>
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.role.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <DashboardLayout role="school_admin">
-            <div className="space-y-12 animate-fade-in">
+            <div className="space-y-6 max-w-7xl mx-auto p-6">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-8 bg-blue-600/5 p-10 rounded-m3-xl border border-blue-600/10 backdrop-blur-md">
-                    <div className="flex items-center gap-8">
-                        <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-600/40 ring-1 ring-white/20">
-                            <Users className="text-white" size={44} />
+                <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-violet-600/10 border border-violet-500/20 text-violet-400 flex items-center justify-center">
+                            <Users size={24} />
                         </div>
-                        <div className="space-y-1.5">
-                            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-blue-400 opacity-70">Identity Registry</span>
-                            <h1 className="text-4xl font-black text-white tracking-tighter uppercase leading-none">User <span className="text-blue-500">Registry</span></h1>
-                            <p className="text-slate-500 font-medium leading-relaxed max-w-md text-sm">Comprehensive administrative control of all active platform identities nodal point.</p>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[11px] font-semibold uppercase tracking-wider text-violet-400">Identity Registry</span>
+                                <Badge variant="neutral">Verified Cohort</Badge>
+                            </div>
+                            <h1 className="text-2xl font-bold text-slate-100 tracking-tight mt-0.5">Institutional User Directory</h1>
+                            <p className="text-xs text-slate-400 mt-0.5">Administrative roster of all active students and faculty supervisors.</p>
                         </div>
                     </div>
-                    <div className="flex space-x-4">
-                        <button className="bg-white/5 text-slate-300 px-6 py-4 rounded-2xl border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] flex items-center space-x-3 hover:bg-white/10 transition-all shadow-lg">
-                            <Download size={18} />
-                            <span>Export Registry</span>
-                        </button>
-                        <button className="btn-primary px-8 py-4 flex items-center space-x-3 text-xs font-black uppercase tracking-[0.2em] !rounded-2xl">
-                            <UserPlus size={18} />
-                            <span>Import Batch</span>
-                        </button>
+                    <div className="flex items-center gap-2.5">
+                        <Button variant="outline" icon={Download}>
+                            Export CSV
+                        </Button>
                     </div>
                 </div>
 
                 {/* Filters & Actions */}
-                <div className="grid md:grid-cols-4 gap-6">
-                    <div className="md:col-span-2 relative">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={20} />
+                <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-4 flex flex-col sm:flex-row gap-3 items-center">
+                    <div className="relative flex-1 w-full">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={15} />
                         <input
                             type="text"
                             placeholder="Search by name, ID, or email..."
-                            className="input-field pl-12 h-14"
+                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg pl-9 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
-                    <div className="glass-card flex p-1.5 border border-white/5 h-14">
+                    <div className="flex items-center gap-1 bg-[#12141c] p-1 rounded-lg border border-[#22242f] w-full sm:w-auto">
                         <button
                             onClick={() => setActiveTab('students')}
-                            className={`flex-1 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'students' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-500 hover:text-white'}`}
+                            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${activeTab === 'students' ? 'bg-violet-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
                         >
-                            Students
+                            Students ({students.length})
                         </button>
                         <button
                             onClick={() => setActiveTab('staff')}
-                            className={`flex-1 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'staff' ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'text-slate-500 hover:text-white'}`}
+                            className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${activeTab === 'staff' ? 'bg-violet-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}
                         >
-                            Staff Users
+                            Staff & Supervisors ({staff.length})
                         </button>
                     </div>
-                    <button className="glass-card flex items-center justify-center space-x-3 text-slate-400 hover:text-white transition-all border border-white/5 h-14 p-4 text-[10px] font-black uppercase tracking-widest">
-                        <Filter size={18} />
-                        <span>Advanced Filters</span>
-                    </button>
                 </div>
 
                 {/* Directory Table */}
-                <div className="glass-card !rounded-m3-xl overflow-hidden border-white/5 bg-gradient-to-br from-white/[0.02] to-transparent shadow-2xl">
+                <div className="bg-[#15171f] border border-[#22242f] rounded-xl overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="w-full text-left">
-                            <thead className="bg-white/[0.02]">
-                                <tr className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em]">
-                                    <th className="px-8 py-6">{activeTab === 'students' ? 'Student Identity' : 'Staff Identity'}</th>
-                                    <th className="px-8 py-6">{activeTab === 'students' ? 'Department' : 'Assigned Role'}</th>
-                                    <th className="px-8 py-6">{activeTab === 'students' ? 'Supervisor' : 'Network Count'}</th>
-                                    <th className="px-8 py-6">Verification</th>
-                                    <th className="px-8 py-6 text-right">Settings</th>
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-[#12141c] border-b border-[#22242f]">
+                                    <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{activeTab === 'students' ? 'Student Identity' : 'Staff Identity'}</th>
+                                    <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{activeTab === 'students' ? 'Department' : 'Assigned Role'}</th>
+                                    <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">{activeTab === 'students' ? 'Supervisor' : 'Mentee Count'}</th>
+                                    <th className="px-5 py-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Status</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-white/5 font-medium">
+                            <tbody className="divide-y divide-[#22242f]">
                                 {activeTab === 'students' ? (
-                                    students.map((s, i) => (
-                                        <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
-                                            <td className="px-8 py-6">
-                                                <div className="flex items-center space-x-4">
-                                                    <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center font-black text-blue-500 border border-white/5 uppercase tracking-tighter">
+                                    filteredStudents.map((s, i) => (
+                                        <tr key={i} className="hover:bg-[#181a24]/50 transition-colors">
+                                            <td className="px-5 py-3.5">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 bg-[#181a24] border border-[#22242f] rounded-full flex items-center justify-center text-xs font-semibold text-violet-400">
                                                         {s.name.split(' ').map(n => n[0]).join('')}
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-black text-white tracking-tight">{s.name}</p>
-                                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{s.id}</p>
+                                                        <p className="text-xs font-semibold text-slate-200">{s.name}</p>
+                                                        <p className="text-[11px] text-slate-500 font-mono">{s.id} • {s.email}</p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6 text-slate-400 text-xs font-bold">{s.dept} Faculty</td>
-                                            <td className="px-8 py-6 text-slate-400 text-xs font-bold">{s.supervisor}</td>
-                                            <td className="px-8 py-6">
-                                                <span className={`text-[9px] font-black uppercase px-3 py-1 rounded-full ${s.status === 'Active' ? 'bg-green-600/20 text-green-400' :
-                                                    s.status === 'Pending' ? 'bg-orange-600/20 text-orange-400' : 'bg-red-600/20 text-red-400'
-                                                    }`}>
+                                            <td className="px-5 py-3.5 text-slate-300 text-xs">{s.dept} Faculty</td>
+                                            <td className="px-5 py-3.5 text-slate-300 text-xs">{s.supervisor}</td>
+                                            <td className="px-5 py-3.5">
+                                                <Badge variant={s.status === 'Active' ? 'success' : s.status === 'Pending' ? 'warning' : 'danger'}>
                                                     {s.status}
-                                                </span>
-                                            </td>
-                                            <td className="px-8 py-6 text-right">
-                                                <button className="text-slate-500 hover:text-white transition-all bg-white/5 p-2.5 rounded-xl border border-white/5">
-                                                    <MoreVertical size={18} />
-                                                </button>
+                                                </Badge>
                                             </td>
                                         </tr>
                                     ))
                                 ) : (
-                                    staff.map((s, i) => (
-                                        <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
-                                            <td className="px-8 py-6">
-                                                <div className="flex items-center space-x-4">
-                                                    <div className="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center font-black text-purple-500 border border-white/5 uppercase tracking-tighter">
+                                    filteredStaff.map((s, i) => (
+                                        <tr key={i} className="hover:bg-[#181a24]/50 transition-colors">
+                                            <td className="px-5 py-3.5">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 bg-[#181a24] border border-[#22242f] rounded-full flex items-center justify-center text-xs font-semibold text-violet-400">
                                                         {s.name.split(' ').map(n => n[0]).join('')}
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-black text-white tracking-tight">{s.name}</p>
-                                                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{s.email}</p>
+                                                        <p className="text-xs font-semibold text-slate-200">{s.name}</p>
+                                                        <p className="text-[11px] text-slate-500">{s.email}</p>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-6">
-                                                <span className="text-[10px] font-black uppercase text-blue-500 bg-blue-600/10 px-3 py-1 rounded-full tracking-widest">{s.role}</span>
+                                            <td className="px-5 py-3.5">
+                                                <Badge variant="purple">{s.role}</Badge>
                                             </td>
-                                            <td className="px-8 py-6 text-slate-400 text-xs font-bold group-hover:text-white transition-colors">
+                                            <td className="px-5 py-3.5 text-slate-300 text-xs">
                                                 {s.students} Mentees
                                             </td>
-                                            <td className="px-8 py-6">
-                                                <CheckCircle2 className="text-green-500" size={18} />
-                                            </td>
-                                            <td className="px-8 py-6 text-right">
-                                                <button className="text-slate-500 hover:text-white transition-all bg-white/5 p-2.5 rounded-xl border border-white/5">
-                                                    <Settings size={18} />
-                                                </button>
+                                            <td className="px-5 py-3.5">
+                                                <Badge variant="success">Verified</Badge>
                                             </td>
                                         </tr>
                                     ))
@@ -169,15 +161,6 @@ const UserDirectory = () => {
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                {/* Batch Actions footer */}
-                <div className="flex items-center justify-between px-10 py-8 bg-blue-600/5 rounded-m3-xl border border-blue-600/10 border-dashed">
-                    <p className="text-xs font-black text-blue-500 uppercase tracking-[0.2em] flex items-center space-x-4">
-                        <Shield size={18} className="animate-pulse" />
-                        <span>Ready for system-wide database sync...</span>
-                    </p>
-                    <button className="bg-blue-600/10 text-blue-500 text-[10px] font-black uppercase tracking-[0.3em] px-6 py-3 rounded-xl hover:bg-blue-600 hover:text-white transition-all">Synchronize registry</button>
                 </div>
             </div>
         </DashboardLayout>

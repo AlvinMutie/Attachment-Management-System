@@ -1,187 +1,137 @@
 import React, { useState } from 'react';
 import {
     ShieldCheck,
-    User,
     Mail,
     Lock,
-    Bell,
     Shield,
     Activity,
     LogOut,
     CheckCircle2,
-    Settings,
     Server,
     Cpu
 } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import { useAuth } from '../../context/AuthContext';
-
-const ProfileCard = ({ title, children }) => (
-    <div className="glass-card p-8 space-y-6">
-        <h3 className="text-lg font-black text-white flex items-center space-x-2">
-            <Settings className="text-blue-500" size={18} />
-            <span className="uppercase tracking-widest text-xs">{title}</span>
-        </h3>
-        {children}
-    </div>
-);
+import Badge from '../../components/ui/Badge';
+import Button from '../../components/ui/Button';
 
 const SuperAdminProfile = () => {
     const { user, logout } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
 
-    // Mock data for Super Admin
     const adminData = {
         name: user?.name || 'Administrator',
         email: user?.email || 'superadmin@attachpro.io',
         role: 'Global Platform Owner',
-        lastLogin: '26 Jan 2026, 03:45 PM',
-        location: 'Global Operations Center',
         permissions: [
-            'Full System Control',
-            'Institutional Management',
-            'Revenue & Billing Oversight',
-            'Emergency System Override',
-            'Database Migration Rights'
+            'Full System Operations Control',
+            'Institutional Tenant Provisioning',
+            'Cross-School Audit Ledger Oversight',
+            'Security Session Management & Lockouts',
+            'Core Database Diagnostic Clearance'
         ]
     };
 
     return (
         <DashboardLayout role="super_admin">
-            <div className="space-y-8 animate-fade-in">
-                {/* Header / Identity */}
-                <div className="flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-blue-600/10 to-transparent p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
-                    <div className="relative group">
-                        <div className="w-32 h-32 bg-blue-600 rounded-[2.5rem] flex items-center justify-center shadow-2xl shadow-blue-600/30 group-hover:scale-105 transition-transform">
-                            <ShieldCheck className="text-white" size={64} />
+            <div className="space-y-6 max-w-5xl mx-auto p-6">
+                {/* Header / Identity Card */}
+                <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 bg-violet-600/10 border border-violet-500/20 rounded-xl flex items-center justify-center text-violet-400">
+                            <ShieldCheck size={28} />
                         </div>
-                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-green-500 border-4 border-slate-950 rounded-full flex items-center justify-center p-2 shadow-lg" title="System Online">
-                            <Server className="text-white" size={16} />
-                        </div>
-                    </div>
-                    <div className="text-center md:text-left space-y-2">
-                        <div className="flex flex-col md:flex-row md:items-center gap-3">
-                            <h1 className="text-4xl font-black text-white tracking-tighter">{adminData.name}</h1>
-                            <span className="bg-blue-600 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-widest shadow-lg shadow-blue-600/20">
-                                {adminData.role}
-                            </span>
-                        </div>
-                        <p className="text-slate-500 font-medium">{adminData.email}</p>
-                        <div className="flex flex-wrap gap-4 pt-2">
-                            <div className="flex items-center space-x-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                <Activity size={14} className="text-blue-500" />
-                                <span>Session Active</span>
+                        <div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[11px] font-semibold uppercase tracking-wider text-violet-400">Super Administrator</span>
+                                <Badge variant="success">Active Session</Badge>
                             </div>
-                            <div className="flex items-center space-x-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                <Cpu size={14} className="text-purple-500" />
-                                <span>High Priority Clearace</span>
-                            </div>
+                            <h1 className="text-2xl font-bold text-slate-100 tracking-tight mt-0.5">{adminData.name}</h1>
+                            <p className="text-xs text-slate-400 font-mono mt-0.5">{adminData.email}</p>
                         </div>
                     </div>
-                    <div className="md:ml-auto">
-                        <button className="btn-primary px-8" onClick={() => setIsEditing(!isEditing)}>
-                            {isEditing ? 'Save Changes' : 'Edit Profile'}
-                        </button>
-                    </div>
+                    <Button variant={isEditing ? 'primary' : 'outline'} onClick={() => setIsEditing(!isEditing)}>
+                        {isEditing ? 'Save Changes' : 'Edit Profile'}
+                    </Button>
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-8">
-                    {/* Security & Access */}
-                    <div className="lg:col-span-1 space-y-8">
-                        <ProfileCard title="System Rights">
-                            <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Permissions Column */}
+                    <div className="space-y-6">
+                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 space-y-4">
+                            <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">Assigned System Rights</h3>
+                            <div className="space-y-2.5">
                                 {adminData.permissions.map((perm, i) => (
-                                    <div key={i} className="flex items-center space-x-3 p-3 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/30 transition-colors">
-                                        <CheckCircle2 className="text-blue-500" size={18} />
-                                        <span className="text-sm font-bold text-slate-300">{perm}</span>
+                                    <div key={i} className="flex items-start gap-2 text-xs text-slate-300">
+                                        <CheckCircle2 className="text-violet-400 flex-shrink-0 mt-0.5" size={14} />
+                                        <span>{perm}</span>
                                     </div>
                                 ))}
                             </div>
-                        </ProfileCard>
+                        </div>
 
-                        <div className="glass-card p-8 border-l-4 border-l-red-600 bg-red-600/[0.02]">
-                            <h3 className="text-lg font-black text-red-500 mb-4 flex items-center space-x-2 uppercase tracking-widest text-xs">Danger Zone</h3>
-                            <button
+                        <div className="bg-[#15171f] border border-rose-500/20 rounded-xl p-6 space-y-3">
+                            <h3 className="text-xs font-bold text-rose-400 uppercase tracking-wider">Session Security</h3>
+                            <p className="text-xs text-slate-400">Terminate your current authenticated administrative session.</p>
+                            <Button
+                                variant="danger"
+                                className="w-full"
                                 onClick={logout}
-                                className="w-full flex items-center justify-center space-x-2 p-4 bg-red-600/10 text-red-500 rounded-2xl border border-red-600/20 hover:bg-red-600/20 transition-all font-black text-xs uppercase tracking-widest"
+                                icon={LogOut}
                             >
-                                <LogOut size={18} />
-                                <span>Logout from System</span>
-                            </button>
+                                Sign Out
+                            </Button>
                         </div>
                     </div>
 
                     {/* Account Settings */}
-                    <div className="lg:col-span-2 space-y-8">
-                        <div className="glass-card p-10 space-y-10">
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className="space-y-3">
-                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Email Address</label>
-                                    <div className="relative">
-                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                                        <input type="email" readOnly={!isEditing} className="input-field pl-12 opacity-80" defaultValue={adminData.email} />
-                                    </div>
+                    <div className="md:col-span-2 space-y-6">
+                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 space-y-4">
+                            <h3 className="text-base font-bold text-slate-100">Account Credentials</h3>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Email Address</label>
+                                    <input
+                                        type="email"
+                                        readOnly={!isEditing}
+                                        className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
+                                        defaultValue={adminData.email}
+                                    />
                                 </div>
-                                <div className="space-y-3">
-                                    <label className="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Global ID</label>
-                                    <div className="relative">
-                                        <Shield className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                                        <input type="text" readOnly className="input-field pl-12 opacity-50 select-none" defaultValue="SA-GLOBAL-99" />
-                                    </div>
+                                <div>
+                                    <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Account Scope</label>
+                                    <input
+                                        type="text"
+                                        readOnly
+                                        className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-400 select-none opacity-60"
+                                        defaultValue="Global Super Admin"
+                                    />
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-white/5 space-y-6">
-                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-blue-500">Security Credentials</h3>
-                                <div className="grid md:grid-cols-2 gap-8">
-                                    <div className="space-y-3">
-                                        <label className="text-xs font-black uppercase tracking-widest text-slate-500">Current Password</label>
-                                        <div className="relative">
-                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                                            <input type="password" readOnly={!isEditing} className="input-field pl-12" defaultValue="••••••••" />
-                                        </div>
+                            <div className="border-t border-[#22242f] pt-4 mt-2">
+                                <h4 className="text-xs font-semibold text-slate-300 mb-3">Password Management</h4>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Current Password</label>
+                                        <input
+                                            type="password"
+                                            readOnly={!isEditing}
+                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
+                                            defaultValue="••••••••"
+                                        />
                                     </div>
-                                    <div className="space-y-3">
-                                        <label className="text-xs font-black uppercase tracking-widest text-slate-500">New Password</label>
-                                        <div className="relative">
-                                            <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                                            <input type="password" readOnly={!isEditing} className="input-field pl-12" placeholder="Leave empty to keep current" />
-                                        </div>
+                                    <div>
+                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">New Password</label>
+                                        <input
+                                            type="password"
+                                            readOnly={!isEditing}
+                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
+                                            placeholder="Leave blank to keep current"
+                                        />
                                     </div>
                                 </div>
-                            </div>
-
-                            <div className="pt-6 border-t border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                                <div className="space-y-1">
-                                    <p className="text-sm font-bold text-white">System Notifications</p>
-                                    <p className="text-xs text-slate-500">Receive alerts for platform-wide emergencies</p>
-                                </div>
-                                <div className="w-14 h-8 bg-blue-600 rounded-full p-1 cursor-pointer flex items-center justify-end px-1.5 transition-colors">
-                                    <div className="w-5 h-5 bg-white rounded-full shadow-lg" />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Audit Log / Activity */}
-                        <div className="glass-card overflow-hidden">
-                            <div className="p-8 border-b border-white/10 flex justify-between items-center">
-                                <h3 className="text-lg font-black text-white uppercase tracking-widest text-xs">Recent Platform Actions</h3>
-                                <button className="text-blue-500 text-xs font-bold uppercase tracking-widest hover:underline">Full Audit Log</button>
-                            </div>
-                            <div className="divide-y divide-white/5">
-                                {[
-                                    { action: 'Updated Global Subscription Policy', time: '2 hours ago', target: 'Payment Gateway' },
-                                    { action: 'Approved Kenya Poly Onboarding', time: '5 hours ago', target: 'Institutions' },
-                                    { action: 'System Backup Initiated', time: 'Yesterday', target: 'AWS-S3-Cluster' }
-                                ].map((item, i) => (
-                                    <div key={i} className="p-6 flex items-center justify-between hover:bg-white/5 transition-colors">
-                                        <div className="space-y-1">
-                                            <p className="text-sm font-bold text-white tracking-tight">{item.action}</p>
-                                            <p className="text-xs text-slate-500 font-medium">Target: {item.target}</p>
-                                        </div>
-                                        <span className="text-[10px] font-black uppercase text-slate-600 bg-slate-900 px-3 py-1 rounded-full">{item.time}</span>
-                                    </div>
-                                ))}
                             </div>
                         </div>
                     </div>

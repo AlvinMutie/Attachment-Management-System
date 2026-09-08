@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import {
     Users,
-    UserCheck,
-    AlertTriangle,
-    CheckCircle2,
-    BookOpen,
-    MapPin,
     Search,
-    RefreshCw,
-    TrendingUp,
-    Shield
+    RefreshCw
 } from 'lucide-react';
 import { coordinatorApi } from '../../utils/coordinatorApi';
-import { Card, Badge, Button, Input, LoadingSkeleton } from '../../components/ui';
+import { Badge, Button, LoadingSkeleton } from '../../components/ui';
 
 export default function SupervisorWorkload() {
     const [loading, setLoading] = useState(true);
@@ -57,151 +50,183 @@ export default function SupervisorWorkload() {
     const getCapacityBadge = (status) => {
         switch (status) {
             case 'high':
-                return <Badge className="bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300">High Load (≥15)</Badge>;
+                return <Badge variant="danger" size="sm" dot={true}>High Load (≥15)</Badge>;
             case 'moderate':
-                return <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300">Moderate (8-14)</Badge>;
+                return <Badge variant="warning" size="sm" dot={true}>Moderate (8-14)</Badge>;
             default:
-                return <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">Optimal (&lt;8)</Badge>;
+                return <Badge variant="success" size="sm" dot={true}>Optimal (&lt;8)</Badge>;
         }
     };
 
     return (
-        <div className="space-y-6 p-6 max-w-7xl mx-auto">
+        <div className="space-y-6 p-6 max-w-7xl mx-auto font-sans">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
-                        <Users className="w-8 h-8 text-teal-600 dark:text-teal-400" />
-                        Supervisor Workload & Capacity Management
-                    </h1>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        Monitor academic and industry supervisor allocations, capacity saturation, and pending responsibilities.
-                    </p>
+                <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 bg-violet-600/15 border border-violet-500/25 rounded-lg flex items-center justify-center text-violet-300">
+                        <Users size={20} />
+                    </div>
+                    <div>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-violet-400">Resource Governance</span>
+                        <h1 className="text-xl font-semibold text-white tracking-tight">
+                            Supervisor Workload & Capacity
+                        </h1>
+                        <p className="text-xs text-slate-400 mt-0.5">
+                            Monitor faculty and industry allocations, capacity saturation, and pending evaluation items.
+                        </p>
+                    </div>
                 </div>
                 <Button
-                    variant="outline"
+                    variant="secondary"
                     onClick={loadSupervisors}
-                    className="flex items-center gap-2 self-start md:self-auto"
+                    className="flex items-center gap-1.5 text-xs py-1.5 px-3 self-start md:self-auto"
                 >
-                    <RefreshCw className="w-4 h-4" />
-                    Refresh Matrix
+                    <RefreshCw className="w-3.5 h-3.5 text-slate-400" />
+                    <span>Refresh Matrix</span>
                 </Button>
             </div>
 
             {/* Metrics Overview */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card className="p-5 border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Active Supervisors</p>
-                    <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{totalSupervisors}</p>
-                    <p className="text-xs text-slate-500 mt-1">{uniSupervisors} University | {industrySupervisors} Industry</p>
-                </Card>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="craft-card p-4">
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                        <span className="font-medium">Active Supervisors</span>
+                        <Users className="w-3.5 h-3.5 text-violet-400" />
+                    </div>
+                    <div className="kpi-metric-value mt-2">{totalSupervisors}</div>
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                        <span>Distribution</span>
+                        <span className="font-mono text-slate-300">{uniSupervisors} Uni | {industrySupervisors} Ind</span>
+                    </div>
+                </div>
 
-                <Card className="p-5 border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Active Pairings</p>
-                    <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">{totalAssignments}</p>
-                    <p className="text-xs text-slate-500 mt-1">Supervision allocations</p>
-                </Card>
+                <div className="craft-card p-4">
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                        <span className="font-medium">Active Pairings</span>
+                        <Users className="w-3.5 h-3.5 text-sky-400" />
+                    </div>
+                    <div className="kpi-metric-value text-sky-400 mt-2">{totalAssignments}</div>
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                        <span>Total assigned</span>
+                        <span className="font-mono text-slate-300">{totalAssignments} links</span>
+                    </div>
+                </div>
 
-                <Card className="p-5 border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Average Cohort Ratio</p>
-                    <p className="text-2xl font-bold text-teal-600 dark:text-teal-400 mt-1">{avgRatio} : 1</p>
-                    <p className="text-xs text-slate-500 mt-1">Students per supervisor</p>
-                </Card>
+                <div className="craft-card p-4">
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                        <span className="font-medium">Average Ratio</span>
+                        <Users className="w-3.5 h-3.5 text-emerald-400" />
+                    </div>
+                    <div className="kpi-metric-value text-emerald-400 mt-2">{avgRatio} <span className="text-xs font-normal text-slate-400">: 1</span></div>
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                        <span>Mentees per mentor</span>
+                        <span className="font-mono text-emerald-400">Target &lt; 15</span>
+                    </div>
+                </div>
 
-                <Card className="p-5 border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">High Saturation Alerts</p>
-                    <p className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">
+                <div className="craft-card p-4">
+                    <div className="flex items-center justify-between text-xs text-slate-400">
+                        <span className="font-medium">Saturation Alerts</span>
+                        <Users className="w-3.5 h-3.5 text-rose-400" />
+                    </div>
+                    <div className="kpi-metric-value text-rose-400 mt-2">
                         {supervisors.filter(s => s.capacityStatus === 'high').length}
-                    </p>
-                    <p className="text-xs text-slate-500 mt-1">Supervisors exceeding threshold</p>
-                </Card>
+                    </div>
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                        <span>Exceeding threshold</span>
+                        <span className="font-mono text-rose-300">High load</span>
+                    </div>
+                </div>
             </div>
 
             {/* Controls */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
-                <div className="flex items-center gap-2">
-                    {['ALL', 'university_supervisor', 'industry_supervisor'].map(role => (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-3 border-b border-[#22242f]">
+                <div className="segmented-tabs">
+                    {[
+                        { id: 'ALL', label: 'All Supervisors' },
+                        { id: 'university_supervisor', label: 'University Faculty' },
+                        { id: 'industry_supervisor', label: 'Industry Mentors' }
+                    ].map(tab => (
                         <button
-                            key={role}
-                            onClick={() => setRoleFilter(role)}
-                            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition ${
-                                roleFilter === role
-                                    ? 'bg-teal-600 text-white'
-                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+                            key={tab.id}
+                            onClick={() => setRoleFilter(tab.id)}
+                            className={`segmented-tab-btn text-xs ${
+                                roleFilter === tab.id ? 'active' : ''
                             }`}
                         >
-                            {role === 'ALL' ? 'All Roles' : role === 'university_supervisor' ? 'University Supervisors' : 'Industry Supervisors'}
+                            {tab.label}
                         </button>
                     ))}
                 </div>
 
-                <div className="w-full sm:w-64">
-                    <Input
-                        placeholder="Search supervisor name or email..."
+                <div className="relative w-full sm:w-60">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={13} />
+                    <input
+                        placeholder="Search supervisor..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="text-xs"
+                        className="w-full bg-[#181a24] border border-[#22242f] rounded-md pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500 font-sans"
                     />
                 </div>
             </div>
 
             {/* Workload Table */}
             {loading ? (
-                <div className="space-y-3">
+                <div className="space-y-2">
                     {[1, 2, 3, 4, 5].map(i => (
-                        <LoadingSkeleton key={i} className="h-16 rounded-xl" />
+                        <LoadingSkeleton key={i} className="h-14 rounded-md" />
                     ))}
                 </div>
             ) : filtered.length === 0 ? (
-                <Card className="p-12 text-center border border-dashed">
-                    <Users className="w-12 h-12 text-slate-400 mx-auto mb-3 opacity-60" />
-                    <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">No supervisors found</h3>
-                    <p className="text-xs text-slate-500 mt-1">Try changing search filters.</p>
-                </Card>
+                <div className="craft-card p-10 text-center space-y-1.5">
+                    <Users className="w-8 h-8 text-slate-500 mx-auto mb-1 opacity-70" />
+                    <h3 className="text-xs font-semibold text-white">No supervisors found</h3>
+                    <p className="text-[11px] text-slate-400">Try adjusting your search or role filter.</p>
+                </div>
             ) : (
-                <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 overflow-hidden shadow-sm">
-                    <div className="overflow-x-auto">
+                <div className="craft-card p-5 space-y-3">
+                    <div className="overflow-x-auto -mx-5">
                         <table className="w-full text-left text-xs">
-                            <thead className="bg-slate-50/80 dark:bg-slate-800/60 text-slate-600 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 font-semibold uppercase tracking-wider">
+                            <thead className="bg-[#12141c] text-slate-400 font-medium border-b border-[#22242f]">
                                 <tr>
-                                    <th className="p-4">Supervisor</th>
-                                    <th className="p-4">Type</th>
-                                    <th className="p-4 text-center">Assigned Students</th>
-                                    <th className="p-4 text-center">Active Attachments</th>
-                                    <th className="p-4 text-center">Pending Logbooks</th>
-                                    <th className="p-4 text-center">Completed Assessments</th>
-                                    <th className="p-4 text-center">Pending Visits</th>
-                                    <th className="p-4 text-right">Capacity Rating</th>
+                                    <th className="py-2.5 px-5">Supervisor</th>
+                                    <th className="py-2.5 px-5">Role Type</th>
+                                    <th className="py-2.5 px-5 text-center">Assigned</th>
+                                    <th className="py-2.5 px-5 text-center">Active</th>
+                                    <th className="py-2.5 px-5 text-center">Pending Reviews</th>
+                                    <th className="py-2.5 px-5 text-center">Completed</th>
+                                    <th className="py-2.5 px-5 text-center">Pending Visits</th>
+                                    <th className="py-2.5 px-5 text-right">Capacity Rating</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                            <tbody className="divide-y divide-[#22242f]">
                                 {filtered.map(s => (
-                                    <tr key={s.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
-                                        <td className="p-4">
-                                            <div className="font-semibold text-slate-900 dark:text-white">{s.name}</div>
-                                            <div className="text-[11px] text-slate-500">{s.email}</div>
+                                    <tr key={s.id} className="hover:bg-[#181a24] transition-colors">
+                                        <td className="py-2.5 px-5">
+                                            <div className="font-medium text-white">{s.name}</div>
+                                            <div className="text-[10px] text-slate-500">{s.email}</div>
                                         </td>
-                                        <td className="p-4">
-                                            <Badge variant="outline" className={s.role === 'university_supervisor' ? 'border-purple-300 text-purple-700 dark:text-purple-300' : 'border-emerald-300 text-emerald-700 dark:text-emerald-300'}>
+                                        <td className="py-2.5 px-5">
+                                            <Badge variant={s.role === 'university_supervisor' ? 'indigo' : 'success'} size="sm">
                                                 {s.role === 'university_supervisor' ? 'University' : 'Industry'}
                                             </Badge>
                                         </td>
-                                        <td className="p-4 text-center font-bold text-slate-900 dark:text-white">
+                                        <td className="py-2.5 px-5 text-center font-mono font-medium text-white">
                                             {s.assignedStudentsCount || 0}
                                         </td>
-                                        <td className="p-4 text-center text-emerald-600 font-semibold">
+                                        <td className="py-2.5 px-5 text-center font-mono text-emerald-400">
                                             {s.activeStudentsCount || 0}
                                         </td>
-                                        <td className="p-4 text-center text-amber-600 font-semibold">
+                                        <td className="py-2.5 px-5 text-center font-mono text-amber-400">
                                             {s.pendingLogbooksCount || 0}
                                         </td>
-                                        <td className="p-4 text-center text-blue-600 font-semibold">
+                                        <td className="py-2.5 px-5 text-center font-mono text-sky-400">
                                             {s.completedAssessmentsCount || 0}
                                         </td>
-                                        <td className="p-4 text-center text-purple-600 font-semibold">
+                                        <td className="py-2.5 px-5 text-center font-mono text-violet-400">
                                             {s.pendingSupervisionCount || 0}
                                         </td>
-                                        <td className="p-4 text-right">
+                                        <td className="py-2.5 px-5 text-right">
                                             {getCapacityBadge(s.capacityStatus)}
                                         </td>
                                     </tr>

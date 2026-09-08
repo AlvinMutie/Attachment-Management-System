@@ -3,20 +3,15 @@ import { Html5QrcodeScanner } from 'html5-qrcode';
 import {
     Users,
     CheckCircle,
-    XCircle,
     Camera,
-    Clock,
     History,
     AlertCircle,
     ArrowUpRight,
-    MessageSquare,
     Check,
-    X,
     Briefcase,
     ShieldAlert,
     AlertTriangle,
-    Calendar,
-    FileText
+    X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import DashboardLayout from '../../components/DashboardLayout';
@@ -25,22 +20,9 @@ import {
     getAssignedStudents,
     getSupervisorLogbooks,
     reviewLogbook,
-    getSupervisorAttendance,
-    markSupervisorAttendance
+    getSupervisorAttendance
 } from '../../utils/supervisorApi';
-
-const StatCard = ({ icon: Icon, label, value, color }) => (
-    <div className="glass-card p-8 flex flex-col justify-between h-full bg-gradient-to-br from-white/[0.04] to-transparent border-white/5 hover:border-blue-500/20 transition-all group rounded-m3-large overflow-hidden relative">
-        <div className="flex justify-between items-center mb-6 relative z-10">
-            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.25em]">{label}</p>
-            <div className={`p-3 rounded-2xl bg-white/5 ${color} shadow-inner group-hover:scale-110 transition-transform duration-500`}>
-                <Icon size={20} />
-            </div>
-        </div>
-        <p className="text-4xl font-black text-white tracking-tighter relative z-10">{value}</p>
-        <div className="absolute -right-4 -bottom-4 w-16 h-16 bg-blue-600/5 blur-xl rounded-full" />
-    </div>
-);
+import { Badge, Button, LoadingSkeleton } from '../../components/ui';
 
 const SupervisorDashboard = () => {
     const { user } = useAuth();
@@ -95,7 +77,7 @@ const SupervisorDashboard = () => {
         if (isScanning) {
             scanner = new Html5QrcodeScanner("reader", {
                 fps: 10,
-                qrbox: { width: 250, height: 250 },
+                qrbox: { width: 220, height: 220 },
                 aspectRatio: 1.0
             });
 
@@ -103,7 +85,7 @@ const SupervisorDashboard = () => {
                 setScanResult(result);
                 setIsScanning(false);
                 scanner.clear();
-            }, (error) => { });
+            }, () => { });
         }
 
         return () => {
@@ -129,6 +111,23 @@ const SupervisorDashboard = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <DashboardLayout role="industry_supervisor">
+                <div className="space-y-4 p-6 sm:p-8 max-w-7xl mx-auto">
+                    <LoadingSkeleton className="h-20 rounded-lg" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <LoadingSkeleton className="h-24 rounded-lg" />
+                        <LoadingSkeleton className="h-24 rounded-lg" />
+                        <LoadingSkeleton className="h-24 rounded-lg" />
+                        <LoadingSkeleton className="h-24 rounded-lg" />
+                    </div>
+                    <LoadingSkeleton className="h-80 rounded-lg" />
+                </div>
+            </DashboardLayout>
+        );
+    }
+
     const presentCount = workspace?.metrics?.todayPresent ?? todayAttendance.filter(a => a.status === 'present').length;
     const totalAssigned = workspace?.metrics?.totalAssigned ?? students.length;
     const pendingCount = workspace?.metrics?.pendingLogbooksCount ?? pendingLogbooks.length;
@@ -136,69 +135,120 @@ const SupervisorDashboard = () => {
 
     return (
         <DashboardLayout role="industry_supervisor">
-            <div className="space-y-10 animate-fade-in pb-12">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-8 bg-blue-600/5 p-10 rounded-m3-xl border border-blue-600/10 backdrop-blur-md">
-                    <div className="flex items-center gap-8">
-                        <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-blue-600/40 ring-1 ring-white/20">
-                            <Briefcase className="text-white" size={40} />
+            <div className="space-y-5 p-6 sm:p-8 max-w-7xl mx-auto pb-16 font-sans">
+                {/* Header Banner */}
+                <div className="craft-card p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center text-emerald-400">
+                            <Briefcase size={24} />
                         </div>
-                        <div className="space-y-1.5">
-                            <span className="text-[11px] font-black uppercase tracking-[0.4em] text-blue-400 opacity-70">Industrial Management</span>
-                            <h1 className="text-4xl font-black text-white tracking-tighter uppercase leading-none">Industry <span className="text-blue-500">Supervisor</span></h1>
-                            <p className="text-slate-500 font-medium max-w-md text-sm">Managing attached students, evaluating logbook reports, and verifying presence records.</p>
+                        <div>
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-[11px] font-medium mb-1">
+                                Workplace Mentorship
+                            </div>
+                            <h1 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
+                                Industry Supervisor Workspace
+                            </h1>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                                On-site presence validation, weekly logbook reviews, and intern assessments.
+                            </p>
                         </div>
                     </div>
-                    <div className="flex bg-blue-600/10 p-2 rounded-2xl border border-blue-600/20 shadow-lg">
-                        <div className="flex items-center gap-4 px-6 py-3">
-                            <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.8)]" />
-                            <span className="text-[11px] font-black text-white tracking-[0.2em] uppercase">Active Roster</span>
-                        </div>
+
+                    <div className="flex items-center gap-2">
+                        <Badge variant="success" dot={true}>
+                            Active Industry Host
+                        </Badge>
                     </div>
                 </div>
 
-                {/* Performance Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <StatCard icon={Users} label="Assigned Students" value={totalAssigned} color="text-blue-400" />
-                    <StatCard icon={CheckCircle} label="Today's Present" value={presentCount} color="text-emerald-400" />
-                    <StatCard icon={AlertCircle} label="Pending Logbooks" value={pendingCount} color="text-amber-400" />
-                    <StatCard icon={ShieldAlert} label="At-Risk Alerts" value={atRiskCount} color="text-rose-400" />
+                {/* KPI Metrics */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div className="craft-card p-4">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                            <span className="font-medium">Assigned Interns</span>
+                            <Users className="w-3.5 h-3.5 text-violet-400" />
+                        </div>
+                        <div className="kpi-metric-value mt-2">{totalAssigned}</div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                            <span>Supervised cohort</span>
+                            <span className="font-mono text-slate-300">{totalAssigned} active</span>
+                        </div>
+                    </div>
+
+                    <div className="craft-card p-4">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                            <span className="font-medium">Today's Check-ins</span>
+                            <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                        </div>
+                        <div className="kpi-metric-value text-emerald-400 mt-2">{presentCount}</div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                            <span>Verified present</span>
+                            <span className="font-mono text-emerald-400">{presentCount} / {totalAssigned}</span>
+                        </div>
+                    </div>
+
+                    <div className="craft-card p-4">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                            <span className="font-medium">Pending Logbooks</span>
+                            <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                        </div>
+                        <div className="kpi-metric-value text-amber-400 mt-2">{pendingCount}</div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                            <span>Require review</span>
+                            <span className="font-mono text-amber-300">{pendingCount} submissions</span>
+                        </div>
+                    </div>
+
+                    <div className="craft-card p-4">
+                        <div className="flex items-center justify-between text-xs text-slate-400">
+                            <span className="font-medium">At-Risk Alerts</span>
+                            <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
+                        </div>
+                        <div className="kpi-metric-value text-rose-400 mt-2">{atRiskCount}</div>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#22242f] text-[11px] text-slate-400">
+                            <span>Attendance &lt; 75%</span>
+                            <span className="font-mono text-rose-300">{atRiskCount} flagged</span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Supervisor Action Queue */}
                 {actionQueue.length > 0 && (
-                    <div className="glass-card p-8 rounded-m3-xl border-amber-500/20 bg-gradient-to-r from-amber-500/5 to-transparent space-y-4">
+                    <div className="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20 space-y-3">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <AlertTriangle className="text-amber-400" size={22} />
-                                <h3 className="text-lg font-black text-white tracking-tight uppercase">Action Required</h3>
+                            <div className="flex items-center gap-2">
+                                <div className="w-5 h-5 rounded bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                                    <AlertTriangle className="w-3 h-3" />
+                                </div>
+                                <h3 className="text-xs font-semibold text-amber-300 uppercase tracking-wide">
+                                    Pending Actions ({actionQueue.length})
+                                </h3>
                             </div>
-                            <span className="text-[10px] font-black uppercase px-3 py-1 bg-amber-500/20 text-amber-300 rounded-full border border-amber-500/30">
-                                {actionQueue.length} items awaiting your review
-                            </span>
                         </div>
-                        <div className="grid md:grid-cols-2 gap-4 pt-2">
+                        <div className="grid md:grid-cols-2 gap-2.5">
                             {actionQueue.map((item, idx) => (
-                                <div key={idx} className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 flex items-start justify-between gap-4">
-                                    <div className="space-y-1">
-                                        <div className="flex items-center gap-2">
-                                            <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
-                                                item.priority === 'urgent' ? 'bg-rose-600/20 text-rose-400 border border-rose-500/20' :
-                                                item.priority === 'high' ? 'bg-amber-600/20 text-amber-400 border border-amber-500/20' :
-                                                'bg-blue-600/20 text-blue-400 border border-blue-500/20'
-                                            }`}>
+                                <div key={idx} className="p-3 rounded-md bg-[#12141c] border border-[#22242f] flex items-start justify-between gap-3">
+                                    <div className="space-y-0.5">
+                                        <div className="flex items-center gap-1.5">
+                                            <Badge
+                                                variant={item.priority === 'urgent' ? 'danger' : item.priority === 'high' ? 'warning' : 'indigo'}
+                                                size="sm"
+                                            >
                                                 {item.priority}
-                                            </span>
-                                            <h4 className="text-sm font-bold text-white">{item.title}</h4>
+                                            </Badge>
+                                            <h4 className="text-xs font-medium text-slate-200">{item.title}</h4>
                                         </div>
-                                        <p className="text-xs text-slate-400">{item.description}</p>
+                                        <p className="text-[11px] text-slate-400 leading-normal">{item.description}</p>
                                     </div>
                                     <a
                                         href={item.actionUrl || '/industry/attendance'}
-                                        className="btn-primary px-3 py-1.5 text-[10px] uppercase tracking-wider shrink-0 flex items-center gap-1"
+                                        className="shrink-0"
                                     >
-                                        <span>Resolve</span>
-                                        <ArrowUpRight size={12} />
+                                        <Button size="sm" variant="outline" className="text-[11px] py-1 px-2.5">
+                                            <span>Resolve</span>
+                                            <ArrowUpRight size={11} className="ml-1" />
+                                        </Button>
                                     </a>
                                 </div>
                             ))}
@@ -206,160 +256,162 @@ const SupervisorDashboard = () => {
                     </div>
                 )}
 
-                <div className="grid lg:grid-cols-3 gap-10">
-                    {/* QR Attendance Scanner */}
-                    <div className="lg:col-span-1 space-y-8">
-                        <div className="glass-card p-10 flex flex-col items-center justify-center space-y-10 bg-gradient-to-br from-white/[0.04] to-transparent !rounded-m3-xl shadow-2xl">
-                            <div className="text-center w-full space-y-2">
-                                <h3 className="text-2xl font-black text-white tracking-tighter uppercase">Clock-in Student</h3>
-                                <p className="text-slate-500 text-[10px] uppercase font-black tracking-[0.2em]">QR Presence Verification</p>
+                <div className="grid lg:grid-cols-3 gap-5">
+                    {/* Left Column: QR Verification & Today Check-ins */}
+                    <div className="lg:col-span-1 space-y-4">
+                        <div className="craft-card p-5 flex flex-col items-center justify-center space-y-4">
+                            <div className="text-center space-y-1">
+                                <h3 className="text-sm font-semibold text-white">QR Presence Verification</h3>
+                                <p className="text-[11px] text-slate-400">Scan student's daily rotating token</p>
                             </div>
 
                             {!isScanning ? (
                                 <div
                                     onClick={() => setIsScanning(true)}
-                                    className="w-full aspect-square bg-white/[0.02] border-2 border-dashed border-white/10 rounded-m3-xl flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 hover:border-blue-500/30 transition-all group shadow-inner"
+                                    className="w-full aspect-square max-w-[200px] bg-[#181a24] border border-dashed border-[#22242f] rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-violet-500/50 transition-all"
                                 >
-                                    <div className="w-24 h-24 bg-blue-600/10 text-blue-400 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-2xl">
-                                        <Camera size={48} />
+                                    <div className="w-12 h-12 bg-violet-600/10 text-violet-400 rounded-lg flex items-center justify-center mb-2">
+                                        <Camera size={24} />
                                     </div>
-                                    <span className="text-slate-500 font-black text-[11px] uppercase tracking-[0.25em] group-hover:text-blue-400">Initialize Camera</span>
+                                    <span className="text-slate-400 text-xs font-medium">Activate Scanner</span>
                                 </div>
                             ) : (
-                                <div id="reader" className="w-full overflow-hidden rounded-m3-xl border-4 border-blue-600/50 shadow-2xl" />
+                                <div id="reader" className="w-full overflow-hidden rounded-lg border border-violet-500/40" />
                             )}
 
                             {scanResult && (
-                                <div className="w-full bg-emerald-600/10 border border-emerald-600/20 p-6 rounded-[2rem] animate-fade-in text-center">
-                                    <div className="flex items-center justify-center space-x-3 text-emerald-400 mb-2">
-                                        <CheckCircle size={24} />
-                                        <span className="font-black uppercase tracking-widest text-xs">Verified</span>
+                                <div className="w-full bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-md text-center">
+                                    <div className="flex items-center justify-center gap-1.5 text-emerald-400 text-xs font-medium mb-1">
+                                        <CheckCircle size={14} />
+                                        <span>Verified</span>
                                     </div>
                                     <p className="text-[10px] font-mono text-slate-400 truncate">{scanResult}</p>
                                     <button
                                         onClick={() => setScanResult(null)}
-                                        className="text-[10px] text-blue-500 font-black uppercase tracking-widest mt-4 hover:underline"
+                                        className="text-[11px] text-violet-400 hover:text-violet-300 font-medium mt-2 block mx-auto"
                                     >
-                                        Scan Another Student
+                                        Scan Next Student
                                     </button>
                                 </div>
                             )}
                         </div>
 
-                        {/* Today's Live Attendance */}
-                        <div className="glass-card p-8 space-y-6">
-                            <div className="flex items-center justify-between">
-                                <h3 className="text-xs font-black text-white uppercase tracking-[0.3em]">Today's Check-ins</h3>
-                                <History size={16} className="text-blue-400" />
+                        {/* Today's Check-ins */}
+                        <div className="craft-card p-4 space-y-3">
+                            <div className="flex items-center justify-between pb-2 border-b border-[#22242f]">
+                                <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Today's Check-Ins</h3>
+                                <History size={14} className="text-slate-400" />
                             </div>
-                            <div className="space-y-4">
+                            <div className="space-y-2 max-h-64 overflow-y-auto">
                                 {todayAttendance.length > 0 ? (
                                     todayAttendance.map((log) => (
-                                        <div key={log.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5">
-                                            <div className="space-y-1">
-                                                <p className="text-sm font-bold text-white tracking-tight">{log.student?.user?.name || 'Student'}</p>
-                                                <p className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{log.verificationMethod || 'Verified'}</p>
+                                        <div key={log.id} className="flex items-center justify-between p-2.5 bg-[#181a24] rounded-md border border-[#22242f] text-xs">
+                                            <div>
+                                                <p className="font-medium text-white">{log.student?.user?.name || 'Student'}</p>
+                                                <p className="text-[10px] text-slate-500">{log.verificationMethod || 'Verified Portal'}</p>
                                             </div>
-                                            <span className="text-[9px] font-black uppercase px-3 py-1 rounded-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/20">
+                                            <Badge variant="success" size="sm" dot={true}>
                                                 {log.status}
-                                            </span>
+                                            </Badge>
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-xs text-slate-500 text-center py-4 font-bold uppercase tracking-widest">No check-ins today yet</p>
+                                    <p className="text-xs text-slate-500 text-center py-4">No check-ins recorded today yet.</p>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    {/* Pending Reviews & Roster */}
-                    <div className="lg:col-span-2 space-y-10">
-                        <div className="flex items-center justify-between px-2">
-                            <h3 className="text-2xl font-black text-white tracking-tighter">Pending Logbook Reviews</h3>
-                            <span className="bg-amber-600/20 text-amber-400 text-[10px] font-black uppercase px-3 py-1 rounded-full border border-amber-500/20 tracking-widest">
-                                {pendingLogbooks.length} Pending
-                            </span>
-                        </div>
-
-                        <div className="space-y-6 px-2">
-                            {pendingLogbooks.length > 0 ? (
-                                pendingLogbooks.map((log) => (
-                                    <div key={log.id} className="glass-card p-8 flex flex-col md:flex-row md:items-center justify-between gap-6 group hover:border-blue-600/30 transition-all bg-gradient-to-r from-blue-600/5 to-transparent !rounded-m3-xl">
-                                        <div className="space-y-2">
-                                            <h4 className="text-xl font-black text-white tracking-tighter">{log.student?.user?.name || 'Student'}</h4>
-                                            <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Week {log.weekNumber} • {log.startDate} to {log.endDate}</p>
-                                            <p className="text-slate-300 text-sm italic line-clamp-2">"{log.summary}"</p>
-                                        </div>
-                                        <div className="flex items-center gap-4">
-                                            <button
-                                                onClick={() => { setSelectedLogbook(log); setReviewComment(log.supervisorComment || ''); }}
-                                                className="bg-blue-600 text-white px-6 py-3 rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-all flex items-center space-x-2"
-                                            >
-                                                <span>Review</span>
-                                                <ArrowUpRight size={16} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="p-8 text-center glass-card text-slate-500 text-xs font-bold uppercase tracking-widest">
-                                    All submitted logbooks have been reviewed.
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Student Watchlist */}
-                        <div className="glass-card overflow-hidden">
-                            <div className="p-8 border-b border-white/10 flex justify-between items-center">
-                                <h3 className="text-lg font-black text-white uppercase tracking-widest text-xs">Assigned Student Roster & Compliance</h3>
-                                <a href="/industry/attendance" className="text-blue-500 text-xs font-black tracking-widest uppercase hover:underline">Attendance Hub</a>
+                    {/* Right Column: Pending Logbook Reviews & Student Roster */}
+                    <div className="lg:col-span-2 space-y-4">
+                        {/* Pending Reviews */}
+                        <div className="craft-card p-5 space-y-4">
+                            <div className="flex items-center justify-between pb-2 border-b border-[#22242f]">
+                                <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Pending Logbook Reviews</h3>
+                                <Badge variant="warning" dot={true}>
+                                    {pendingLogbooks.length} Pending
+                                </Badge>
                             </div>
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left">
-                                    <thead className="bg-white/[0.02]">
-                                        <tr className="text-slate-500 text-[10px] uppercase font-black tracking-[0.3em]">
-                                            <th className="px-8 py-5">Managed Student</th>
-                                            <th className="px-8 py-5">Admission No</th>
-                                            <th className="px-8 py-5">Attendance</th>
-                                            <th className="px-8 py-5 text-right">Academic Standing</th>
+
+                            <div className="space-y-2.5">
+                                {pendingLogbooks.length > 0 ? (
+                                    pendingLogbooks.map((log) => (
+                                        <div key={log.id} className="p-3.5 rounded-md bg-[#181a24] border border-[#22242f] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                            <div className="space-y-1">
+                                                <h4 className="text-xs font-semibold text-white">{log.student?.user?.name || 'Student'}</h4>
+                                                <p className="text-slate-400 text-[11px]">Week {log.weekNumber} • {log.startDate} to {log.endDate}</p>
+                                                <p className="text-slate-300 text-xs italic line-clamp-2">"{log.summary}"</p>
+                                            </div>
+                                            <div className="shrink-0">
+                                                <Button
+                                                    size="sm"
+                                                    variant="primary"
+                                                    onClick={() => { setSelectedLogbook(log); setReviewComment(log.supervisorComment || ''); }}
+                                                    className="text-xs py-1.5 px-3"
+                                                >
+                                                    <span>Review</span>
+                                                    <ArrowUpRight size={12} className="ml-1" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="py-6 text-center text-slate-500 text-xs">
+                                        All submitted logbooks have been reviewed.
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Student Watchlist Table */}
+                        <div className="craft-card p-5 space-y-3">
+                            <div className="flex justify-between items-center pb-2 border-b border-[#22242f]">
+                                <h3 className="text-xs font-semibold text-white uppercase tracking-wide">Assigned Interns & Attendance Standing</h3>
+                                <a href="/industry/attendance" className="text-violet-400 text-xs font-medium hover:underline">Attendance Hub →</a>
+                            </div>
+                            <div className="overflow-x-auto -mx-5">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="bg-[#12141c] text-slate-400 font-medium border-b border-[#22242f]">
+                                        <tr>
+                                            <th className="py-2.5 px-5">Student</th>
+                                            <th className="py-2.5 px-5">Admission No</th>
+                                            <th className="py-2.5 px-5">Attendance</th>
+                                            <th className="py-2.5 px-5 text-right">Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-white/5 font-medium">
+                                    <tbody className="divide-y divide-[#22242f]">
                                         {students.length > 0 ? (
                                             students.map((s) => (
-                                                <tr key={s.id} className="hover:bg-white/[0.03] transition-colors group">
-                                                    <td className="px-8 py-6">
-                                                        <div className="flex items-center space-x-3">
-                                                            <div className="w-1.5 h-6 bg-blue-600 rounded-full group-hover:h-8 transition-all" />
-                                                            <div>
-                                                                <p className="text-sm font-black text-white">{s.user?.name}</p>
-                                                                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{s.user?.email}</p>
-                                                            </div>
+                                                <tr key={s.id} className="hover:bg-[#181a24] transition-colors">
+                                                    <td className="py-2.5 px-5">
+                                                        <div>
+                                                            <p className="font-medium text-white">{s.user?.name}</p>
+                                                            <p className="text-[10px] text-slate-500">{s.user?.email}</p>
                                                         </div>
                                                     </td>
-                                                    <td className="px-8 py-6 text-slate-300 text-xs font-bold">{s.admissionNumber}</td>
-                                                    <td className="px-8 py-6 text-slate-400 text-xs font-bold">
-                                                        <div className="flex items-center gap-2">
-                                                            <span>{s.attendanceRate !== undefined ? `${s.attendanceRate}%` : 'N/A'}</span>
+                                                    <td className="py-2.5 px-5 text-slate-300 font-mono text-[11px]">{s.admissionNumber}</td>
+                                                    <td className="py-2.5 px-5 text-slate-300">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <span className="font-mono">{s.attendanceRate !== undefined ? `${s.attendanceRate}%` : 'N/A'}</span>
                                                             {s.complianceStatus?.status === 'CRITICAL' && (
-                                                                <span className="text-[9px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">Critical</span>
+                                                                <Badge variant="danger" size="sm">Critical</Badge>
                                                             )}
                                                             {s.complianceStatus?.status === 'AT_RISK' && (
-                                                                <span className="text-[9px] font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">At Risk</span>
+                                                                <Badge variant="warning" size="sm">At Risk</Badge>
                                                             )}
                                                         </div>
                                                     </td>
-                                                    <td className="px-8 py-6 text-right">
-                                                        <span className="text-[9px] font-black uppercase text-emerald-400 px-3 py-1 bg-emerald-600/10 rounded-full tracking-tighter border border-emerald-500/20">
+                                                    <td className="py-2.5 px-5 text-right">
+                                                        <Badge variant="success" size="sm">
                                                             {s.placementStatus || 'ACTIVE'}
-                                                        </span>
+                                                        </Badge>
                                                     </td>
                                                 </tr>
                                             ))
                                         ) : (
                                             <tr>
-                                                <td colSpan={4} className="text-center py-8 text-slate-500 text-xs font-bold uppercase tracking-widest">
-                                                    No students assigned yet.
+                                                <td colSpan={4} className="text-center py-6 text-slate-500 text-xs">
+                                                    No students assigned to your supervision yet.
                                                 </td>
                                             </tr>
                                         )}
@@ -373,69 +425,70 @@ const SupervisorDashboard = () => {
 
             {/* Logbook Review Modal */}
             {selectedLogbook && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 sm:p-12 animate-in fade-in duration-300">
-                    <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-xl" onClick={() => setSelectedLogbook(null)} />
-                    <div className="relative w-full max-w-2xl glass-card p-8 border-white/10 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+                    <div className="relative w-full max-w-xl bg-[#12141c] border border-[#22242f] rounded-xl p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between pb-2 border-b border-[#22242f]">
                             <div>
-                                <h3 className="text-xl font-black text-white">Review Week {selectedLogbook.weekNumber} Logbook</h3>
-                                <p className="text-xs text-slate-400">Student: {selectedLogbook.student?.user?.name}</p>
+                                <h3 className="text-sm font-semibold text-white">Review Week {selectedLogbook.weekNumber} Logbook</h3>
+                                <p className="text-xs text-slate-400 mt-0.5">Student: {selectedLogbook.student?.user?.name}</p>
                             </div>
-                            <button onClick={() => setSelectedLogbook(null)} className="text-slate-500 hover:text-white">
-                                <X size={20} />
+                            <button onClick={() => setSelectedLogbook(null)} className="text-slate-400 hover:text-white p-1">
+                                <X size={15} />
                             </button>
                         </div>
 
-                        <div className="space-y-4">
-                            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/5 space-y-2">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Student Weekly Summary</span>
-                                <p className="text-sm text-slate-300">{selectedLogbook.summary}</p>
+                        <div className="space-y-3 text-xs">
+                            <div className="p-3 rounded-md bg-[#181a24] border border-[#22242f] space-y-1">
+                                <span className="text-[10px] font-medium uppercase text-violet-400">Weekly Reflection Summary</span>
+                                <p className="text-slate-200 leading-relaxed text-[11px]">{selectedLogbook.summary}</p>
                             </div>
 
                             {selectedLogbook.dailyEntries && typeof selectedLogbook.dailyEntries === 'object' && (
-                                <div className="space-y-2">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Daily Activity Breakdown</span>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                                <div className="space-y-1.5">
+                                    <span className="text-[10px] font-medium uppercase text-slate-400">Daily Breakdown</span>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                                         {Object.entries(selectedLogbook.dailyEntries).map(([day, text]) => (
-                                            <div key={day} className="p-3 bg-white/[0.02] rounded-xl border border-white/5">
-                                                <span className="font-bold uppercase text-[9px] text-blue-400 block">{day}</span>
-                                                <span className="text-slate-300">{text || 'No entry logged'}</span>
+                                            <div key={day} className="p-2 bg-[#181a24] rounded border border-[#22242f]">
+                                                <span className="font-semibold uppercase text-[9px] text-violet-400 block">{day}</span>
+                                                <span className="text-slate-300 text-[11px] line-clamp-2">{text || 'No tasks logged'}</span>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             )}
 
-                            <div className="space-y-2">
-                                <label className="text-xs font-black uppercase tracking-widest text-slate-400">Supervisor Feedback & Guidance</label>
+                            <div className="space-y-1">
+                                <label className="text-xs font-medium text-slate-300">Supervisor Feedback & Recommendations</label>
                                 <textarea
-                                    rows={4}
+                                    rows={3}
                                     value={reviewComment}
                                     onChange={(e) => setReviewComment(e.target.value)}
-                                    placeholder="Add constructive feedback or corrections..."
-                                    className="input-field w-full p-3 resize-none"
+                                    placeholder="Provide feedback on technical performance or required revisions..."
+                                    className="w-full p-2.5 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white placeholder-slate-500 resize-none outline-none focus:border-violet-500 font-sans"
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-end gap-4 pt-4 border-t border-white/5">
-                            <button
+                        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#22242f]">
+                            <Button
                                 type="button"
                                 disabled={reviewing}
+                                variant="danger"
                                 onClick={() => handleReviewSubmit('rejected')}
-                                className="px-6 py-3 rounded-xl bg-rose-600/10 text-rose-400 border border-rose-600/20 hover:bg-rose-600/20 text-xs font-bold uppercase tracking-widest"
+                                className="text-xs py-1.5 px-3"
                             >
                                 Request Revision
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 type="button"
                                 disabled={reviewing}
+                                variant="primary"
                                 onClick={() => handleReviewSubmit('approved')}
-                                className="btn-primary px-8 py-3 text-xs flex items-center gap-2"
+                                className="text-xs py-1.5 px-3 flex items-center gap-1.5"
                             >
-                                <Check size={16} />
+                                <Check size={14} />
                                 <span>{reviewing ? 'Saving...' : 'Approve Logbook'}</span>
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

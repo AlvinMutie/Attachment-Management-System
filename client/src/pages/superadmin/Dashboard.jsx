@@ -2,35 +2,33 @@ import { useEffect, useState } from 'react';
 import {
     Users,
     Building2,
-    GraduationCap,
-    Briefcase,
     Activity,
-    Clock,
-    TrendingUp,
     ShieldCheck,
-    Globe,
-    Zap,
-    VenetianMask,
-    History
+    History,
+    CheckCircle2,
+    ArrowUpRight
 } from 'lucide-react';
 import { getDashboardAnalytics } from '../../utils/superadminApi';
+import Card from '../../components/ui/Card';
+import Badge from '../../components/ui/Badge';
+import { Link } from 'react-router-dom';
 
-const StatCard = ({ title, value, icon: Icon, trend, color }) => (
-    <div className="glass-card p-6 flex flex-col justify-between group transition-all duration-300">
-        <div className="flex justify-between items-start mb-4">
-            <div className={`p-3 rounded-xl bg-${color}-500/10 text-${color}-400 ring-1 ring-${color}-500/20 group-hover:scale-110 transition-transform duration-500`}>
-                <Icon size={24} />
+const StatCard = ({ title, value, icon: Icon, trend, subtitle = 'Active this period' }) => (
+    <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-5 flex flex-col justify-between hover:border-[#2f3242] transition-colors">
+        <div className="flex justify-between items-start mb-3">
+            <div className="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-400 flex items-center justify-center">
+                <Icon size={20} />
             </div>
             {trend && (
-                <div className={`flex items-center space-x-1 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${trend.isPositive ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
-                    <span>{trend.value}</span>
-                </div>
+                <span className={`inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-md ${trend.isPositive ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
+                    {trend.value}
+                </span>
             )}
         </div>
         <div>
-            <p className="text-slate-400 text-xs font-semibold uppercase tracking-widest mb-1">{title}</p>
-            <h3 className="text-3xl font-bold text-white tracking-tight leading-none">{value}</h3>
-            <p className="text-[10px] text-slate-500 mt-2 font-medium tracking-wide">ACTIVE THIS PERIOD</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">{title}</p>
+            <h3 className="text-2xl font-bold text-slate-100 tracking-tight mt-1">{value}</h3>
+            <p className="text-xs text-slate-500 mt-1">{subtitle}</p>
         </div>
     </div>
 );
@@ -55,8 +53,8 @@ const Dashboard = () => {
 
     if (loading) {
         return (
-            <div className="flex-1 flex items-center justify-center bg-slate-950">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            <div className="flex-1 flex items-center justify-center min-h-[50vh]">
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-violet-500 border-t-transparent"></div>
             </div>
         );
     }
@@ -64,121 +62,135 @@ const Dashboard = () => {
     const metrics = analytics?.metrics || {};
 
     return (
-        <div className="flex-1 space-y-8 p-8 max-w-7xl mx-auto">
+        <div className="flex-1 space-y-6 p-6 max-w-7xl mx-auto">
             {/* Header Section */}
-            <header className="relative p-8 rounded-2xl bg-slate-900 border border-white/5 overflow-hidden group">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl -mr-48 -mt-48 transition-all duration-700 group-hover:bg-blue-600/10" />
-                <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div className="flex items-center space-x-6">
-                        <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-600/20 text-white transition-transform duration-500 group-hover:scale-105">
-                            <ShieldCheck size={32} />
-                        </div>
-                        <div>
-                            <p className="text-blue-400 text-[10px] font-bold tracking-[0.2em] mb-1 uppercase">System Operations</p>
-                            <h1 className="text-4xl font-bold text-white tracking-tight flex items-center">
-                                Platform <span className="text-blue-500 ml-2">Overview</span>
-                            </h1>
-                            <p className="text-slate-400 text-sm mt-1 max-w-md font-medium">Standard system-wide performance and monitoring metrics.</p>
-                        </div>
+            <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-violet-600/10 border border-violet-500/20 text-violet-400 flex items-center justify-center">
+                        <ShieldCheck size={24} />
                     </div>
-                    <div className="flex items-center space-x-4 bg-slate-950/50 p-4 rounded-xl border border-white/5">
-                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.5)] animate-pulse" />
-                        <div>
-                            <p className="text-xs font-bold text-white uppercase tracking-wider">System Optimal</p>
-                            <p className="text-[10px] text-slate-500 font-medium">Infrastructure status: Healthy</p>
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-[11px] font-semibold uppercase tracking-wider text-violet-400">System Operations</span>
+                            <Badge variant="success">Production Ready</Badge>
                         </div>
+                        <h1 className="text-2xl font-bold text-slate-100 tracking-tight mt-0.5">Platform Overview</h1>
+                        <p className="text-xs text-slate-400 mt-0.5">Cross-institutional monitoring, audit ledger, and user metrics.</p>
                     </div>
                 </div>
-            </header>
+                <div className="flex items-center gap-3 bg-[#12141c] px-4 py-2.5 rounded-lg border border-[#22242f]">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <div>
+                        <p className="text-xs font-semibold text-slate-200">Infrastructure Optimal</p>
+                        <p className="text-[11px] text-slate-400">All services operating normally</p>
+                    </div>
+                </div>
+            </div>
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard
-                    title="Total Institutions"
+                    title="Institutions"
                     value={metrics.totalSchools || '0'}
                     icon={Building2}
                     trend={{ value: '+12%', isPositive: true }}
-                    color="blue"
+                    subtitle="Active universities / schools"
                 />
                 <StatCard
                     title="Industry Partners"
                     value={metrics.totalIndustrySupervisors || '0'}
-                    icon={VenetianMask}
-                    color="emerald"
+                    icon={Users}
+                    subtitle="Registered companies"
                 />
                 <StatCard
                     title="Approval Rate"
                     value={`${metrics.globalApprovalRate || 0}%`}
                     icon={Activity}
-                    trend={{ value: 'OPTIMIZED', isPositive: true }}
-                    color="amber"
+                    trend={{ value: 'Target 90%', isPositive: true }}
+                    subtitle="Logbooks & placement approvals"
                 />
                 <StatCard
-                    title="Global Users"
+                    title="Total Accounts"
                     value={metrics.totalUsers || '0'}
                     icon={Users}
-                    trend={{ value: '+4.2K', isPositive: true }}
-                    color="blue"
+                    subtitle="Across all roles & schools"
                 />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Recent Activity */}
-                <div className="lg:col-span-2 glass-card p-8">
-                    <div className="flex items-center justify-between mb-8">
-                        <div>
-                            <h2 className="text-xl font-bold text-white tracking-tight">System Audit Trail</h2>
-                            <p className="text-xs text-slate-500 mt-1 font-medium italic">Verified system activity logs synced.</p>
-                        </div>
-                        <button className="text-xs font-bold text-blue-400 hover:text-blue-300 transition-colors uppercase tracking-widest">
-                            View Report
-                        </button>
-                    </div>
-
-                    <div className="space-y-6">
-                        {analytics?.recentActivity?.map((activity, index) => (
-                            <div key={index} className="flex items-center p-4 bg-slate-950/30 rounded-xl border border-white/5 group hover:bg-slate-950/50 transition-all">
-                                <div className="w-10 h-10 rounded-lg bg-slate-800 flex items-center justify-center text-slate-400 group-hover:text-blue-400 transition-colors">
-                                    <History size={18} />
-                                </div>
-                                <div className="ml-4 flex-1">
-                                    <p className="text-sm font-semibold text-slate-300">
-                                        <span className="text-white font-bold">{activity.user?.name || 'System'}</span>
-                                        <span className="mx-2 text-slate-500">Performed</span>
-                                        <span className="text-blue-400">{activity.action.replace(/_/g, ' ')}</span>
-                                    </p>
-                                    <p className="text-[10px] text-slate-500 font-medium mt-0.5">{new Date(activity.createdAt).toLocaleString()}</p>
-                                </div>
-                                <div className="px-2.5 py-1 rounded-md bg-slate-900 border border-white/5 text-[9px] font-bold text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    VERIFIED
-                                </div>
+                <div className="lg:col-span-2 bg-[#15171f] border border-[#22242f] rounded-xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div className="flex items-center justify-between mb-5">
+                            <div>
+                                <h2 className="text-base font-bold text-slate-100 tracking-tight">System Audit Ledger</h2>
+                                <p className="text-xs text-slate-400 mt-0.5">Recent administrative and automated system events</p>
                             </div>
-                        ))}
+                            <Link to="/superadmin/audit-logs" className="text-xs font-semibold text-violet-400 hover:text-violet-300 flex items-center gap-1 transition-colors">
+                                View Full Ledger <ArrowUpRight size={14} />
+                            </Link>
+                        </div>
+
+                        <div className="space-y-3">
+                            {analytics?.recentActivity && analytics.recentActivity.length > 0 ? (
+                                analytics.recentActivity.map((activity, index) => (
+                                    <div key={index} className="flex items-center justify-between p-3.5 bg-[#12141c] rounded-lg border border-[#22242f] hover:border-[#2f3242] transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-lg bg-[#181a24] border border-[#22242f] flex items-center justify-center text-slate-400">
+                                                <History size={16} />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-semibold text-slate-200">
+                                                    <span className="text-slate-100">{activity.user?.name || 'System'}</span>
+                                                    <span className="mx-1.5 text-slate-400 font-normal">executed</span>
+                                                    <span className="text-violet-400 font-mono text-[11px]">{activity.action?.replace(/_/g, ' ')}</span>
+                                                </p>
+                                                <p className="text-[11px] text-slate-400 mt-0.5">{new Date(activity.createdAt).toLocaleString()}</p>
+                                            </div>
+                                        </div>
+                                        <Badge variant="neutral">Logged</Badge>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-8 text-xs text-slate-400">No recent audit records found.</div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Access Distribution */}
-                <div className="glass-card p-8 flex flex-col">
-                    <div className="mb-8">
-                        <h2 className="text-xl font-bold text-white tracking-tight">Access Distribution</h2>
-                        <p className="text-xs text-slate-400 mt-1 font-medium">User analytic distribution by role.</p>
+                <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 flex flex-col justify-between">
+                    <div>
+                        <div className="mb-5">
+                            <h2 className="text-base font-bold text-slate-100 tracking-tight">Identity Distribution</h2>
+                            <p className="text-xs text-slate-400 mt-0.5">Active accounts segmented by system role</p>
+                        </div>
+
+                        <div className="space-y-4">
+                            {analytics?.usersByRole?.map((role, index) => {
+                                const total = metrics.totalUsers || 1;
+                                const percentage = Math.round((role.count / total) * 100);
+                                return (
+                                    <div key={index} className="space-y-1.5">
+                                        <div className="flex justify-between text-xs font-medium">
+                                            <span className="text-slate-300 capitalize">{role.role.replace(/_/g, ' ')}</span>
+                                            <span className="text-slate-400">{role.count} ({percentage}%)</span>
+                                        </div>
+                                        <div className="h-2 w-full bg-[#12141c] rounded-full overflow-hidden border border-[#22242f]">
+                                            <div
+                                                className="h-full bg-violet-600 rounded-full transition-all duration-500"
+                                                style={{ width: `${Math.max(percentage, 3)}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
 
-                    <div className="flex-1 flex flex-col justify-center space-y-6">
-                        {analytics?.usersByRole?.map((role, index) => (
-                            <div key={index}>
-                                <div className="flex justify-between text-xs font-bold uppercase tracking-widest mb-2">
-                                    <span className="text-slate-400">{role.role.replace(/_/g, ' ')}</span>
-                                    <span className="text-white">{role.count}</span>
-                                </div>
-                                <div className="h-1.5 w-full bg-slate-900 rounded-full overflow-hidden border border-white/5">
-                                    <div
-                                        className="h-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.3)] transition-all duration-1000"
-                                        style={{ width: `${(role.count / metrics.totalUsers) * 100}%` }}
-                                    />
-                                </div>
-                            </div>
-                        ))}
+                    <div className="mt-6 pt-4 border-t border-[#22242f] flex items-center justify-between text-xs text-slate-400">
+                        <span>Total identities indexed</span>
+                        <span className="font-semibold text-slate-200">{metrics.totalUsers || 0}</span>
                     </div>
                 </div>
             </div>
