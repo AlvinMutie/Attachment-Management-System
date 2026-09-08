@@ -1,32 +1,117 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Zap } from 'lucide-react';
+import { ShieldCheck, Menu, X, ArrowRight, GraduationCap, Building2 } from 'lucide-react';
+import Button from './ui/Button';
 
-const Navbar = () => (
-    <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50">
-        <div className="content-width h-16 flex justify-between items-center text-slate-900">
-            <Link to="/" className="flex items-center space-x-2 group cursor-pointer text-slate-900">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-600/20 group-hover:scale-105 transition-transform">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 2L2 7l10 5 10-5-10-5z" />
-                        <path d="M2 17l10 5 10-5" />
-                        <path d="M2 12l10 5 10-5" />
-                    </svg>
-                </div>
-                <span className="text-xl font-bold tracking-tight">AttachPro</span>
-            </Link>
+const Navbar = () => {
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-            <div className="hidden md:flex items-center space-x-8 text-[13px] font-bold text-slate-600">
-                <a href="#vision" className="hover:text-blue-600 transition-colors uppercase tracking-wider text-xs">Vision</a>
-                <a href="#features" className="hover:text-blue-600 transition-colors uppercase tracking-wider text-xs">Features</a>
-                <a href="#faq" className="hover:text-blue-600 transition-colors uppercase tracking-wider text-xs">FAQ</a>
-                <Link to="/login" className="hover:text-blue-600 transition-colors uppercase tracking-wider text-xs border-l border-slate-200 pl-8 ml-2">Login</Link>
-                <Link to="/signup" className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-all font-bold text-xs uppercase tracking-widest shadow-md">
-                    Get Started
+    return (
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0d0e12]/85 backdrop-blur-md border-b border-[#22242f]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+                {/* Brand Logo */}
+                <Link to="/" className="flex items-center gap-2.5 group">
+                    <div className="w-8 h-8 rounded-lg bg-violet-600/10 border border-violet-500/30 flex items-center justify-center text-violet-400 group-hover:bg-violet-600/20 transition-all">
+                        <GraduationCap size={18} />
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        <span className="text-base font-bold text-slate-100 tracking-tight">AMS</span>
+                        <span className="text-[10px] font-semibold text-violet-400 bg-violet-500/10 border border-violet-500/20 px-1.5 py-0.5 rounded">
+                            Institutional
+                        </span>
+                    </div>
                 </Link>
+
+                {/* Desktop Navigation Links */}
+                <div className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-300">
+                    <a href="#workspaces" className="hover:text-white transition-colors">Workspaces</a>
+                    <a href="#lifecycle" className="hover:text-white transition-colors">Lifecycle</a>
+                    <a href="#pillars" className="hover:text-white transition-colors">Features</a>
+                    <a href="#security" className="hover:text-white transition-colors">Compliance</a>
+                    <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
+                </div>
+
+                {/* Actions */}
+                <div className="hidden md:flex items-center gap-3">
+                    <Link to="/login">
+                        <Button variant="ghost" size="sm">
+                            Sign In
+                        </Button>
+                    </Link>
+                    <Link to="/signup">
+                        <Button variant="primary" size="sm" endIcon={ArrowRight}>
+                            Register School
+                        </Button>
+                    </Link>
+                </div>
+
+                {/* Mobile Menu Toggle */}
+                <button
+                    type="button"
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                    className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
+                    aria-label="Toggle Navigation Menu"
+                >
+                    {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                </button>
             </div>
-        </div>
-    </nav>
-);
+
+            {/* Mobile Drawer */}
+            {mobileMenuOpen && (
+                <div className="md:hidden bg-[#12141c] border-b border-[#22242f] px-5 py-4 space-y-3">
+                    <div className="flex flex-col space-y-2 text-xs font-medium text-slate-300">
+                        <a
+                            href="#workspaces"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="py-1.5 hover:text-white"
+                        >
+                            Workspaces
+                        </a>
+                        <a
+                            href="#lifecycle"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="py-1.5 hover:text-white"
+                        >
+                            Lifecycle
+                        </a>
+                        <a
+                            href="#pillars"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="py-1.5 hover:text-white"
+                        >
+                            Features
+                        </a>
+                        <a
+                            href="#security"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="py-1.5 hover:text-white"
+                        >
+                            Compliance
+                        </a>
+                        <a
+                            href="#faq"
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="py-1.5 hover:text-white"
+                        >
+                            FAQ
+                        </a>
+                    </div>
+                    <div className="pt-3 border-t border-[#22242f] flex flex-col gap-2">
+                        <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
+                            <Button variant="outline" size="sm" className="w-full">
+                                Sign In
+                            </Button>
+                        </Link>
+                        <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
+                            <Button variant="primary" size="sm" className="w-full">
+                                Register Institution
+                            </Button>
+                        </Link>
+                    </div>
+                </div>
+            )}
+        </nav>
+    );
+};
 
 export default Navbar;
