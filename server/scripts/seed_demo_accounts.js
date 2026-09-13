@@ -1,6 +1,5 @@
 const { sequelize } = require('../config/database');
 const models = require('../models');
-const bcrypt = require('bcryptjs');
 
 async function seedDemoAccounts() {
     try {
@@ -18,8 +17,6 @@ async function seedDemoAccounts() {
                 status: 'active'
             });
         }
-
-        const hashedPassword = await bcrypt.hash('password123', 10);
 
         const accounts = [
             {
@@ -65,18 +62,19 @@ async function seedDemoAccounts() {
             if (!user) {
                 user = await models.User.create({
                     ...acc,
-                    password: hashedPassword,
-                    status: 'active'
+                    password: 'password123',
+                    status: 'active',
+                    failedLoginAttempts: 0
                 });
                 console.log(`✅ Created ${acc.role}: ${acc.email}`);
             } else {
-                await user.update({
-                    password: hashedPassword,
-                    role: acc.role,
-                    status: 'active',
-                    schoolId: acc.schoolId || user.schoolId
-                });
-                console.log(`🔄 Updated password for ${acc.role}: ${acc.email}`);
+                user.password = 'password123';
+                user.status = 'active';
+                user.failedLoginAttempts = 0;
+                user.role = acc.role;
+                if (acc.schoolId) user.schoolId = acc.schoolId;
+                await user.save();
+                console.log(`🔄 Reset password for ${acc.role}: ${acc.email}`);
             }
 
             // If student, ensure student record exists
