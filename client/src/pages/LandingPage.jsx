@@ -186,13 +186,13 @@ const LandingPage = () => {
                         </div>
                     </div>
                 </div>
+            </section>
 
-                {/* ========================================================================= */}
-                {/* 2. SCROLL-DRIVEN 3D LAPTOP SCREEN ENTRY ANIMATION */}
-                {/* ========================================================================= */}
-                <div className="mt-8 w-full">
-                    <ScrollLaptopMockup />
-                </div>
+            {/* ========================================================================= */}
+            {/* 2. SCROLL-DRIVEN 3D LAPTOP SCREEN ENTRY ANIMATION                         */}
+            {/* ========================================================================= */}
+            <section id="workspaces" className="relative w-full py-6">
+                <ScrollLaptopMockup />
             </section>
 
             {/* ========================================================================= */}

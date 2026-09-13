@@ -10,16 +10,11 @@ import {
     Shield,
     Activity,
     Users,
-    TrendingUp,
+    ChevronRight,
     Sparkles,
     Calendar,
-    ArrowUpRight,
-    Terminal,
-    ChevronRight,
-    Check
+    ArrowRight
 } from 'lucide-react';
-import Badge from '../ui/Badge';
-import Button from '../ui/Button';
 
 export const ScrollLaptopMockup = () => {
     const containerRef = useRef(null);
@@ -39,51 +34,50 @@ export const ScrollLaptopMockup = () => {
         offset: ['start start', 'end end']
     });
 
-    // Smooth springs for fluid cinematic feel
+    // Smooth spring physics for organic motion
     const smoothProgress = useSpring(scrollYProgress, {
-        stiffness: 80,
-        damping: 24,
+        stiffness: 70,
+        damping: 22,
         restDelta: 0.001
     });
 
-    // 3D Angle Transformations
-    // 0.0 -> 0.4: Tilted laptop opens up and rotates to flat 0deg
-    const rotateX = useTransform(smoothProgress, [0, 0.45], [26, 0]);
+    // 3D Angle: Starts tilted back at 22deg and levels out flat (0deg)
+    const rotateX = useTransform(smoothProgress, [0, 0.4], [22, 0]);
 
-    // 0.2 -> 1.0: Scales up from full laptop hardware view to screen-filling viewport
-    const scale = useTransform(smoothProgress, [0, 0.4, 0.95], [0.88, 1.15, 1.65]);
+    // Scale: Starts at 0.82 and smoothly scales up to a clean 1.18x (centered without hitting the navbar)
+    const scale = useTransform(smoothProgress, [0, 0.45, 0.95], [0.84, 1.02, 1.20]);
 
-    // Vertical alignment shift so camera dives into the screen center
-    const translateY = useTransform(smoothProgress, [0, 0.4, 0.95], [40, -10, 140]);
+    // Center vertical translation so it remains perfectly balanced between navbar (64px) and bottom
+    const translateY = useTransform(smoothProgress, [0, 0.5, 0.95], [10, -5, 20]);
 
-    // Bottom keyboard and chassis fade out as camera enters the screen
-    const keyboardOpacity = useTransform(smoothProgress, [0.35, 0.7], [1, 0]);
-    const keyboardY = useTransform(smoothProgress, [0.35, 0.7], [0, 60]);
+    // Lower keyboard and chassis opacity fades out smoothly as you zoom into the screen
+    const keyboardOpacity = useTransform(smoothProgress, [0.35, 0.65], [1, 0]);
+    const keyboardTranslateY = useTransform(smoothProgress, [0.35, 0.65], [0, 40]);
 
-    // Screen border glow intensity
-    const screenGlow = useTransform(smoothProgress, [0, 0.6, 1], [0.2, 0.8, 1]);
+    // Ambient halo glow behind the laptop
+    const haloGlow = useTransform(smoothProgress, [0, 0.5, 1], [0.3, 0.7, 0.9]);
 
     return (
-        <div ref={containerRef} className="relative h-[220vh] w-full">
-            {/* Sticky Viewport Anchor */}
-            <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden [perspective:1400px]">
-                {/* Background Ambient Glow Halo */}
+        <div ref={containerRef} className="relative h-[200vh] w-full">
+            {/* Sticky Viewport Container with top clearance for 64px header */}
+            <div className="sticky top-16 h-[calc(100vh-4rem)] w-full flex flex-col items-center justify-center overflow-hidden [perspective:1400px] px-4 sm:px-6">
+                {/* Background Ambient Glow */}
                 <motion.div
-                    style={{ opacity: screenGlow }}
-                    className="absolute w-[680px] h-[480px] bg-gradient-to-tr from-violet-600/25 via-indigo-600/20 to-cyan-500/20 blur-[130px] rounded-full pointer-events-none -z-10"
+                    style={{ opacity: haloGlow }}
+                    className="absolute w-[600px] sm:w-[800px] h-[400px] bg-gradient-to-tr from-violet-600/20 via-indigo-600/15 to-cyan-400/15 blur-[120px] rounded-full pointer-events-none -z-10"
                 />
 
-                {/* Scroll Indicator Prompt (fades on scroll) */}
+                {/* Micro Scroll Guidance Pill */}
                 <motion.div
-                    style={{ opacity: useTransform(smoothProgress, [0, 0.15], [1, 0]) }}
-                    className="absolute top-8 z-20 flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#151720]/80 backdrop-blur-md border border-[#22242f] text-[11px] font-medium text-slate-300 shadow-xl pointer-events-none"
+                    style={{ opacity: useTransform(smoothProgress, [0, 0.12], [1, 0]) }}
+                    className="absolute top-4 z-20 flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#12141c]/90 backdrop-blur-md border border-[#22242f] text-[11px] text-slate-300 shadow-xl pointer-events-none"
                 >
                     <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-ping" />
-                    <span>Scroll down to enter the interactive workspace</span>
-                    <ChevronRight size={13} className="text-violet-400" />
+                    <span>Scroll down to zoom into the live workspace</span>
+                    <ChevronRight size={12} className="text-violet-400" />
                 </motion.div>
 
-                {/* 3D Transformable Laptop Container */}
+                {/* 3D Transformable Laptop Frame */}
                 <motion.div
                     style={{
                         rotateX,
@@ -91,36 +85,38 @@ export const ScrollLaptopMockup = () => {
                         y: translateY,
                         transformStyle: 'preserve-3d'
                     }}
-                    className="relative w-[92%] max-w-[1040px] flex flex-col items-center select-none"
+                    className="relative w-full max-w-[960px] flex flex-col items-center select-none"
                 >
-                    {/* === LAPTOP LID & SCREEN === */}
-                    <div className="relative w-full rounded-[22px] bg-[#161821] p-3 sm:p-4 border-[2px] border-[#2f3244] shadow-[0_25px_70px_rgba(0,0,0,0.85)] ring-1 ring-white/10">
-                        {/* Top Bezel Camera & Sensor Notch */}
-                        <div className="absolute top-1.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-30">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#0a0b0e] border border-[#2f3244]" />
-                            <div className="w-1 h-1 rounded-full bg-emerald-500/60" />
+                    {/* ========================================================= */}
+                    {/* VECTOR LAPTOP LID & SCREEN BEZEL                          */}
+                    {/* ========================================================= */}
+                    <div className="relative w-full rounded-[20px] bg-[#1a1c26] p-2.5 sm:p-3.5 border-[2px] border-[#363a4e] shadow-[0_20px_60px_rgba(0,0,0,0.85)] ring-1 ring-white/10">
+                        {/* Top Notch Camera & Sensor Array */}
+                        <div className="absolute top-1 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-0.5 rounded-b-md bg-[#0d0e14] z-30">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#1a1c26] border border-[#363a4e]" />
+                            <div className="w-1 h-1 rounded-full bg-emerald-400/80 shadow-[0_0_4px_#34d399]" title="Camera Active" />
                         </div>
 
-                        {/* Inner High-Res Screen Glass */}
-                        <div className="relative rounded-xl bg-[#0d0e14] border border-[#22242f] overflow-hidden text-left shadow-inner">
-                            {/* App Window Header Bar */}
-                            <div className="bg-[#12141c] border-b border-[#22242f] px-4 py-2.5 flex items-center justify-between">
+                        {/* Inner Glass Display */}
+                        <div className="relative rounded-xl bg-[#0d0e12] border border-[#22242f] overflow-hidden text-left shadow-2xl">
+                            {/* Window Top Navigation Bar */}
+                            <div className="bg-[#12141c] border-b border-[#1e2230] px-3 sm:px-4 py-2 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                     <div className="flex items-center gap-1.5">
                                         <div className="w-2.5 h-2.5 rounded-full bg-rose-500/80" />
                                         <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
                                         <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
                                     </div>
-                                    <span className="text-[11px] font-mono text-slate-400 pl-2 border-l border-[#22242f]">
-                                        attachpro.app/workspace/{activeWorkspace}
+                                    <span className="text-[10px] font-mono text-slate-400 pl-2 border-l border-[#22242f] hidden sm:inline">
+                                        ams.institution.edu/portal/{activeWorkspace}
                                     </span>
                                 </div>
 
-                                {/* Role Switcher in Titlebar */}
+                                {/* Interactive Role Selector in Window Header */}
                                 <div className="flex items-center gap-1 bg-[#181a24] p-1 rounded-lg border border-[#22242f]">
                                     {[
-                                        { id: 'student', label: 'Student', icon: GraduationCap },
-                                        { id: 'supervisor', label: 'Industry Lead', icon: Briefcase },
+                                        { id: 'student', label: 'Student Intern', icon: GraduationCap },
+                                        { id: 'supervisor', label: 'Industry Supervisor', icon: Briefcase },
                                         { id: 'coordinator', label: 'Coordinator', icon: Compass }
                                     ].map((role) => {
                                         const Icon = role.icon;
@@ -139,7 +135,7 @@ export const ScrollLaptopMockup = () => {
                                                         : 'text-slate-400 hover:text-white'
                                                 }`}
                                             >
-                                                <Icon size={12} />
+                                                <Icon size={11} />
                                                 <span>{role.label}</span>
                                             </button>
                                         );
@@ -148,42 +144,42 @@ export const ScrollLaptopMockup = () => {
                             </div>
 
                             {/* Cockpit Content Inside Screen */}
-                            <div className="p-4 sm:p-6 space-y-4 bg-gradient-to-b from-[#10121a] to-[#0d0e12]">
+                            <div className="p-4 sm:p-5 space-y-3.5 bg-gradient-to-b from-[#11131a] to-[#0c0d12]">
                                 {/* Dossier Header Strip */}
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-[#1e2230]">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1e2230]">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-violet-600/15 border border-violet-500/25 text-violet-300 flex items-center justify-center font-bold text-sm">
-                                            {activeWorkspace === 'student' && <GraduationCap size={20} />}
-                                            {activeWorkspace === 'supervisor' && <Briefcase size={20} />}
-                                            {activeWorkspace === 'coordinator' && <Compass size={20} />}
+                                        <div className="w-9 h-9 rounded-xl bg-violet-600/15 border border-violet-500/25 text-violet-300 flex items-center justify-center font-bold text-xs shrink-0">
+                                            {activeWorkspace === 'student' && <GraduationCap size={18} />}
+                                            {activeWorkspace === 'supervisor' && <Briefcase size={18} />}
+                                            {activeWorkspace === 'coordinator' && <Compass size={18} />}
                                         </div>
-                                        <div>
+                                        <div className="min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-xs font-bold text-white">
+                                                <span className="text-xs font-bold text-white truncate">
                                                     {activeWorkspace === 'student' && 'Alvin Mutie (ADM: CS-2023-049)'}
                                                     {activeWorkspace === 'supervisor' && 'Eng. Sarah Jenkins (Safaricom Cloud Ops)'}
                                                     {activeWorkspace === 'coordinator' && 'Dr. James Okoth (Faculty of Computing)'}
                                                 </span>
-                                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                                    <CheckCircle2 size={10} /> Active
+                                                <span className="inline-flex items-center gap-1 px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+                                                    <CheckCircle2 size={9} /> Verified
                                                 </span>
                                             </div>
-                                            <p className="text-[11px] text-slate-400">
+                                            <p className="text-[10px] text-slate-400 truncate">
                                                 {activeWorkspace === 'student' && 'Placement: Safaricom PLC • Week 8 of 12'}
-                                                {activeWorkspace === 'supervisor' && 'Mentoring 8 Interns • All Site Visits Synchronized'}
-                                                {activeWorkspace === 'coordinator' && 'Term: May - August 2026 • 142 Placements Under Oversight'}
+                                                {activeWorkspace === 'supervisor' && 'Mentoring 8 Interns • All Presence Telemetry Synced'}
+                                                {activeWorkspace === 'coordinator' && 'Term: May - Aug 2026 • 142 Active Interns Coordinated'}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
-                                        <div className="px-3 py-1.5 rounded-lg bg-[#181a24] border border-[#22242f] text-right">
-                                            <span className="text-[9px] uppercase tracking-wider text-slate-400 block font-semibold">Compliance</span>
-                                            <span className="text-xs font-bold text-emerald-400 font-mono">94.8% (≥75% Met)</span>
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <div className="px-2.5 py-1 rounded-lg bg-[#181a24] border border-[#22242f] text-right">
+                                            <span className="text-[8px] uppercase tracking-wider text-slate-400 block font-semibold">Attendance</span>
+                                            <span className="text-[11px] font-bold text-emerald-400 font-mono">94.8% (≥75% Met)</span>
                                         </div>
-                                        <div className="px-3 py-1.5 rounded-lg bg-[#181a24] border border-[#22242f] text-right">
-                                            <span className="text-[9px] uppercase tracking-wider text-slate-400 block font-semibold">Approved Logs</span>
-                                            <span className="text-xs font-bold text-violet-400 font-mono">8 / 10 Weeks</span>
+                                        <div className="px-2.5 py-1 rounded-lg bg-[#181a24] border border-[#22242f] text-right">
+                                            <span className="text-[8px] uppercase tracking-wider text-slate-400 block font-semibold">Approved Logs</span>
+                                            <span className="text-[11px] font-bold text-violet-400 font-mono">8 / 10 Weeks</span>
                                         </div>
                                     </div>
                                 </div>
@@ -191,35 +187,35 @@ export const ScrollLaptopMockup = () => {
                                 {/* Active Workspace Content Grid */}
                                 {activeWorkspace === 'student' && (
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                        <div className="p-3.5 rounded-xl bg-[#141620] border border-[#22242f] space-y-2">
+                                        <div className="p-3 rounded-xl bg-[#141620] border border-[#22242f] space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-[11px] font-bold text-slate-200 flex items-center gap-1.5">
-                                                    <QrCode size={13} className="text-violet-400" /> Rotating Token
+                                                <span className="text-[10px] font-bold text-slate-200 flex items-center gap-1">
+                                                    <QrCode size={12} className="text-violet-400" /> Rotating Token
                                                 </span>
-                                                <span className="text-[10px] font-mono text-violet-400 bg-violet-500/10 px-1.5 py-0.5 rounded border border-violet-500/20">
+                                                <span className="text-[9px] font-mono text-violet-400 bg-violet-500/10 px-1 py-0.2 rounded border border-violet-500/20">
                                                     {qrCountdown}s
                                                 </span>
                                             </div>
-                                            <div className="p-2.5 rounded-lg bg-[#0e1017] border border-[#22242f] text-center">
-                                                <p className="text-[10px] text-slate-400 font-mono">SESSION: AT-9821-NBI</p>
-                                                <p className="text-xs font-bold text-emerald-400 mt-0.5">Verified Presence Today</p>
+                                            <div className="p-2 rounded-lg bg-[#0e1017] border border-[#22242f] text-center">
+                                                <p className="text-[9px] text-slate-500 font-mono">TOKEN: AT-9821-NBI</p>
+                                                <p className="text-[11px] font-bold text-emerald-400 mt-0.5">Presence Verified Today</p>
                                             </div>
-                                            <p className="text-[10px] text-slate-500">Safaricom PLC HQ • On-Site Checked In</p>
+                                            <p className="text-[9px] text-slate-400">Safaricom HQ • On-Site Checked In</p>
                                         </div>
 
-                                        <div className="md:col-span-2 p-3.5 rounded-xl bg-[#141620] border border-[#22242f] space-y-2">
+                                        <div className="md:col-span-2 p-3 rounded-xl bg-[#141620] border border-[#22242f] space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-[11px] font-bold text-slate-200">Week 8 Technical Logbook</span>
-                                                <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                                                <span className="text-[10px] font-bold text-slate-200">Week 8 Technical Logbook</span>
+                                                <span className="text-[9px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
                                                     Approved & Locked
                                                 </span>
                                             </div>
-                                            <div className="p-2.5 rounded-lg bg-[#0e1017] border border-[#22242f] text-[11px] text-slate-300 font-mono leading-relaxed">
-                                                Deployed Docker containerized microservices to Kubernetes cluster with automated Prometheus health checks.
+                                            <div className="p-2 rounded-lg bg-[#0e1017] border border-[#22242f] text-[10px] text-slate-300 font-mono leading-relaxed">
+                                                Configured CI/CD pipeline automation for Kubernetes microservices deployment with automated load testing.
                                             </div>
-                                            <div className="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
-                                                <span className="text-emerald-400 font-medium">Signed off by Eng. Sarah Jenkins</span>
-                                                <span className="font-mono text-slate-500">3 Artifacts (.yaml, .pdf)</span>
+                                            <div className="flex items-center justify-between text-[9px] text-slate-400">
+                                                <span className="text-emerald-400 font-medium">Approved by Eng. Sarah Jenkins</span>
+                                                <span className="font-mono text-slate-500">3 Attachments (.pdf, .yaml)</span>
                                             </div>
                                         </div>
                                     </div>
@@ -227,17 +223,17 @@ export const ScrollLaptopMockup = () => {
 
                                 {activeWorkspace === 'supervisor' && (
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                        <div className="p-3.5 rounded-xl bg-[#141620] border border-[#22242f] space-y-2">
-                                            <span className="text-[11px] font-bold text-slate-200">Intern Roster (8 Assigned)</span>
-                                            <div className="space-y-1.5">
+                                        <div className="p-3 rounded-xl bg-[#141620] border border-[#22242f] space-y-1.5">
+                                            <span className="text-[10px] font-bold text-slate-200">Assigned Interns (8)</span>
+                                            <div className="space-y-1">
                                                 {[
-                                                    { name: 'Alvin Mutie', dept: 'Software Eng', status: 'Approved', color: 'emerald' },
-                                                    { name: 'Sarah Wilson', dept: 'Informatics', status: 'Pending Review', color: 'amber' },
-                                                    { name: 'David Smith', dept: 'Cyber Security', status: 'Approved', color: 'emerald' }
+                                                    { name: 'Alvin Mutie', status: 'Present' },
+                                                    { name: 'Sarah Wilson', status: 'Pending Log' },
+                                                    { name: 'David Smith', status: 'Present' }
                                                 ].map((stu, i) => (
-                                                    <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-[#0e1017] border border-[#22242f] text-[11px]">
-                                                        <span className="font-semibold text-slate-200">{stu.name}</span>
-                                                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded bg-${stu.color}-500/10 text-${stu.color}-400 border border-${stu.color}-500/20`}>
+                                                    <div key={i} className="flex items-center justify-between p-1.5 rounded-lg bg-[#0e1017] border border-[#22242f] text-[10px]">
+                                                        <span className="font-medium text-slate-200">{stu.name}</span>
+                                                        <span className="text-[8px] font-bold px-1 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                                                             {stu.status}
                                                         </span>
                                                     </div>
@@ -245,19 +241,19 @@ export const ScrollLaptopMockup = () => {
                                             </div>
                                         </div>
 
-                                        <div className="md:col-span-2 p-3.5 rounded-xl bg-[#141620] border border-[#22242f] space-y-2">
+                                        <div className="md:col-span-2 p-3 rounded-xl bg-[#141620] border border-[#22242f] space-y-2">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-[11px] font-bold text-slate-200">Pending Logbook Submission</span>
-                                                <span className="text-[10px] text-slate-400">Sarah Wilson (Week 8)</span>
+                                                <span className="text-[10px] font-bold text-slate-200">Logbook Review Queue</span>
+                                                <span className="text-[9px] text-slate-400">Sarah Wilson (Week 8)</span>
                                             </div>
-                                            <div className="p-2.5 rounded-lg bg-[#0e1017] border border-[#22242f] text-[11px] text-slate-300 font-mono">
-                                                "Configured Apache Kafka event streaming cluster with consumer group partition rebalancing."
+                                            <div className="p-2 rounded-lg bg-[#0e1017] border border-[#22242f] text-[10px] text-slate-300 font-mono">
+                                                "Integrated Apache Kafka event streaming cluster with consumer group partition rebalancing."
                                             </div>
-                                            <div className="flex gap-2 pt-1">
-                                                <button className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-semibold transition-all">
+                                            <div className="flex gap-2">
+                                                <button className="px-2.5 py-1 rounded-md bg-emerald-600 text-white text-[10px] font-bold">
                                                     Approve Entry
                                                 </button>
-                                                <button className="px-3 py-1 rounded-lg bg-[#181a24] hover:bg-[#202330] border border-[#22242f] text-slate-300 text-[11px] font-semibold transition-all">
+                                                <button className="px-2.5 py-1 rounded-md bg-[#181a24] border border-[#22242f] text-slate-300 text-[10px] font-bold">
                                                     Request Revision
                                                 </button>
                                             </div>
@@ -267,16 +263,12 @@ export const ScrollLaptopMockup = () => {
 
                                 {activeWorkspace === 'coordinator' && (
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                        <div className="p-3.5 rounded-xl bg-[#141620] border border-[#22242f] space-y-2">
-                                            <span className="text-[11px] font-bold text-slate-200">Cohort Pipeline</span>
-                                            <div className="space-y-1 text-[11px]">
+                                        <div className="p-3 rounded-xl bg-[#141620] border border-[#22242f] space-y-1.5">
+                                            <span className="text-[10px] font-bold text-slate-200">Cohort Pipeline</span>
+                                            <div className="space-y-1 text-[10px]">
                                                 <div className="flex justify-between text-slate-300">
                                                     <span>Active Placements:</span>
                                                     <span className="font-mono text-emerald-400 font-bold">142</span>
-                                                </div>
-                                                <div className="flex justify-between text-slate-300">
-                                                    <span>Pending Approvals:</span>
-                                                    <span className="font-mono text-amber-400 font-bold">4</span>
                                                 </div>
                                                 <div className="flex justify-between text-slate-300">
                                                     <span>Faculty Supervisors:</span>
@@ -285,11 +277,11 @@ export const ScrollLaptopMockup = () => {
                                             </div>
                                         </div>
 
-                                        <div className="md:col-span-2 p-3.5 rounded-xl bg-[#141620] border border-[#22242f] space-y-2">
-                                            <span className="text-[11px] font-bold text-slate-200">Automated Risk Attention Queue</span>
-                                            <div className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-300 flex items-center justify-between">
-                                                <span>2 students flagged for supervisor visit delay (&gt;6 weeks without faculty check)</span>
-                                                <button className="px-2.5 py-1 bg-amber-500 text-slate-950 font-bold rounded text-[10px]">
+                                        <div className="md:col-span-2 p-3 rounded-xl bg-[#141620] border border-[#22242f] space-y-2">
+                                            <span className="text-[10px] font-bold text-slate-200">Supervision Attention Queue</span>
+                                            <div className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[10px] text-amber-300 flex items-center justify-between">
+                                                <span>2 students flagged for supervisor visit delay (&gt;6 weeks)</span>
+                                                <button className="px-2 py-0.5 bg-amber-500 text-slate-950 font-bold rounded text-[9px]">
                                                     Dispatch Notice
                                                 </button>
                                             </div>
@@ -300,25 +292,63 @@ export const ScrollLaptopMockup = () => {
                         </div>
                     </div>
 
-                    {/* === LAPTOP BOTTOM KEYBOARD & CHASSIS === */}
+                    {/* ========================================================= */}
+                    {/* VECTOR LAPTOP KEYBOARD DECK & CHASSIS                     */}
+                    {/* ========================================================= */}
                     <motion.div
                         style={{
                             opacity: keyboardOpacity,
-                            y: keyboardY
+                            y: keyboardTranslateY
                         }}
-                        className="w-[104%] -mt-1 flex flex-col items-center pointer-events-none"
+                        className="w-[102%] -mt-1 flex flex-col items-center pointer-events-none"
                     >
-                        {/* Laptop Hinge & Base Top */}
-                        <div className="w-full h-4 bg-gradient-to-b from-[#222533] via-[#1a1c26] to-[#12141c] rounded-t-sm border-t border-[#3d4257] shadow-lg flex items-center justify-center">
-                            <div className="w-24 h-1 rounded-full bg-[#0d0e14]" />
+                        {/* Hinge Line */}
+                        <div className="w-full h-3 bg-gradient-to-b from-[#252836] via-[#1c1e29] to-[#141620] rounded-t-sm border-t border-[#41475e] shadow-md flex items-center justify-center">
+                            <div className="w-20 h-1 rounded-full bg-[#0a0b10]" />
                         </div>
 
-                        {/* Laptop Deck Plate with Trackpad & Keyboard Silhouette */}
-                        <div className="w-full h-12 bg-gradient-to-b from-[#181a24] to-[#11131a] rounded-b-2xl border-b-2 border-x-2 border-[#2b2e40] shadow-[0_30px_60px_rgba(0,0,0,0.9)] flex items-center justify-center relative">
-                            {/* Trackpad Cutout */}
-                            <div className="w-32 h-6 rounded-lg bg-[#141620] border border-[#262838] shadow-inner" />
-                            {/* Front Lip Grip Notch */}
-                            <div className="absolute top-0 w-20 h-1 bg-[#282b3d] rounded-b-md" />
+                        {/* Keyboard Base Chassis */}
+                        <div className="w-full bg-gradient-to-b from-[#1b1d28] via-[#151722] to-[#0f1017] rounded-b-2xl border-x-2 border-b-2 border-[#313547] p-3 shadow-[0_25px_60px_rgba(0,0,0,0.95)] flex flex-col items-center space-y-2">
+                            {/* Vector Keyboard Grid & Speakers */}
+                            <div className="w-full flex items-center justify-between gap-2 px-2">
+                                {/* Left Speaker Grill Dots */}
+                                <div className="w-8 h-14 rounded-md bg-[radial-gradient(#2d3144_1px,transparent_1px)] [background-size:3px_3px] opacity-40 shrink-0" />
+
+                                {/* Simplified Vector Keycap Matrix */}
+                                <div className="flex-1 bg-[#10121a] border border-[#242738] rounded-lg p-1.5 space-y-1 shadow-inner">
+                                    {/* Function Row */}
+                                    <div className="grid grid-cols-12 gap-0.5 h-2">
+                                        {Array.from({ length: 12 }).map((_, i) => (
+                                            <div key={i} className="rounded-sm bg-[#161824] border border-[#25283a]" />
+                                        ))}
+                                    </div>
+                                    {/* Number / QWERTY Rows */}
+                                    <div className="grid grid-cols-12 gap-0.5 h-2.5">
+                                        {Array.from({ length: 12 }).map((_, i) => (
+                                            <div key={i} className="rounded-sm bg-[#1a1c2a] border border-[#272b3e]" />
+                                        ))}
+                                    </div>
+                                    <div className="grid grid-cols-11 gap-0.5 h-2.5">
+                                        {Array.from({ length: 11 }).map((_, i) => (
+                                            <div key={i} className="rounded-sm bg-[#1a1c2a] border border-[#272b3e]" />
+                                        ))}
+                                    </div>
+                                    {/* Spacebar Row */}
+                                    <div className="flex items-center justify-center gap-1 h-3">
+                                        <div className="w-6 h-full rounded-sm bg-[#181a26] border border-[#272b3e]" />
+                                        <div className="w-6 h-full rounded-sm bg-[#181a26] border border-[#272b3e]" />
+                                        <div className="flex-1 h-full rounded-sm bg-[#1d2030] border border-[#2d3147]" />
+                                        <div className="w-6 h-full rounded-sm bg-[#181a26] border border-[#272b3e]" />
+                                        <div className="w-6 h-full rounded-sm bg-[#181a26] border border-[#272b3e]" />
+                                    </div>
+                                </div>
+
+                                {/* Right Speaker Grill Dots */}
+                                <div className="w-8 h-14 rounded-md bg-[radial-gradient(#2d3144_1px,transparent_1px)] [background-size:3px_3px] opacity-40 shrink-0" />
+                            </div>
+
+                            {/* Vector Force Touch Trackpad */}
+                            <div className="w-36 h-7 rounded-lg bg-[#141620] border border-[#282b3d] shadow-inner" />
                         </div>
                     </motion.div>
                 </motion.div>
