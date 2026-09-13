@@ -14,25 +14,23 @@ import {
     Briefcase,
     Phone,
     AlertCircle,
-    Send
+    Send,
+    Edit3,
+    Clock,
+    Check,
+    X,
+    ExternalLink
 } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import { useAuth } from '../../context/AuthContext';
 import { getStudentProfile, updateStudentPlacement } from '../../utils/studentApi';
-
-const ProfileCard = ({ title, icon: Icon = Settings, children }) => (
-    <div className="glass-card p-8 space-y-6">
-        <h3 className="text-lg font-black text-white flex items-center space-x-2">
-            <Icon className="text-blue-500" size={18} />
-            <span className="uppercase tracking-widest text-xs">{title}</span>
-        </h3>
-        {children}
-    </div>
-);
+import Badge from '../../components/ui/Badge';
+import Button from '../../components/ui/Button';
 
 const StudentProfile = () => {
     const { user, logout } = useAuth();
     const [profile, setProfile] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
     const [saving, setSaving] = useState(false);
     const [feedback, setFeedback] = useState(null);
@@ -52,13 +50,14 @@ const StudentProfile = () => {
 
     const loadProfile = async () => {
         try {
+            setLoading(true);
             const res = await getStudentProfile();
             if (res.data?.data) {
                 const s = res.data.data;
                 setProfile(s);
                 setPlacementForm({
                     course: s.course || '',
-                    yearOfStudy: s.yearOfStudy || '',
+                    yearOfStudy: s.yearOfStudy || 'Year 3',
                     phone: s.phone || '',
                     organizationName: s.organizationName || '',
                     organizationAddress: s.organizationAddress || '',
@@ -71,6 +70,8 @@ const StudentProfile = () => {
             }
         } catch (err) {
             console.error('Failed to load student profile:', err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -86,287 +87,358 @@ const StudentProfile = () => {
                 ...placementForm,
                 submitForApproval
             });
-            setFeedback({ type: 'success', text: res.data?.message || 'Placement details updated.' });
+            setFeedback({
+                type: 'success',
+                text: submitForApproval
+                    ? 'Placement details submitted to your coordinator for approval.'
+                    : 'Placement draft saved successfully.'
+            });
             setIsEditing(false);
             loadProfile();
         } catch (err) {
-            setFeedback({ type: 'error', text: err.response?.data?.message || 'Failed to update placement details' });
+            setFeedback({
+                type: 'error',
+                text: err.response?.data?.message || 'Failed to update placement details'
+            });
         } finally {
             setSaving(false);
         }
     };
 
-    const statusColors = {
-        DRAFT: 'bg-slate-500/20 text-slate-400 border-slate-500/30',
-        SUBMITTED: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-        PENDING_APPROVAL: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-        APPROVED: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-        ACTIVE: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-        COMPLETED: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-        REJECTED: 'bg-rose-500/20 text-rose-400 border-rose-500/30'
+    const getStatusBadgeVariant = (status) => {
+        switch (status) {
+            case 'APPROVED':
+            case 'ACTIVE':
+                return 'success';
+            case 'SUBMITTED':
+            case 'PENDING_APPROVAL':
+                return 'warning';
+            case 'REJECTED':
+                return 'danger';
+            default:
+                return 'neutral';
+        }
     };
 
     const placementStatus = profile?.placementStatus || 'DRAFT';
     const canEdit = ['DRAFT', 'REJECTED', 'SUBMITTED'].includes(placementStatus);
 
+    if (loading) {
+        return (
+            <DashboardLayout role="student">
+                <div className="flex items-center justify-center min-h-[50vh]">
+                    <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+                </div>
+            </DashboardLayout>
+        );
+    }
+
     return (
         <DashboardLayout role="student">
-            <div className="space-y-8 animate-fade-in pb-12">
-                {/* Header / Identity */}
-                <div className="flex flex-col md:flex-row items-center gap-8 bg-gradient-to-r from-blue-600/10 to-transparent p-10 rounded-[2.5rem] border border-white/5 shadow-2xl">
-                    <div className="relative group">
-                        <div className="w-32 h-32 bg-slate-900 rounded-[2.5rem] flex items-center justify-center shadow-2xl border border-white/10 overflow-hidden">
-                            <User className="text-blue-500" size={64} />
+            <div className="space-y-6 max-w-6xl mx-auto p-4 sm:p-6 font-sans">
+                {/* 1. Header & Identity Card */}
+                <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div className="flex items-center gap-4">
+                        <div className="w-14 h-14 bg-violet-600/10 border border-violet-500/20 text-violet-400 rounded-xl flex items-center justify-center text-lg font-bold">
+                            {user?.name?.charAt(0) || 'S'}
                         </div>
-                        <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 border-4 border-slate-950 rounded-full flex items-center justify-center shadow-lg">
-                            <CheckCircle2 className="text-white" size={16} />
-                        </div>
-                    </div>
-                    <div className="text-center md:text-left space-y-2">
-                        <div className="flex flex-col md:flex-row md:items-center gap-3">
-                            <h1 className="text-4xl font-black text-white tracking-tighter">{user?.name}</h1>
-                            <span className={`text-[10px] font-black uppercase px-3 py-1 rounded-full border ${statusColors[placementStatus] || 'bg-blue-600 text-white'}`}>
-                                {placementStatus.replace('_', ' ')}
-                            </span>
-                        </div>
-                        <p className="text-slate-400 font-medium">
-                            {profile?.admissionNumber || 'Admission Pending'} • {profile?.course || profile?.department || 'Department Unassigned'}
-                        </p>
-                        <div className="flex flex-wrap gap-4 pt-2">
-                            <div className="flex items-center space-x-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                <Building size={14} className="text-blue-500" />
-                                <span>{profile?.organizationName || 'No Organization Assigned'}</span>
+                        <div>
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-xs font-semibold text-slate-300">
+                                    {profile?.admissionNumber || 'Admission Pending'}
+                                </span>
+                                <span className="text-slate-600">•</span>
+                                <span className="text-xs text-slate-400">
+                                    {profile?.course || profile?.department || 'Department Unassigned'}
+                                </span>
+                                <Badge variant={getStatusBadgeVariant(placementStatus)}>
+                                    {placementStatus.replace(/_/g, ' ')}
+                                </Badge>
                             </div>
-                            {profile?.endDate && (
-                                <div className="flex items-center space-x-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                                    <Calendar size={14} className="text-purple-500" />
-                                    <span>Ends {profile.endDate}</span>
-                                </div>
-                            )}
+                            <h1 className="text-2xl font-bold text-slate-100 tracking-tight mt-1">{user?.name}</h1>
+                            <p className="text-xs text-slate-400 font-mono mt-0.5">{user?.email}</p>
                         </div>
                     </div>
+
+                    {canEdit && (
+                        <Button
+                            variant={isEditing ? 'outline' : 'primary'}
+                            onClick={() => {
+                                setIsEditing(!isEditing);
+                                setFeedback(null);
+                            }}
+                            icon={isEditing ? X : Edit3}
+                        >
+                            {isEditing ? 'Cancel Editing' : 'Edit Placement Info'}
+                        </Button>
+                    )}
                 </div>
 
-                {/* Feedback Alert */}
+                {/* 2. Feedback Alert */}
                 {feedback && (
-                    <div className={`p-4 rounded-2xl border flex items-center gap-3 text-xs font-bold ${feedback.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border-rose-500/20 text-rose-400'}`}>
-                        <AlertCircle size={16} />
+                    <div className={`p-4 rounded-xl border flex items-center gap-3 text-xs font-medium ${
+                        feedback.type === 'success'
+                            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                            : 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+                    }`}>
+                        <AlertCircle size={16} className="shrink-0" />
                         <span>{feedback.text}</span>
                     </div>
                 )}
 
-                {/* Rejection Alert */}
+                {/* 3. Rejection / Action Required Banner */}
                 {placementStatus === 'REJECTED' && profile?.rejectionReason && (
-                    <div className="p-6 rounded-2xl bg-rose-500/10 border border-rose-500/20 space-y-2">
-                        <div className="flex items-center gap-2 text-rose-400 font-bold text-xs uppercase tracking-widest">
-                            <AlertCircle size={16} />
-                            <span>Placement Application Requires Revision</span>
+                    <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 space-y-1.5">
+                        <div className="flex items-center gap-2 text-rose-400 font-semibold text-xs">
+                            <AlertCircle size={15} />
+                            <span>Coordinator Feedback — Revisions Required</span>
                         </div>
-                        <p className="text-slate-300 text-sm">{profile.rejectionReason}</p>
+                        <p className="text-xs text-slate-300 pl-6 leading-relaxed">
+                            {profile.rejectionReason}
+                        </p>
                     </div>
                 )}
 
-                <div className="grid lg:grid-cols-3 gap-8">
-                    {/* Academic & Supervisor Info */}
-                    <div className="lg:col-span-1 space-y-8">
-                        <ProfileCard title="Academic Institution" icon={GraduationCap}>
-                            <div className="space-y-4">
-                                <div className="space-y-1">
-                                    <p className="text-[10px] uppercase font-black text-slate-500 tracking-widest">Institution</p>
-                                    <p className="text-sm font-bold text-white leading-tight">{profile?.institution || user?.schoolName || 'University'}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-[10px] uppercase font-black text-slate-500 tracking-widest">Department</p>
-                                    <p className="text-sm font-bold text-slate-300 leading-tight">{profile?.department || 'N/A'}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-[10px] uppercase font-black text-slate-500 tracking-widest">Admission Number</p>
-                                    <p className="text-sm font-bold text-slate-300 leading-tight">{profile?.admissionNumber || 'N/A'}</p>
-                                </div>
+                {/* 4. Main Body: 2-Column Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Left Column: Academic & Supervision Oversight */}
+                    <div className="space-y-6">
+                        {/* Institutional Details */}
+                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-5 space-y-4">
+                            <div className="flex items-center gap-2">
+                                <GraduationCap className="text-violet-400" size={17} />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">Academic Dossier</h3>
                             </div>
-                        </ProfileCard>
 
-                        <ProfileCard title="Supervision Oversight" icon={Shield}>
-                            <div className="space-y-5">
-                                <div className="flex items-start space-x-4">
-                                    <Briefcase className="text-emerald-500 shrink-0 mt-1" size={20} />
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] uppercase font-black text-slate-500 tracking-widest">Industry Supervisor</p>
-                                        <p className="text-sm font-bold text-white leading-tight">
-                                            {profile?.industrySupervisor ? profile.industrySupervisor.name : 'Pending Assignment'}
-                                        </p>
-                                        {profile?.industrySupervisor?.email && (
-                                            <p className="text-xs text-slate-400">{profile.industrySupervisor.email}</p>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="flex items-start space-x-4">
-                                    <GraduationCap className="text-purple-500 shrink-0 mt-1" size={20} />
-                                    <div className="space-y-1">
-                                        <p className="text-[10px] uppercase font-black text-slate-500 tracking-widest">Academic Supervisor</p>
-                                        <p className="text-sm font-bold text-white leading-tight">
-                                            {profile?.universitySupervisor ? profile.universitySupervisor.name : 'Pending Assignment'}
-                                        </p>
-                                        {profile?.universitySupervisor?.email && (
-                                            <p className="text-xs text-slate-400">{profile.universitySupervisor.email}</p>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </ProfileCard>
-                    </div>
-
-                    {/* Attachment Placement Application & Details */}
-                    <div className="lg:col-span-2 space-y-8">
-                        <div className="glass-card p-10 space-y-8">
-                            <div className="flex items-center justify-between border-b border-white/5 pb-4">
+                            <div className="space-y-3 text-xs">
                                 <div>
-                                    <h3 className="text-base font-black uppercase tracking-widest text-white">Attachment Placement Details</h3>
-                                    <p className="text-xs text-slate-500 mt-0.5">Submit your hosting organization and timeline</p>
+                                    <span className="text-slate-500 text-[11px] block">University / School:</span>
+                                    <span className="text-slate-200 font-semibold">{profile?.institution || user?.schoolName || 'Kirinyaga University'}</span>
                                 </div>
-                                {canEdit && (
-                                    <button
-                                        type="button"
-                                        onClick={() => setIsEditing(!isEditing)}
-                                        className="text-xs font-black uppercase tracking-widest text-blue-400 hover:text-blue-300"
-                                    >
-                                        {isEditing ? 'Cancel' : 'Edit Details'}
-                                    </button>
-                                )}
-                            </div>
-
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-widest text-slate-400">Hosting Organization</label>
-                                    <input
-                                        type="text"
-                                        disabled={!isEditing}
-                                        value={placementForm.organizationName}
-                                        onChange={(e) => setPlacementForm({ ...placementForm, organizationName: e.target.value })}
-                                        className="input-field w-full disabled:opacity-60"
-                                        placeholder="e.g. Safaricom PLC, Google"
-                                    />
+                                <div>
+                                    <span className="text-slate-500 text-[11px] block">Academic Department:</span>
+                                    <span className="text-slate-300">{profile?.department || 'Computing & Information Technology'}</span>
                                 </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-widest text-slate-400">Organization Address</label>
-                                    <input
-                                        type="text"
-                                        disabled={!isEditing}
-                                        value={placementForm.organizationAddress}
-                                        onChange={(e) => setPlacementForm({ ...placementForm, organizationAddress: e.target.value })}
-                                        className="input-field w-full disabled:opacity-60"
-                                        placeholder="e.g. Waiyaki Way, Nairobi"
-                                    />
+                                <div>
+                                    <span className="text-slate-500 text-[11px] block">Degree Programme:</span>
+                                    <span className="text-slate-300">{profile?.course || 'BSc Software Engineering'}</span>
                                 </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-widest text-slate-400">Contact Person / HR Lead</label>
-                                    <input
-                                        type="text"
-                                        disabled={!isEditing}
-                                        value={placementForm.contactPerson}
-                                        onChange={(e) => setPlacementForm({ ...placementForm, contactPerson: e.target.value })}
-                                        className="input-field w-full disabled:opacity-60"
-                                        placeholder="e.g. Jane Doe"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-widest text-slate-400">Company Contact Email</label>
-                                    <input
-                                        type="email"
-                                        disabled={!isEditing}
-                                        value={placementForm.organizationEmail}
-                                        onChange={(e) => setPlacementForm({ ...placementForm, organizationEmail: e.target.value })}
-                                        className="input-field w-full disabled:opacity-60"
-                                        placeholder="e.g. hr@company.com"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-widest text-slate-400">Company Phone</label>
-                                    <input
-                                        type="tel"
-                                        disabled={!isEditing}
-                                        value={placementForm.organizationPhone}
-                                        onChange={(e) => setPlacementForm({ ...placementForm, organizationPhone: e.target.value })}
-                                        className="input-field w-full disabled:opacity-60"
-                                        placeholder="e.g. +254 700 000000"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-widest text-slate-400">Student Mobile Phone</label>
-                                    <input
-                                        type="tel"
-                                        disabled={!isEditing}
-                                        value={placementForm.phone}
-                                        onChange={(e) => setPlacementForm({ ...placementForm, phone: e.target.value })}
-                                        className="input-field w-full disabled:opacity-60"
-                                        placeholder="e.g. +254 712 345678"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-widest text-slate-400">Attachment Start Date</label>
-                                    <input
-                                        type="date"
-                                        disabled={!isEditing}
-                                        value={placementForm.startDate}
-                                        onChange={(e) => setPlacementForm({ ...placementForm, startDate: e.target.value })}
-                                        className="input-field w-full disabled:opacity-60"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-xs font-black uppercase tracking-widest text-slate-400">Attachment End Date</label>
-                                    <input
-                                        type="date"
-                                        disabled={!isEditing}
-                                        value={placementForm.endDate}
-                                        onChange={(e) => setPlacementForm({ ...placementForm, endDate: e.target.value })}
-                                        className="input-field w-full disabled:opacity-60"
-                                    />
+                                <div>
+                                    <span className="text-slate-500 text-[11px] block">Year of Study:</span>
+                                    <span className="text-slate-300">{profile?.yearOfStudy || 'Year 3'}</span>
                                 </div>
                             </div>
-
-                            {isEditing && (
-                                <div className="pt-6 border-t border-white/5 flex flex-wrap gap-4 justify-end">
-                                    <button
-                                        type="button"
-                                        disabled={saving}
-                                        onClick={() => handleSavePlacement(false)}
-                                        className="px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold uppercase tracking-widest"
-                                    >
-                                        Save Draft
-                                    </button>
-                                    <button
-                                        type="button"
-                                        disabled={saving}
-                                        onClick={() => handleSavePlacement(true)}
-                                        className="btn-primary px-8 py-3 text-xs flex items-center gap-2"
-                                    >
-                                        <Send size={16} />
-                                        <span>{saving ? 'Transmitting...' : 'Submit For Approval'}</span>
-                                    </button>
-                                </div>
-                            )}
                         </div>
 
-                        {/* Sign Out Card */}
-                        <div className="glass-card p-8 border-l-4 border-l-red-600 bg-red-600/[0.02] flex items-center justify-between">
-                            <div className="space-y-1">
-                                <h3 className="text-sm font-black text-red-500 uppercase tracking-widest">Sign Out</h3>
-                                <p className="text-xs text-slate-500 font-medium">Terminate current session securely</p>
+                        {/* Supervision Pairings */}
+                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-5 space-y-4">
+                            <div className="flex items-center gap-2">
+                                <Shield className="text-violet-400" size={17} />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">Supervision Oversight</h3>
                             </div>
-                            <button
+
+                            <div className="space-y-3">
+                                {/* Industry Mentor */}
+                                <div className="p-3 bg-[#12141c] rounded-lg border border-[#22242f] space-y-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] uppercase font-semibold text-emerald-400">Industry Mentor</span>
+                                        <Badge variant={profile?.industrySupervisor ? 'success' : 'neutral'}>
+                                            {profile?.industrySupervisor ? 'Assigned' : 'Pending'}
+                                        </Badge>
+                                    </div>
+                                    <p className="text-xs font-semibold text-slate-200">
+                                        {profile?.industrySupervisor?.name || 'Pending Assignment'}
+                                    </p>
+                                    {profile?.industrySupervisor?.email && (
+                                        <p className="text-[11px] text-slate-400 font-mono">{profile.industrySupervisor.email}</p>
+                                    )}
+                                </div>
+
+                                {/* Academic Supervisor */}
+                                <div className="p-3 bg-[#12141c] rounded-lg border border-[#22242f] space-y-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] uppercase font-semibold text-violet-400">Faculty Supervisor</span>
+                                        <Badge variant={profile?.universitySupervisor ? 'purple' : 'neutral'}>
+                                            {profile?.universitySupervisor ? 'Assigned' : 'Pending'}
+                                        </Badge>
+                                    </div>
+                                    <p className="text-xs font-semibold text-slate-200">
+                                        {profile?.universitySupervisor?.name || 'Pending Assignment'}
+                                    </p>
+                                    {profile?.universitySupervisor?.email && (
+                                        <p className="text-[11px] text-slate-400 font-mono">{profile.universitySupervisor.email}</p>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Session & Sign Out */}
+                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-5 space-y-3">
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">Account Session</h3>
+                            <Button
+                                variant="danger"
+                                className="w-full"
                                 onClick={logout}
-                                className="flex items-center space-x-2 px-8 py-3 bg-red-600/10 text-red-500 rounded-xl border border-red-600/20 hover:bg-red-600/20 transition-all font-black text-xs uppercase tracking-widest"
+                                icon={LogOut}
                             >
-                                <LogOut size={16} />
-                                <span>Logout</span>
-                            </button>
+                                Sign Out from Terminal
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Right Column: Host Organization & Placement Application */}
+                    <div className="lg:col-span-2 space-y-6">
+                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 space-y-6">
+                            <div className="flex items-center justify-between border-b border-[#22242f] pb-4">
+                                <div>
+                                    <h3 className="text-base font-bold text-slate-100">Host Organization & Placement Record</h3>
+                                    <p className="text-xs text-slate-400 mt-0.5">
+                                        {isEditing
+                                            ? 'Fill in your workplace placement details for coordinator verification.'
+                                            : 'Official host organization details registered with the attachment office.'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <form onSubmit={(e) => { e.preventDefault(); handleSavePlacement(true); }} className="space-y-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                                            Hosting Organization Name
+                                        </label>
+                                        <input
+                                            type="text"
+                                            disabled={!isEditing}
+                                            value={placementForm.organizationName}
+                                            onChange={(e) => setPlacementForm({ ...placementForm, organizationName: e.target.value })}
+                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500 disabled:opacity-60"
+                                            placeholder="e.g. Safaricom PLC HQ"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                                            Workplace Physical Address
+                                        </label>
+                                        <input
+                                            type="text"
+                                            disabled={!isEditing}
+                                            value={placementForm.organizationAddress}
+                                            onChange={(e) => setPlacementForm({ ...placementForm, organizationAddress: e.target.value })}
+                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500 disabled:opacity-60"
+                                            placeholder="e.g. Waiyaki Way, Nairobi"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                                            HR / Mentor Contact Person
+                                        </label>
+                                        <input
+                                            type="text"
+                                            disabled={!isEditing}
+                                            value={placementForm.contactPerson}
+                                            onChange={(e) => setPlacementForm({ ...placementForm, contactPerson: e.target.value })}
+                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500 disabled:opacity-60"
+                                            placeholder="e.g. Jane Mwangi (Head of Engineering)"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                                            Company Contact Email
+                                        </label>
+                                        <input
+                                            type="email"
+                                            disabled={!isEditing}
+                                            value={placementForm.organizationEmail}
+                                            onChange={(e) => setPlacementForm({ ...placementForm, organizationEmail: e.target.value })}
+                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500 disabled:opacity-60"
+                                            placeholder="e.g. attachments@safaricom.co.ke"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                                            Company Phone
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            disabled={!isEditing}
+                                            value={placementForm.organizationPhone}
+                                            onChange={(e) => setPlacementForm({ ...placementForm, organizationPhone: e.target.value })}
+                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500 disabled:opacity-60"
+                                            placeholder="e.g. +254 722 000000"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                                            Student Mobile Phone
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            disabled={!isEditing}
+                                            value={placementForm.phone}
+                                            onChange={(e) => setPlacementForm({ ...placementForm, phone: e.target.value })}
+                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-violet-500 disabled:opacity-60"
+                                            placeholder="e.g. +254 712 345678"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                                            Attachment Start Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            disabled={!isEditing}
+                                            value={placementForm.startDate}
+                                            onChange={(e) => setPlacementForm({ ...placementForm, startDate: e.target.value })}
+                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500 disabled:opacity-60 [color-scheme:dark]"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+                                            Attachment End Date
+                                        </label>
+                                        <input
+                                            type="date"
+                                            disabled={!isEditing}
+                                            value={placementForm.endDate}
+                                            onChange={(e) => setPlacementForm({ ...placementForm, endDate: e.target.value })}
+                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500 disabled:opacity-60 [color-scheme:dark]"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                {isEditing && (
+                                    <div className="pt-4 border-t border-[#22242f] flex items-center justify-end gap-3">
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            disabled={saving}
+                                            onClick={() => handleSavePlacement(false)}
+                                        >
+                                            Save Draft
+                                        </Button>
+                                        <Button
+                                            type="submit"
+                                            variant="primary"
+                                            disabled={saving}
+                                            icon={Send}
+                                        >
+                                            {saving ? 'Submitting...' : 'Submit for Coordinator Approval'}
+                                        </Button>
+                                    </div>
+                                )}
+                            </form>
                         </div>
                     </div>
                 </div>
