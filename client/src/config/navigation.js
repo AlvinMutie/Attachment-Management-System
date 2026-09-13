@@ -137,6 +137,7 @@ export const ROLE_NAVIGATION = {
             section: 'Coordination',
             items: [
                 { label: 'Executive Dashboard', path: '/coordinator/dashboard', icon: LayoutDashboard },
+                { label: 'My Profile', path: '/coordinator/profile', icon: User },
                 { label: 'Attention Queue', path: '/coordinator/attention-queue', icon: AlertTriangle },
                 { label: 'Placement Coordination', path: '/coordinator/placements', icon: BookOpen }
             ]
@@ -187,7 +188,8 @@ export const ROLE_NAVIGATION = {
         {
             section: 'Navigation',
             items: [
-                { label: 'Dashboard', path: '/superadmin/dashboard', icon: LayoutDashboard }
+                { label: 'Dashboard', path: '/superadmin/dashboard', icon: LayoutDashboard },
+                { label: 'Admin Profile', path: '/superadmin/profile', icon: User }
             ]
         },
         {

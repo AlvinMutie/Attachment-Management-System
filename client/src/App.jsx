@@ -40,6 +40,7 @@ const VisitPortal = lazy(() => import('./pages/VisitPortal'));
 
 // Coordinator (Lazy Loaded)
 const CoordinatorDashboard = lazy(() => import('./pages/coordinator/CoordinatorDashboard'));
+const CoordinatorProfile = lazy(() => import('./pages/coordinator/Profile'));
 const PlacementCoordination = lazy(() => import('./pages/coordinator/PlacementCoordination'));
 const AcademicOversight = lazy(() => import('./pages/coordinator/AcademicOversight'));
 const SupervisorWorkload = lazy(() => import('./pages/coordinator/SupervisorWorkload'));
@@ -49,6 +50,7 @@ const SupervisionVisits = lazy(() => import('./pages/coordinator/SupervisionVisi
 // Super Admin (Lazy Loaded)
 const SuperadminLayout = lazy(() => import('./components/superadmin/SuperadminLayout'));
 const SuperadminDashboard = lazy(() => import('./pages/superadmin/Dashboard'));
+const SuperadminProfile = lazy(() => import('./pages/superadmin/Profile'));
 const SchoolManagement = lazy(() => import('./pages/superadmin/SchoolManagement'));
 const UserManagement = lazy(() => import('./pages/superadmin/UserManagement'));
 const AuditLogs = lazy(() => import('./pages/superadmin/AuditLogs'));
@@ -98,6 +100,7 @@ function AnimatedRoutes() {
 
                     {/* Coordinator Routes */}
                     <Route path="/coordinator/dashboard" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><CoordinatorDashboard /></PrivateRoute>} />
+                    <Route path="/coordinator/profile" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><CoordinatorProfile /></PrivateRoute>} />
                     <Route path="/coordinator/attention-queue" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><CoordinatorDashboard /></PrivateRoute>} />
                     <Route path="/coordinator/placements" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><PlacementCoordination /></PrivateRoute>} />
                     <Route path="/coordinator/supervisors" element={<PrivateRoute roles={['attachment_coordinator', 'school_admin', 'super_admin']}><SupervisorWorkload /></PrivateRoute>} />
@@ -117,6 +120,7 @@ function AnimatedRoutes() {
                     <Route path="/superadmin" element={<PrivateRoute roles={['super_admin']}><SuperadminLayout /></PrivateRoute>}>
                         <Route index element={<Navigate to="dashboard" replace />} />
                         <Route path="dashboard" element={<SuperadminDashboard />} />
+                        <Route path="profile" element={<SuperadminProfile />} />
                         <Route path="schools" element={<SchoolManagement />} />
                         <Route path="users" element={<UserManagement />} />
                         <Route path="audit-logs" element={<AuditLogs />} />

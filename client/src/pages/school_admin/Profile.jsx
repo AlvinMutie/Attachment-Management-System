@@ -2,18 +2,19 @@ import React, { useState, useEffect } from 'react';
 import {
     User, Mail, Lock, School as SchoolIcon,
     Building, CheckCircle2, LogOut, Globe,
-    ImageIcon, MapPin, Upload, Link as LinkIcon
+    ImageIcon, MapPin, Upload, Link as LinkIcon,
+    Shield, Sparkles, Check, Save, Edit3, Palette
 } from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
 import { useAuth, applyTheme } from '../../context/AuthContext';
 import { getMySchool, updateMySchool } from '../../utils/schoolApi';
-import Badge from '../../components/ui/Badge';
-import Button from '../../components/ui/Button';
+import { Badge, Button, LoadingSkeleton } from '../../components/ui';
 
 const AdminProfile = () => {
     const { user, logout } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [saveSuccess, setSaveSuccess] = useState(false);
     const [schoolData, setSchoolData] = useState({
         name: '',
         address: '',
@@ -32,9 +33,11 @@ const AdminProfile = () => {
         try {
             setLoading(true);
             const response = await getMySchool();
-            setSchoolData(response.data);
-            if (response.data.logo) {
-                setLogoPreview(response.data.logo.startsWith('http') ? response.data.logo : `http://localhost:5000${response.data.logo}`);
+            if (response.data) {
+                setSchoolData(response.data);
+                if (response.data.logo) {
+                    setLogoPreview(response.data.logo.startsWith('http') ? response.data.logo : `http://localhost:5000${response.data.logo}`);
+                }
             }
         } catch (error) {
             console.error('Failed to fetch school data:', error);
@@ -63,7 +66,8 @@ const AdminProfile = () => {
 
             await updateMySchool(data);
             setIsEditing(false);
-            alert('Institutional branding updated successfully');
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 3000);
             if (schoolData.primaryColor) {
                 applyTheme(schoolData.primaryColor);
             }
@@ -76,8 +80,12 @@ const AdminProfile = () => {
     if (loading) {
         return (
             <DashboardLayout role="school_admin">
-                <div className="flex items-center justify-center min-h-[50vh]">
-                    <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="space-y-6 max-w-7xl mx-auto p-4">
+                    <LoadingSkeleton className="h-32 rounded-2xl bg-[#15171f] border border-[#22242f]" />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <LoadingSkeleton className="h-80 rounded-2xl bg-[#15171f] border border-[#22242f]" />
+                        <LoadingSkeleton className="md:col-span-2 h-80 rounded-2xl bg-[#15171f] border border-[#22242f]" />
+                    </div>
                 </div>
             </DashboardLayout>
         );
@@ -85,82 +93,155 @@ const AdminProfile = () => {
 
     return (
         <DashboardLayout role="school_admin">
-            <div className="space-y-6 max-w-5xl mx-auto p-6">
-                {/* Header / Identity */}
-                <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                    <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 bg-[#12141c] border border-[#22242f] rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0">
-                            {logoPreview ? (
-                                <img src={logoPreview} alt={schoolData.name} className="w-full h-full object-cover" />
+            <div className="max-w-7xl mx-auto space-y-6 pb-16 font-sans">
+                {/* 1. Header Hero Dossier */}
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#161922] to-[#0f1117] border border-[#222533] p-6 sm:p-7 shadow-xl">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
+
+                    <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                        <div className="flex items-center gap-5">
+                            <div className="relative">
+                                <div className="w-16 h-16 rounded-2xl bg-[#181a24] border border-[#22242f] flex items-center justify-center overflow-hidden shadow-inner shrink-0">
+                                    {logoPreview ? (
+                                        <img src={logoPreview} alt={schoolData.name} className="w-full h-full object-cover" />
+                                    ) : (
+                                        <SchoolIcon className="text-amber-400" size={32} />
+                                    )}
+                                </div>
+                                <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-[#0f1117]" title="Verified Campus Admin" />
+                            </div>
+
+                            <div className="space-y-1">
+                                <div className="flex flex-wrap items-center gap-2.5">
+                                    <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                                        {user?.name || 'Campus Administrator'}
+                                    </h1>
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                        <Shield size={12} className="text-amber-400" />
+                                        Institutional Administrator
+                                    </span>
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+                                    <span className="text-slate-200 font-semibold">{schoolData.name || 'University Campus'}</span>
+                                    <span className="text-slate-600">•</span>
+                                    <span className="text-slate-400 flex items-center gap-1">
+                                        <MapPin size={13} className="text-amber-400" /> {schoolData.address || 'Main Campus'}
+                                    </span>
+                                    <span className="text-slate-600">•</span>
+                                    <span className="font-mono text-slate-400">{schoolData.contactEmail || user?.email}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-2.5 w-full md:w-auto">
+                            {isEditing ? (
+                                <div className="flex items-center gap-2 w-full sm:w-auto">
+                                    <Button
+                                        variant="secondary"
+                                        onClick={() => setIsEditing(false)}
+                                        className="flex-1 sm:flex-none text-xs py-2 px-3.5 border border-[#2a2e40]"
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        variant="primary"
+                                        onClick={handleSave}
+                                        className="flex-1 sm:flex-none text-xs py-2 px-4 font-bold flex items-center justify-center gap-1.5 shadow-lg shadow-amber-500/20"
+                                    >
+                                        <Save size={14} />
+                                        <span>Save Branding</span>
+                                    </Button>
+                                </div>
                             ) : (
-                                <SchoolIcon className="text-violet-400" size={28} />
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setIsEditing(true)}
+                                    className="w-full sm:w-auto text-xs py-2 px-4 font-semibold flex items-center justify-center gap-1.5 border-[#2a2e40]"
+                                >
+                                    <Edit3 size={14} />
+                                    <span>Edit Campus Profile</span>
+                                </Button>
                             )}
                         </div>
-                        <div>
-                            <div className="flex items-center gap-2">
-                                <span className="text-[11px] font-semibold uppercase tracking-wider text-violet-400">Institutional Governance</span>
-                                <Badge variant="success">Verified Campus</Badge>
-                            </div>
-                            <h1 className="text-2xl font-bold text-slate-100 tracking-tight mt-0.5">{user?.name}</h1>
-                            <p className="text-xs text-slate-400 mt-0.5">{schoolData.name} • {schoolData.address || 'Main Campus'}</p>
-                        </div>
                     </div>
-                    <Button
-                        variant={isEditing ? 'primary' : 'outline'}
-                        onClick={isEditing ? handleSave : () => setIsEditing(true)}
-                    >
-                        {isEditing ? 'Save Changes' : 'Edit Institutional Profile'}
-                    </Button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Branding column */}
-                    <div className="space-y-6">
-                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 space-y-4">
-                            <div className="flex items-center gap-2">
-                                <Building className="text-violet-400" size={16} />
-                                <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">Campus Branding</h3>
+                {saveSuccess && (
+                    <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/25 rounded-xl text-emerald-300 text-xs font-semibold flex items-center gap-2 animate-fade-in">
+                        <CheckCircle2 size={16} className="text-emerald-400" />
+                        <span>Institutional branding and administrator profile updated successfully.</span>
+                    </div>
+                )}
+
+                {/* 2. Main 2-Column Configuration Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    {/* Left Column: Campus Identity & Branding (4 Cols) */}
+                    <div className="lg:col-span-4 space-y-5">
+                        <div className="rounded-2xl bg-[#12141c] border border-[#22242f] p-5 space-y-4 shadow-md">
+                            <div className="flex items-center justify-between pb-3 border-b border-[#1e2230]">
+                                <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                                    <Building size={14} className="text-amber-400" />
+                                    Campus Branding
+                                </h3>
+                                <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                                    Tenant Logo
+                                </span>
                             </div>
 
+                            {/* Logo Display / Uploader */}
                             <div className="space-y-3">
-                                <div className="w-full aspect-video rounded-lg bg-[#12141c] border border-[#22242f] flex items-center justify-center overflow-hidden">
+                                <div className="w-full aspect-video rounded-xl bg-[#181a24] border border-[#22242f] flex items-center justify-center overflow-hidden">
                                     {logoPreview || (uploadMode === 'url' && schoolData.logo) ? (
-                                        <img src={(uploadMode === 'file' && logoPreview) ? logoPreview : (schoolData.logo.startsWith('http') ? schoolData.logo : `http://localhost:5000${schoolData.logo}`)} alt="Preview" className="w-full h-full object-cover" />
+                                        <img
+                                            src={(uploadMode === 'file' && logoPreview) ? logoPreview : (schoolData.logo.startsWith('http') ? schoolData.logo : `http://localhost:5000${schoolData.logo}`)}
+                                            alt="Campus Logo"
+                                            className="w-full h-full object-cover"
+                                        />
                                     ) : (
-                                        <div className="flex flex-col items-center gap-1.5 text-slate-500">
-                                            <ImageIcon size={24} />
-                                            <span className="text-[11px]">No Logo Configured</span>
+                                        <div className="flex flex-col items-center gap-2 text-slate-500">
+                                            <ImageIcon size={28} className="text-slate-600" />
+                                            <span className="text-xs">No Logo Configured</span>
                                         </div>
                                     )}
                                 </div>
 
                                 {isEditing && (
-                                    <div className="space-y-3 pt-2">
-                                        <div className="flex gap-2">
+                                    <div className="space-y-2.5 pt-1">
+                                        <div className="grid grid-cols-2 gap-1.5 p-1 rounded-lg bg-[#0e1017] border border-[#22242f]">
                                             <button
                                                 type="button"
                                                 onClick={() => setUploadMode('file')}
-                                                className={`flex-1 py-1 rounded text-xs font-medium ${uploadMode === 'file' ? 'bg-violet-600 text-white' : 'bg-[#12141c] text-slate-400 border border-[#22242f]'}`}
+                                                className={`py-1.5 rounded-md text-xs font-semibold transition-all ${
+                                                    uploadMode === 'file' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+                                                }`}
                                             >
                                                 Upload File
                                             </button>
                                             <button
                                                 type="button"
                                                 onClick={() => setUploadMode('url')}
-                                                className={`flex-1 py-1 rounded text-xs font-medium ${uploadMode === 'url' ? 'bg-violet-600 text-white' : 'bg-[#12141c] text-slate-400 border border-[#22242f]'}`}
+                                                className={`py-1.5 rounded-md text-xs font-semibold transition-all ${
+                                                    uploadMode === 'url' ? 'bg-amber-600 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
+                                                }`}
                                             >
                                                 Image URL
                                             </button>
                                         </div>
 
                                         {uploadMode === 'file' ? (
-                                            <input type="file" accept="image/*" onChange={handleFileChange} className="text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:bg-violet-500/10 file:text-violet-400" />
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleFileChange}
+                                                className="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-amber-500/10 file:text-amber-400 cursor-pointer"
+                                            />
                                         ) : (
                                             <input
                                                 type="url"
-                                                className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-violet-500"
-                                                placeholder="https://..."
-                                                value={schoolData.logo}
+                                                className="w-full bg-[#181a24] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                                                placeholder="https://example.edu/logo.png"
+                                                value={schoolData.logo || ''}
                                                 onChange={(e) => setSchoolData({ ...schoolData, logo: e.target.value })}
                                             />
                                         )}
@@ -168,72 +249,133 @@ const AdminProfile = () => {
                                 )}
                             </div>
 
-                            <div className="border-t border-[#22242f] pt-3 space-y-2 text-xs">
-                                <div>
-                                    <span className="text-slate-500 text-[11px] block">Campus Name:</span>
+                            {/* Campus Metadata */}
+                            <div className="space-y-3 pt-3 border-t border-[#1e2230] text-xs">
+                                <div className="space-y-1">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Institution Name</span>
                                     {isEditing ? (
                                         <input
                                             type="text"
-                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-1.5 text-xs text-slate-200 mt-1"
+                                            className="w-full p-2.5 rounded-lg bg-[#181a24] border border-[#22242f] text-xs text-white outline-none focus:border-amber-500"
                                             value={schoolData.name}
                                             onChange={(e) => setSchoolData({ ...schoolData, name: e.target.value })}
                                         />
                                     ) : (
-                                        <span className="text-slate-200 font-semibold">{schoolData.name}</span>
+                                        <p className="font-semibold text-white">{schoolData.name || 'Not set'}</p>
                                     )}
                                 </div>
-                                <div>
-                                    <span className="text-slate-500 text-[11px] block">Contact Email:</span>
+
+                                <div className="space-y-1">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Campus Address</span>
+                                    {isEditing ? (
+                                        <input
+                                            type="text"
+                                            className="w-full p-2.5 rounded-lg bg-[#181a24] border border-[#22242f] text-xs text-white outline-none focus:border-amber-500"
+                                            value={schoolData.address || ''}
+                                            onChange={(e) => setSchoolData({ ...schoolData, address: e.target.value })}
+                                        />
+                                    ) : (
+                                        <p className="font-semibold text-slate-300">{schoolData.address || 'Main Campus'}</p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-1">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Official Contact Email</span>
                                     {isEditing ? (
                                         <input
                                             type="email"
-                                            className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-1.5 text-xs text-slate-200 mt-1"
-                                            value={schoolData.contactEmail}
+                                            className="w-full p-2.5 rounded-lg bg-[#181a24] border border-[#22242f] text-xs text-white outline-none focus:border-amber-500"
+                                            value={schoolData.contactEmail || ''}
                                             onChange={(e) => setSchoolData({ ...schoolData, contactEmail: e.target.value })}
                                         />
                                     ) : (
-                                        <span className="text-slate-300 font-mono text-[11px]">{schoolData.contactEmail}</span>
+                                        <p className="font-mono font-semibold text-slate-300">{schoolData.contactEmail || 'admin@school.edu'}</p>
                                     )}
                                 </div>
                             </div>
                         </div>
 
-                        <Button
-                            variant="danger"
-                            className="w-full"
+                        <button
+                            type="button"
                             onClick={logout}
-                            icon={LogOut}
+                            className="w-full flex items-center justify-center gap-2 p-3.5 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20 hover:bg-rose-500/20 transition-all font-bold text-xs"
                         >
-                            Sign Out
-                        </Button>
+                            <LogOut size={15} />
+                            <span>Sign Out of Administrator Account</span>
+                        </button>
                     </div>
 
-                    {/* Account Settings */}
-                    <div className="md:col-span-2 space-y-6">
-                        <div className="bg-[#15171f] border border-[#22242f] rounded-xl p-6 space-y-4">
-                            <h3 className="text-base font-bold text-slate-100">Administrator Identity</h3>
-
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Right Column: Admin Identity & Security (8 Cols) */}
+                    <div className="lg:col-span-8 space-y-5">
+                        <div className="rounded-2xl bg-[#12141c] border border-[#22242f] p-5 sm:p-6 space-y-5 shadow-md">
+                            <div className="flex items-center justify-between pb-3.5 border-b border-[#1e2230]">
                                 <div>
-                                    <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Email</label>
-                                    <input type="email" readOnly className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-400 opacity-60" defaultValue={user?.email} />
-                                </div>
-                                <div>
-                                    <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Administrator Name</label>
-                                    <input type="text" readOnly className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-400 opacity-60" defaultValue={user?.name} />
+                                    <h3 className="text-sm font-bold text-white">Administrator Identity & Security</h3>
+                                    <p className="text-[11px] text-slate-400 mt-0.5">
+                                        Campus governance credentials and administrative access settings.
+                                    </p>
                                 </div>
                             </div>
 
-                            <div className="border-t border-[#22242f] pt-4 mt-2">
-                                <h4 className="text-xs font-semibold text-slate-300 mb-3">Security Credentials</h4>
+                            <div className="space-y-4">
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">Current Password</label>
-                                        <input type="password" readOnly={!isEditing} className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500" defaultValue="••••••••" />
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                                            <User size={13} className="text-amber-400" /> Administrator Name
+                                        </label>
+                                        <input
+                                            type="text"
+                                            readOnly
+                                            className="w-full p-2.5 rounded-lg bg-[#10121a] border border-[#1e2230] text-xs text-slate-400 opacity-70 cursor-not-allowed"
+                                            defaultValue={user?.name}
+                                        />
                                     </div>
-                                    <div>
-                                        <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">New Password</label>
-                                        <input type="password" readOnly={!isEditing} className="w-full bg-[#12141c] border border-[#22242f] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-violet-500" placeholder="Leave empty to keep current" />
+
+                                    <div className="space-y-1.5">
+                                        <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                                            <Mail size={13} className="text-amber-400" /> Administrative Email
+                                        </label>
+                                        <input
+                                            type="email"
+                                            readOnly
+                                            className="w-full p-2.5 rounded-lg bg-[#10121a] border border-[#1e2230] text-xs text-slate-400 opacity-70 cursor-not-allowed"
+                                            defaultValue={user?.email}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Security Credentials Section */}
+                                <div className="pt-4 border-t border-[#1e2230] space-y-3.5">
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="text-xs font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+                                            <Lock size={13} className="text-amber-400" /> Security Credentials
+                                        </h4>
+                                        <span className="text-[10px] text-slate-500">Root Campus Authority</span>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-semibold text-slate-400">Current Password</label>
+                                            <input
+                                                type="password"
+                                                readOnly={!isEditing}
+                                                defaultValue="••••••••••••"
+                                                className="w-full p-2.5 rounded-lg bg-[#10121a] border border-[#1e2230] text-xs text-slate-400"
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-semibold text-slate-400">New Password</label>
+                                            <input
+                                                type="password"
+                                                readOnly={!isEditing}
+                                                placeholder={isEditing ? 'Leave blank to keep current' : '••••••••••••'}
+                                                className={`w-full p-2.5 rounded-lg border text-xs outline-none transition-colors ${
+                                                    isEditing
+                                                        ? 'bg-[#181a24] border-[#22242f] text-white focus:border-amber-500'
+                                                        : 'bg-[#10121a] border-[#1e2230] text-slate-400 cursor-not-allowed'
+                                                }`}
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -246,3 +388,4 @@ const AdminProfile = () => {
 };
 
 export default AdminProfile;
+

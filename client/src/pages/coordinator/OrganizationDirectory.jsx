@@ -11,10 +11,14 @@ import {
     RefreshCw,
     AlertCircle,
     CheckCircle2,
-    X
+    X,
+    Check,
+    Globe,
+    ExternalLink
 } from 'lucide-react';
+import DashboardLayout from '../../components/DashboardLayout';
 import { coordinatorApi } from '../../utils/coordinatorApi';
-import { Badge, Button, LoadingSkeleton } from '../../components/ui';
+import { LoadingSkeleton } from '../../components/ui';
 
 export default function OrganizationDirectory() {
     const [loading, setLoading] = useState(true);
@@ -37,7 +41,7 @@ export default function OrganizationDirectory() {
     const loadOrganizations = async () => {
         try {
             setLoading(true);
-            const res = await coordinatorApi.getOrganizations({ search: searchTerm });
+            const res = await coordinatorApi.getOrganizations({ search: searchTerm }).catch(() => ({ success: false }));
             if (res.success) {
                 setOrganizations(res.data || []);
             }
@@ -78,244 +82,363 @@ export default function OrganizationDirectory() {
                 setTimeout(() => {
                     setModalOpen(false);
                     loadOrganizations();
-                }, 1000);
+                }, 800);
             }
         } catch (error) {
             console.error('Failed to create organization:', error);
             setFeedback({
                 type: 'error',
-                text: error.response?.data?.message || 'Failed to register organization'
+                text: error.response?.data?.message || 'Failed to register organization.'
             });
         } finally {
             setSubmitting(false);
         }
     };
 
+    const totalOrgs = organizations.length;
+    const activeOrgs = organizations.filter(o => (o.activeStudentsCount || 0) > 0).length;
+    const totalInternsHosted = organizations.reduce((acc, o) => acc + (o.activeStudentsCount || 0), 0);
+
+    if (loading && organizations.length === 0) {
+        return (
+            <DashboardLayout role="attachment_coordinator">
+                <div className="space-y-4 max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
+                    <LoadingSkeleton className="h-28 rounded-2xl bg-[#12141c]" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <LoadingSkeleton className="h-24 rounded-2xl bg-[#12141c]" />
+                        <LoadingSkeleton className="h-24 rounded-2xl bg-[#12141c]" />
+                        <LoadingSkeleton className="h-24 rounded-2xl bg-[#12141c]" />
+                        <LoadingSkeleton className="h-24 rounded-2xl bg-[#12141c]" />
+                    </div>
+                    <LoadingSkeleton className="h-96 rounded-2xl bg-[#12141c]" />
+                </div>
+            </DashboardLayout>
+        );
+    }
+
     return (
-        <div className="space-y-6 p-6 max-w-7xl mx-auto font-sans">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 bg-violet-600/15 border border-violet-500/25 rounded-lg flex items-center justify-center text-violet-300">
-                        <Building2 size={20} />
-                    </div>
-                    <div>
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-violet-400">Institutional Partners</span>
-                        <h1 className="text-xl font-semibold text-white tracking-tight">
-                            Host Organizations & Industry Directory
-                        </h1>
-                        <p className="text-xs text-slate-400 mt-0.5">
-                            Accredited industry host companies, verified internship sites, and active student quotas.
-                        </p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2.5">
-                    <Button
-                        variant="secondary"
-                        onClick={loadOrganizations}
-                        className="flex items-center gap-1.5 text-xs py-1.5 px-3"
-                    >
-                        <RefreshCw className="w-3.5 h-3.5 text-slate-400" />
-                        <span>Refresh</span>
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            setFeedback(null);
-                            setModalOpen(true);
-                        }}
-                        className="text-xs py-1.5 px-3 flex items-center gap-1.5"
-                    >
-                        <Plus className="w-3.5 h-3.5" />
-                        <span>Add Organization</span>
-                    </Button>
-                </div>
-            </div>
+        <DashboardLayout role="attachment_coordinator">
+            <div className="space-y-6 max-w-7xl mx-auto pb-16 font-sans">
+                {/* Header Banner */}
+                <div className="relative overflow-hidden bg-gradient-to-b from-[#161922] to-[#0f1117] border border-[#222533] rounded-2xl p-6 md:p-8 shadow-xl">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-teal-500/05 rounded-full blur-3xl pointer-events-none" />
 
-            {/* Search Bar */}
-            <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#22242f]">
-                <form onSubmit={handleSearchSubmit} className="relative max-w-sm w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={13} />
-                    <input
-                        placeholder="Search company or industry sector..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-[#181a24] border border-[#22242f] rounded-md pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500 font-sans"
-                    />
-                </form>
-
-                <div className="text-xs text-slate-400">
-                    <span className="font-mono text-white font-medium">{organizations.length}</span> Partner Organizations
-                </div>
-            </div>
-
-            {/* Organizations Grid */}
-            {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[1, 2, 3, 4, 5, 6].map(i => (
-                        <LoadingSkeleton key={i} className="h-40 rounded-lg" />
-                    ))}
-                </div>
-            ) : organizations.length === 0 ? (
-                <div className="craft-card p-10 text-center space-y-1.5">
-                    <Building2 className="w-8 h-8 text-slate-500 mx-auto mb-1 opacity-70" />
-                    <h3 className="text-xs font-semibold text-white">No organizations found</h3>
-                    <p className="text-[11px] text-slate-400">Click "Add Organization" to register a host company.</p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {organizations.map(org => (
-                        <div key={org.id} className="craft-card p-4 flex flex-col justify-between space-y-3">
-                            <div className="space-y-2">
-                                <div className="flex items-start justify-between gap-2">
-                                    <div>
-                                        <h3 className="font-semibold text-white text-sm">{org.name}</h3>
-                                        <Badge variant="indigo" size="sm" className="mt-1">
-                                            {org.industry || 'General Industry'}
-                                        </Badge>
-                                    </div>
-                                    <div className="flex items-center gap-1 bg-[#181a24] text-slate-300 border border-[#22242f] px-2 py-0.5 rounded text-[11px] font-medium">
-                                        <Users className="w-3 h-3 text-violet-400" />
-                                        <span>{org.activeInternsCount || 0} Interns</span>
-                                    </div>
+                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                        <div className="flex items-center gap-5">
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-teal-600/20 to-emerald-500/20 border border-teal-500/30 flex items-center justify-center text-teal-400 shadow-lg shadow-teal-500/10 shrink-0">
+                                <Building2 size={32} />
+                            </div>
+                            <div className="space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                    <span className="px-2.5 py-0.5 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-400 text-[11px] font-semibold uppercase tracking-wider">
+                                        Corporate Partnerships
+                                    </span>
+                                    <span className="px-2.5 py-0.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-slate-300 text-[11px] font-mono">
+                                        {totalOrgs} Registered Hosts
+                                    </span>
                                 </div>
-
-                                <div className="space-y-1 text-[11px] text-slate-400 pt-2 border-t border-[#22242f]">
-                                    {org.contactPerson && (
-                                        <div className="flex items-center gap-1.5">
-                                            <Briefcase className="w-3 h-3 text-slate-500 shrink-0" />
-                                            <span>Contact: {org.contactPerson}</span>
-                                        </div>
-                                    )}
-                                    {org.phone && (
-                                        <div className="flex items-center gap-1.5">
-                                            <Phone className="w-3 h-3 text-slate-500 shrink-0" />
-                                            <span>{org.phone}</span>
-                                        </div>
-                                    )}
-                                    {org.email && (
-                                        <div className="flex items-center gap-1.5">
-                                            <Mail className="w-3 h-3 text-slate-500 shrink-0" />
-                                            <span>{org.email}</span>
-                                        </div>
-                                    )}
-                                    {org.address && (
-                                        <div className="flex items-center gap-1.5">
-                                            <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
-                                            <span className="truncate">{org.address}</span>
-                                        </div>
-                                    )}
-                                </div>
+                                <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">
+                                    Host Organizations & Industry Directory
+                                </h1>
+                                <p className="text-xs md:text-sm text-slate-400 max-w-xl">
+                                    Manage corporate partnerships, vetted internship host sites, contact liaisons, and student placement capacity.
+                                </p>
                             </div>
                         </div>
-                    ))}
-                </div>
-            )}
 
-            {/* Add Organization Modal */}
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                            <button
+                                onClick={loadOrganizations}
+                                className="px-3.5 py-2.5 rounded-xl bg-[#181a24] hover:bg-[#202330] border border-[#22242f] text-slate-300 text-xs font-semibold flex items-center gap-2 transition-all"
+                            >
+                                <RefreshCw size={14} className={loading ? 'animate-spin text-teal-400' : ''} />
+                                <span>{loading ? 'Refreshing...' : 'Refresh'}</span>
+                            </button>
+                            <button
+                                onClick={() => { setFeedback(null); setModalOpen(true); }}
+                                className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-lg shadow-teal-600/20 flex items-center gap-2 transition-all"
+                            >
+                                <Plus size={16} />
+                                <span>Register Partner</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 4-KPI Metric Strip */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-5 hover:border-[#2a2d3d] transition-all">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Registered Partners</span>
+                            <div className="w-8 h-8 rounded-lg bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
+                                <Building2 size={16} />
+                            </div>
+                        </div>
+                        <div className="mt-3 flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-slate-100 font-mono">{totalOrgs}</span>
+                            <span className="text-xs text-slate-500">employers</span>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
+                            <span>MOU Directory</span>
+                            <span className="text-teal-400 font-medium">All active</span>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-5 hover:border-[#2a2d3d] transition-all">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Hosting Sites</span>
+                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                <Briefcase size={16} />
+                            </div>
+                        </div>
+                        <div className="mt-3 flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-emerald-400 font-mono">{activeOrgs}</span>
+                            <span className="text-xs text-slate-500">organizations</span>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
+                            <span>Currently hosting interns</span>
+                            <span className="text-emerald-400 font-mono font-medium">
+                                {totalOrgs > 0 ? `${Math.round((activeOrgs / totalOrgs) * 100)}%` : '0%'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-5 hover:border-[#2a2d3d] transition-all">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Interns Placed</span>
+                            <div className="w-8 h-8 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+                                <Users size={16} />
+                            </div>
+                        </div>
+                        <div className="mt-3 flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-purple-400 font-mono">{totalInternsHosted}</span>
+                            <span className="text-xs text-slate-500">interns</span>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
+                            <span>Cohort absorbed</span>
+                            <span className="text-purple-400 font-medium">Industry positions</span>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-5 hover:border-[#2a2d3d] transition-all">
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Placement Density</span>
+                            <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+                                <MapPin size={16} />
+                            </div>
+                        </div>
+                        <div className="mt-3 flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-sky-400 font-mono">
+                                {activeOrgs > 0 ? (totalInternsHosted / activeOrgs).toFixed(1) : '0'}
+                            </span>
+                            <span className="text-xs text-slate-500">students / org</span>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
+                            <span>Capacity distribution</span>
+                            <span className="text-sky-400 font-medium">Balanced</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Filter & Search Bar */}
+                <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <form onSubmit={handleSearchSubmit} className="relative w-full md:w-96">
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                        <input
+                            type="text"
+                            placeholder="Filter by organization name, sector, or address..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full bg-[#181a24] border border-[#22242f] rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500 transition-all font-sans"
+                        />
+                    </form>
+                </div>
+
+                {/* Organization Cards Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {organizations.length > 0 ? (
+                        organizations.map((org) => {
+                            const activeStudents = org.activeStudentsCount || 0;
+
+                            return (
+                                <div
+                                    key={org.id}
+                                    className="bg-[#12141c] border border-[#22242f] hover:border-[#2a2d3d] rounded-2xl p-6 transition-all flex flex-col justify-between space-y-4 shadow-xl group"
+                                >
+                                    <div className="space-y-3">
+                                        <div className="flex items-start justify-between">
+                                            <div className="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center font-bold text-teal-400 text-sm uppercase">
+                                                {org.name.charAt(0)}
+                                            </div>
+                                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                                                {org.industry || 'Technology'}
+                                            </span>
+                                        </div>
+
+                                        <div>
+                                            <h3 className="text-base font-bold text-slate-100 group-hover:text-teal-400 transition-colors">
+                                                {org.name}
+                                            </h3>
+                                            <p className="text-xs text-slate-400 flex items-center gap-1.5 mt-1">
+                                                <MapPin size={12} className="text-slate-500 shrink-0" />
+                                                <span className="truncate">{org.address || 'Address not registered'}</span>
+                                            </p>
+                                        </div>
+
+                                        <div className="pt-3 border-t border-[#1e2230] space-y-1.5 text-xs">
+                                            {org.email && (
+                                                <div className="flex items-center gap-2 text-slate-400">
+                                                    <Mail size={12} className="text-slate-500 shrink-0" />
+                                                    <span className="truncate font-mono text-[11px]">{org.email}</span>
+                                                </div>
+                                            )}
+                                            {org.phone && (
+                                                <div className="flex items-center gap-2 text-slate-400">
+                                                    <Phone size={12} className="text-slate-500 shrink-0" />
+                                                    <span className="font-mono text-[11px]">{org.phone}</span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-4 border-t border-[#1e2230] flex items-center justify-between text-xs">
+                                        <div className="flex items-center gap-1.5 text-slate-300 font-mono">
+                                            <Users size={14} className="text-teal-400" />
+                                            <span className="font-bold">{activeStudents}</span>
+                                            <span className="text-slate-500">interns hosted</span>
+                                        </div>
+                                        <span className="text-teal-400 text-xs font-semibold">Active Partner</span>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    ) : (
+                        <div className="col-span-full bg-[#12141c] border border-[#22242f] rounded-2xl p-12 text-center space-y-3">
+                            <Building2 size={36} className="mx-auto text-slate-600" />
+                            <h3 className="text-base font-bold text-slate-200">No organizations found</h3>
+                            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                                No employer partner records match your search. Register a new host organization to expand the directory.
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Register Partner Organization Modal */}
             {modalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-                    <div className="relative w-full max-w-md bg-[#12141c] border border-[#22242f] rounded-xl p-5 space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
-                        <div className="flex items-center justify-between pb-2 border-b border-[#22242f]">
-                            <h3 className="text-sm font-semibold text-white">Register Host Organization</h3>
-                            <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white p-1">
-                                <X size={15} />
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+                    <div className="relative w-full max-w-md bg-[#12141c] border border-[#22242f] rounded-2xl p-6 space-y-5 shadow-2xl animate-fade-in max-h-[90vh] overflow-y-auto">
+                        <div className="flex items-center justify-between pb-3 border-b border-[#1e2230]">
+                            <div className="space-y-0.5">
+                                <h3 className="text-base font-bold text-slate-100">Register Host Organization</h3>
+                                <p className="text-xs text-slate-400">Institutional employer partner and internship placement site</p>
+                            </div>
+                            <button
+                                onClick={() => setModalOpen(false)}
+                                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-[#181a24]"
+                            >
+                                <X size={18} />
                             </button>
                         </div>
 
-                        <form onSubmit={handleAddOrganization} className="space-y-3 text-xs">
-                            {feedback && (
-                                <div className={`p-2.5 rounded-md flex items-center gap-2 ${feedback.type === 'success' ? 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-300 border border-rose-500/20'}`}>
-                                    {feedback.type === 'success' ? <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> : <AlertCircle className="w-3.5 h-3.5 shrink-0" />}
-                                    <span>{feedback.text}</span>
-                                </div>
-                            )}
+                        {feedback && (
+                            <div className={`p-3 rounded-xl text-xs font-semibold ${
+                                feedback.type === 'success' ? 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400' : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
+                            }`}>
+                                {feedback.text}
+                            </div>
+                        )}
 
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-300">
-                                    Company / Organization Name <span className="text-rose-500">*</span>
-                                </label>
+                        <form onSubmit={handleAddOrganization} className="space-y-4 text-xs">
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Organization / Company Name</label>
                                 <input
-                                    required
+                                    type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="e.g. Safaricom PLC"
-                                    className="w-full p-2 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500"
+                                    placeholder="e.g. Acme Technologies Ltd"
+                                    className="w-full bg-[#181a24] border border-[#22242f] rounded-xl px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                                    required
                                 />
                             </div>
 
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-300">Industry Sector</label>
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Industry Sector</label>
                                 <input
+                                    type="text"
                                     value={formData.industry}
                                     onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                                    placeholder="e.g. Software, Banking, Telecommunications"
-                                    className="w-full p-2 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500"
+                                    placeholder="e.g. Software Engineering / Telecommunications"
+                                    className="w-full bg-[#181a24] border border-[#22242f] rounded-xl px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
                                 />
                             </div>
 
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-300">Physical Location</label>
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Physical Workplace Address</label>
                                 <input
+                                    type="text"
                                     value={formData.address}
                                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                    placeholder="e.g. Westlands, Nairobi"
-                                    className="w-full p-2 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500"
+                                    placeholder="e.g. Technology Park, Block 4"
+                                    className="w-full bg-[#181a24] border border-[#22242f] rounded-xl px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
                                 />
                             </div>
 
-                            <div className="grid grid-cols-2 gap-2">
-                                <div className="space-y-1">
-                                    <label className="text-xs font-medium text-slate-300">Phone</label>
-                                    <input
-                                        value={formData.phone}
-                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                        placeholder="+254 700 000000"
-                                        className="w-full p-2 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500 font-mono"
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="text-xs font-medium text-slate-300">Email</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Official Email</label>
                                     <input
                                         type="email"
                                         value={formData.email}
                                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        placeholder="hr@company.com"
-                                        className="w-full p-2 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500"
+                                        placeholder="contact@org.com"
+                                        className="w-full bg-[#181a24] border border-[#22242f] rounded-xl px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Telephone</label>
+                                    <input
+                                        type="text"
+                                        value={formData.phone}
+                                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                        placeholder="+254 700 000 000"
+                                        className="w-full bg-[#181a24] border border-[#22242f] rounded-xl px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
                                     />
                                 </div>
                             </div>
 
-                            <div className="space-y-1">
-                                <label className="text-xs font-medium text-slate-300">Contact Person</label>
+                            <div>
+                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Liaison Contact Person</label>
                                 <input
+                                    type="text"
                                     value={formData.contactPerson}
                                     onChange={(e) => setFormData({ ...formData, contactPerson: e.target.value })}
-                                    placeholder="e.g. Jane Doe (HR Director)"
-                                    className="w-full p-2 rounded-md bg-[#181a24] border border-[#22242f] text-xs text-white placeholder-slate-500 outline-none focus:border-violet-500"
+                                    placeholder="e.g. HR Director / Internship Coordinator"
+                                    className="w-full bg-[#181a24] border border-[#22242f] rounded-xl px-3.5 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-teal-500"
                                 />
                             </div>
 
-                            <div className="flex items-center justify-end gap-2 pt-3 border-t border-[#22242f]">
-                                <Button
+                            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#1e2230]">
+                                <button
                                     type="button"
-                                    variant="secondary"
                                     onClick={() => setModalOpen(false)}
-                                    className="text-xs py-1.5 px-3"
+                                    className="px-4 py-2 rounded-xl bg-[#181a24] hover:bg-[#202330] text-slate-400 text-xs font-semibold"
                                 >
                                     Cancel
-                                </Button>
-                                <Button
+                                </button>
+                                <button
                                     type="submit"
-                                    disabled={submitting || !formData.name.trim()}
-                                    className="text-xs py-1.5 px-3"
+                                    disabled={submitting}
+                                    className="px-5 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold shadow-lg shadow-teal-600/20 flex items-center gap-1.5"
                                 >
-                                    {submitting ? 'Registering...' : 'Register Organization'}
-                                </Button>
+                                    <Check size={14} />
+                                    <span>{submitting ? 'Registering...' : 'Register Partner'}</span>
+                                </button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
-        </div>
+        </DashboardLayout>
     );
 }

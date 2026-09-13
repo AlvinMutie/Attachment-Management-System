@@ -1,226 +1,415 @@
 import React, { useEffect, useState } from 'react';
-import { Activity, MapPin, Mail, Search, Clock, CheckCircle2, XCircle, AlertCircle, ChevronRight, User, GraduationCap, Users } from 'lucide-react';
+import {
+    Activity,
+    MapPin,
+    Mail,
+    Search,
+    Clock,
+    CheckCircle2,
+    XCircle,
+    AlertCircle,
+    ChevronRight,
+    User,
+    GraduationCap,
+    Users,
+    RefreshCw,
+    QrCode,
+    Filter,
+    FileText,
+    ArrowUpRight,
+    PhoneCall,
+    Check
+} from 'lucide-react';
 import DashboardLayout from '../../components/DashboardLayout';
-import { getLivePresence } from '../../utils/supervisorApi';
+import { getLivePresence, markSupervisorAttendance } from '../../utils/supervisorApi';
+import { LoadingSkeleton } from '../../components/ui';
 
 const PresenceHub = () => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [statusFilter, setStatusFilter] = useState('all'); // all, present, absent, not-scanned
 
-    useEffect(() => {
-        fetchPresence();
-        const interval = setInterval(fetchPresence, 30000); // Polling every 30s
-        return () => clearInterval(interval);
-    }, []);
-
-    const fetchPresence = async () => {
+    const fetchPresence = async (isManual = false) => {
+        if (isManual) setRefreshing(true);
         try {
             const response = await getLivePresence();
-            setStudents(response.data);
+            setStudents(response.data || []);
         } catch (error) {
             console.error('Failed to fetch presence data:', error);
         } finally {
             setLoading(false);
+            if (isManual) setRefreshing(false);
         }
     };
 
-    const StatusBadge = ({ status }) => {
-        switch (status) {
-            case 'present':
-                return (
-                    <div className="flex items-center gap-2 text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Active Now</span>
-                    </div>
-                );
-            case 'absent':
-                return (
-                    <div className="flex items-center gap-2 text-rose-400 bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20">
-                        <XCircle size={10} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Off-site</span>
-                    </div>
-                );
-            default:
-                return (
-                    <div className="flex items-center gap-2 text-slate-400 bg-slate-500/10 px-3 py-1 rounded-full border border-slate-500/20">
-                        <Clock size={10} />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Pending Sync</span>
-                    </div>
-                );
+    useEffect(() => {
+        fetchPresence();
+        const interval = setInterval(() => fetchPresence(), 30000); // Polling every 30s
+        return () => clearInterval(interval);
+    }, []);
+
+    const handleQuickCheckin = async (studentId) => {
+        try {
+            await markSupervisorAttendance({
+                studentId,
+                date: new Date().toISOString().split('T')[0],
+                status: 'present',
+                notes: 'Quick presence check-in via Presence Hub'
+            });
+            fetchPresence();
+        } catch (err) {
+            alert(err.response?.data?.message || 'Failed to mark attendance');
         }
     };
 
-    const filteredStudents = students.filter(student =>
-        student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        student.admissionNumber.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredStudents = students.filter(student => {
+        const matchesSearch =
+            (student.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (student.admissionNumber || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (student.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+
+        if (!matchesSearch) return false;
+
+        if (statusFilter === 'all') return true;
+        return student.presenceStatus === statusFilter;
+    });
+
+    const presentCount = students.filter(s => s.presenceStatus === 'present').length;
+    const absentCount = students.filter(s => s.presenceStatus === 'absent').length;
+    const pendingCount = students.filter(s => s.presenceStatus === 'not-scanned' || !s.presenceStatus).length;
+
+    if (loading) {
+        return (
+            <DashboardLayout role="industry_supervisor">
+                <div className="space-y-4 max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
+                    <LoadingSkeleton className="h-28 rounded-2xl bg-[#12141c]" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <LoadingSkeleton className="h-24 rounded-2xl bg-[#12141c]" />
+                        <LoadingSkeleton className="h-24 rounded-2xl bg-[#12141c]" />
+                        <LoadingSkeleton className="h-24 rounded-2xl bg-[#12141c]" />
+                        <LoadingSkeleton className="h-24 rounded-2xl bg-[#12141c]" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <LoadingSkeleton className="h-64 rounded-2xl bg-[#12141c]" />
+                        <LoadingSkeleton className="h-64 rounded-2xl bg-[#12141c]" />
+                        <LoadingSkeleton className="h-64 rounded-2xl bg-[#12141c]" />
+                    </div>
+                </div>
+            </DashboardLayout>
+        );
+    }
 
     return (
         <DashboardLayout role="industry_supervisor">
-            <div className="space-y-10 animate-fade-in">
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row items-center justify-between gap-8 bg-gradient-to-br from-[var(--brand-primary-subtle)] to-transparent p-10 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--brand-primary)] opacity-[0.03] blur-[100px] -mr-32 -mt-32" />
-                    <div className="flex items-center gap-8 relative z-10">
-                        <div className="w-20 h-20 bg-[var(--brand-primary)] rounded-3xl flex items-center justify-center shadow-2xl shadow-[var(--brand-primary-glow)] ring-1 ring-white/20 group-hover:scale-105 transition-transform duration-500">
-                            <Activity size={40} className="text-white animate-pulse" />
-                        </div>
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-3">
-                                <span className="text-[11px] font-black uppercase tracking-[0.4em] text-[var(--brand-primary)] opacity-70">Live Oversight</span>
-                                <div className="h-1 w-1 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981] animate-pulse" />
+            <div className="space-y-6 max-w-7xl mx-auto pb-16 font-sans">
+                {/* Header Banner */}
+                <div className="relative overflow-hidden bg-gradient-to-b from-[#161922] to-[#0f1117] border border-[#222533] rounded-2xl p-6 md:p-8 shadow-xl">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/05 rounded-full blur-3xl pointer-events-none" />
+
+                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                        <div className="flex items-center gap-5">
+                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/10 shrink-0">
+                                <Activity size={32} className="animate-pulse" />
                             </div>
-                            <h1 className="text-4xl font-black text-white tracking-tighter uppercase leading-none">Student <span className="text-[var(--brand-primary)]">Presence</span> Hub</h1>
-                            <p className="text-slate-500 font-medium max-w-md text-sm leading-relaxed">Real-time monitoring of active attachment nodes and operational status.</p>
+                            <div className="space-y-1.5">
+                                <div className="flex items-center gap-2">
+                                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold uppercase tracking-wider">
+                                        Live Operations
+                                    </span>
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-slate-400 text-[11px] font-mono">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                                        30s Auto-Sync
+                                    </span>
+                                </div>
+                                <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">
+                                    Real-time Presence Hub
+                                </h1>
+                                <p className="text-xs md:text-sm text-slate-400 max-w-xl">
+                                    Continuous telemetry of assigned intern nodes, workplace check-in status, and recent activity streams.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 w-full md:w-auto">
+                            <button
+                                onClick={() => fetchPresence(true)}
+                                disabled={refreshing}
+                                className="px-3.5 py-2.5 rounded-xl bg-[#181a24] hover:bg-[#202330] border border-[#22242f] text-slate-300 text-xs font-semibold flex items-center gap-2 transition-all"
+                            >
+                                <RefreshCw size={14} className={refreshing ? 'animate-spin text-emerald-400' : ''} />
+                                <span>{refreshing ? 'Refreshing...' : 'Sync Now'}</span>
+                            </button>
+                            <a
+                                href="/industry/dashboard"
+                                className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all"
+                            >
+                                <QrCode size={14} />
+                                <span>Open Scanner</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 4-KPI Metric Strip */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div
+                        onClick={() => setStatusFilter('present')}
+                        className={`bg-[#12141c] border rounded-2xl p-5 cursor-pointer transition-all ${
+                            statusFilter === 'present' ? 'border-emerald-500/50 bg-emerald-500/05' : 'border-[#22242f] hover:border-[#2a2d3d]'
+                        }`}
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active On-Site</span>
+                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+                                <CheckCircle2 size={16} />
+                            </div>
+                        </div>
+                        <div className="mt-3 flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-emerald-400 font-mono">{presentCount}</span>
+                            <span className="text-xs text-slate-500">interns</span>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
+                            <span>Status: Verified</span>
+                            <span className="text-emerald-400 font-semibold font-mono">
+                                {students.length > 0 ? `${Math.round((presentCount / students.length) * 100)}%` : '0%'}
+                            </span>
                         </div>
                     </div>
 
-                    <div className="relative w-full md:w-80 group z-10">
-                        <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-slate-500 group-focus-within:text-[var(--brand-primary)] transition-colors" size={20} />
+                    <div
+                        onClick={() => setStatusFilter('absent')}
+                        className={`bg-[#12141c] border rounded-2xl p-5 cursor-pointer transition-all ${
+                            statusFilter === 'absent' ? 'border-rose-500/50 bg-rose-500/05' : 'border-[#22242f] hover:border-[#2a2d3d]'
+                        }`}
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Off-Site / Absent</span>
+                            <div className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
+                                <XCircle size={16} />
+                            </div>
+                        </div>
+                        <div className="mt-3 flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-rose-400 font-mono">{absentCount}</span>
+                            <span className="text-xs text-slate-500">interns</span>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
+                            <span>Requires follow-up</span>
+                            <span className="text-rose-400 font-semibold">{absentCount > 0 ? 'Alert' : 'None'}</span>
+                        </div>
+                    </div>
+
+                    <div
+                        onClick={() => setStatusFilter('not-scanned')}
+                        className={`bg-[#12141c] border rounded-2xl p-5 cursor-pointer transition-all ${
+                            statusFilter === 'not-scanned' ? 'border-amber-500/50 bg-amber-500/05' : 'border-[#22242f] hover:border-[#2a2d3d]'
+                        }`}
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pending Clock-In</span>
+                            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                                <Clock size={16} />
+                            </div>
+                        </div>
+                        <div className="mt-3 flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-amber-400 font-mono">{pendingCount}</span>
+                            <span className="text-xs text-slate-500">interns</span>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
+                            <span>Awaiting QR scan</span>
+                            <span className="text-amber-400 font-medium">Pending today</span>
+                        </div>
+                    </div>
+
+                    <div
+                        onClick={() => setStatusFilter('all')}
+                        className={`bg-[#12141c] border rounded-2xl p-5 cursor-pointer transition-all ${
+                            statusFilter === 'all' ? 'border-violet-500/50 bg-violet-500/05' : 'border-[#22242f] hover:border-[#2a2d3d]'
+                        }`}
+                    >
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Supervised</span>
+                            <div className="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
+                                <Users size={16} />
+                            </div>
+                        </div>
+                        <div className="mt-3 flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-slate-100 font-mono">{students.length}</span>
+                            <span className="text-xs text-slate-500">registered</span>
+                        </div>
+                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
+                            <span>Total cohort pool</span>
+                            <span className="text-violet-400 font-medium">All active</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Filter and Search Bar */}
+                <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="relative w-full md:w-96">
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
                         <input
                             type="text"
-                            placeholder="Find student node..."
+                            placeholder="Filter by name, admission ID, or email..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="input-field pl-14 py-4 !rounded-2xl border-white/10 focus:border-[var(--brand-primary)] transition-all bg-white/[0.03]"
+                            className="w-full bg-[#181a24] border border-[#22242f] rounded-xl pl-10 pr-4 py-2.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-all font-sans"
                         />
                     </div>
-                </div>
 
-                {/* Dashboard Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="glass-card p-6 border-emerald-500/10 bg-gradient-to-br from-emerald-500/[0.02] to-transparent">
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Active Now</p>
-                        <div className="flex items-end justify-between">
-                            <h4 className="text-3xl font-black text-emerald-400 tracking-tighter">{students.filter(s => s.presenceStatus === 'present').length}</h4>
-                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                <Activity size={20} className="text-emerald-500" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="glass-card p-6 border-rose-500/10 bg-gradient-to-br from-rose-500/[0.02] to-transparent">
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Off-Site</p>
-                        <div className="flex items-end justify-between">
-                            <h4 className="text-3xl font-black text-rose-400 tracking-tighter">{students.filter(s => s.presenceStatus === 'absent').length}</h4>
-                            <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center">
-                                <AlertCircle size={20} className="text-rose-500" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="glass-card p-6 border-slate-500/10 bg-gradient-to-br from-slate-500/[0.02] to-transparent">
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Total Assigned</p>
-                        <div className="flex items-end justify-between">
-                            <h4 className="text-3xl font-black text-white tracking-tighter">{students.length}</h4>
-                            <div className="w-10 h-10 rounded-xl bg-slate-500/10 flex items-center justify-center">
-                                <Users size={20} className="text-slate-400" />
-                            </div>
-                        </div>
-                    </div>
-                    <div className="glass-card p-6 border-purple-500/10 bg-gradient-to-br from-purple-500/[0.02] to-transparent">
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Pending Sync</p>
-                        <div className="flex items-end justify-between">
-                            <h4 className="text-3xl font-black text-purple-400 tracking-tighter">{students.filter(s => s.presenceStatus === 'not-scanned').length}</h4>
-                            <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                                <Clock size={20} className="text-purple-500" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Grid View */}
-                {loading ? (
-                    <div className="flex flex-col items-center justify-center h-96 space-y-4">
-                        <div className="w-16 h-16 border-4 border-[var(--brand-primary-subtle)] border-t-[var(--brand-primary)] rounded-full animate-spin shadow-[0_0_30px_var(--brand-primary-glow)]" />
-                        <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] animate-pulse">Initializing Presence Grid...</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-12">
-                        {filteredStudents.map((student) => (
-                            <div key={student.id} className="glass-card p-8 group hover:border-[var(--brand-primary-glow)] transition-all duration-500 relative flex flex-col justify-between h-full">
-                                <div className="space-y-6">
-                                    <div className="flex items-start justify-between">
-                                        <div className="relative">
-                                            <div className="w-20 h-20 rounded-[2rem] bg-slate-900 border border-white/10 flex items-center justify-center overflow-hidden shadow-2xl group-hover:scale-105 transition-transform duration-500 ring-2 ring-transparent group-hover:ring-[var(--brand-primary-glow)]">
-                                                {student.photo ? (
-                                                    <img src={`http://localhost:5000${student.photo}`} alt={student.name} className="w-full h-full object-cover" />
-                                                ) : (
-                                                    <div className="flex flex-col items-center gap-1">
-                                                        <User className="text-slate-700" size={32} />
-                                                        <span className="text-[8px] font-black text-slate-800 uppercase">NO PHOTO</span>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            {student.presenceStatus === 'present' && (
-                                                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 border-4 border-slate-950 rounded-lg flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                                                    <CheckCircle2 className="text-white" size={12} />
-                                                </div>
-                                            )}
-                                        </div>
-                                        <StatusBadge status={student.presenceStatus} />
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        <h3 className="text-xl font-black text-white tracking-tighter group-hover:text-[var(--brand-primary)] transition-colors">{student.name}</h3>
-                                        <div className="flex items-center gap-2 text-[10px] text-slate-500 font-black uppercase tracking-widest bg-white/[0.03] w-fit px-3 py-1 rounded-lg">
-                                            <span className="text-[var(--brand-primary)]">ID:</span> {student.admissionNumber}
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4 pt-4 border-t border-white/5">
-                                        <div className="flex items-center gap-3 text-sm text-slate-400 font-medium">
-                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-500">
-                                                <Mail size={14} />
-                                            </div>
-                                            <span className="truncate">{student.email}</span>
-                                        </div>
-                                        <div className="flex items-center gap-3 text-sm text-slate-400 font-medium">
-                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-slate-500">
-                                                <GraduationCap size={14} />
-                                            </div>
-                                            <span className="truncate">{student.course}</span>
-                                        </div>
-                                    </div>
-
-                                    {student.latestLogbook && (
-                                        <div className="mt-6 p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3 group-hover:bg-[var(--brand-primary-subtle)] transition-all duration-500">
-                                            <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center justify-between">
-                                                Recent Activity
-                                                <span className={`px-2 py-0.5 rounded-full text-[8px] border ${student.latestLogbook.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                                    student.latestLogbook.status === 'rejected' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
-                                                        'bg-amber-500/10 text-amber-400 border-amber-500/20'
-                                                    }`}>
-                                                    Week {student.latestLogbook.weekNumber} • {student.latestLogbook.status}
-                                                    {student.latestLogbook.attachments?.length > 0 && (
-                                                        <span className="ml-2 flex items-center gap-1 text-[var(--brand-primary)]">
-                                                            <FileText size={8} />
-                                                            {student.latestLogbook.attachments.length} Artifacts
-                                                        </span>
-                                                    )}
-                                                </span>
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <button className="mt-8 w-full py-4 bg-white/5 hover:bg-[var(--brand-primary)] text-slate-400 hover:text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-300 border border-white/5 hover:scale-[1.02] active:scale-95 group-hover:border-[var(--brand-primary-glow)] flex items-center justify-center gap-2">
-                                    Analyze Logs
-                                    <ChevronRight size={14} />
-                                </button>
-                            </div>
+                    <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0">
+                        <span className="text-[11px] text-slate-500 font-medium shrink-0 flex items-center gap-1">
+                            <Filter size={12} /> Status:
+                        </span>
+                        {[
+                            { id: 'all', label: 'All Interns' },
+                            { id: 'present', label: 'Active Now' },
+                            { id: 'absent', label: 'Off-site' },
+                            { id: 'not-scanned', label: 'Pending Sync' }
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setStatusFilter(tab.id)}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0 transition-all ${
+                                    statusFilter === tab.id
+                                        ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
+                                        : 'bg-[#181a24] text-slate-400 hover:text-slate-200 border border-[#22242f]'
+                                }`}
+                            >
+                                {tab.label}
+                            </button>
                         ))}
                     </div>
-                )}
+                </div>
 
-                {students.length === 0 && !loading && (
-                    <div className="flex flex-col items-center justify-center h-96 space-y-6 glass-card !bg-transparent border-dashed">
-                        <div className="w-24 h-24 rounded-[3rem] bg-white/5 flex items-center justify-center text-slate-700 ring-4 ring-white/5">
-                            <Users size={40} />
-                        </div>
-                        <div className="text-center space-y-2">
-                            <h3 className="text-2xl font-black text-white uppercase tracking-tighter">No Nodes Assigned</h3>
-                            <p className="text-slate-500 font-medium max-w-sm">There are currently no students linked to your operational oversight. Please contact the institution administrator.</p>
-                        </div>
+                {/* Intern Presence Cards Grid */}
+                {filteredStudents.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredStudents.map((student) => {
+                            const isPresent = student.presenceStatus === 'present';
+                            const isAbsent = student.presenceStatus === 'absent';
+
+                            return (
+                                <div
+                                    key={student.id}
+                                    className="bg-[#12141c] border border-[#22242f] hover:border-[#2a2d3d] rounded-2xl p-6 transition-all duration-300 flex flex-col justify-between space-y-5 hover:shadow-xl hover:shadow-black/40 group"
+                                >
+                                    <div className="space-y-4">
+                                        {/* Card Header: Avatar + Presence Status */}
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div className="relative">
+                                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-slate-800 to-slate-900 border border-[#22242f] flex items-center justify-center font-bold text-base text-slate-200 overflow-hidden shadow-md">
+                                                    {student.photo ? (
+                                                        <img
+                                                            src={`http://localhost:5000${student.photo}`}
+                                                            alt={student.name}
+                                                            className="w-full h-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <span>{student.name ? student.name.charAt(0) : 'S'}</span>
+                                                    )}
+                                                </div>
+                                                {isPresent && (
+                                                    <span className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-[#12141c] rounded-full flex items-center justify-center shadow-md shadow-emerald-500/40">
+                                                        <Check size={9} className="text-white font-bold" />
+                                                    </span>
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                {isPresent ? (
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                                        Active Now
+                                                    </span>
+                                                ) : isAbsent ? (
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/10 border border-rose-500/25 text-rose-400 text-[10px] font-bold uppercase tracking-wider">
+                                                        <XCircle size={10} />
+                                                        Off-site
+                                                    </span>
+                                                ) : (
+                                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-400 text-[10px] font-bold uppercase tracking-wider">
+                                                        <Clock size={10} />
+                                                        Pending Check-in
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Student Info */}
+                                        <div className="space-y-1">
+                                            <h3 className="text-base font-bold text-slate-100 group-hover:text-emerald-400 transition-colors">
+                                                {student.name}
+                                            </h3>
+                                            <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#181a24] border border-[#22242f] text-[10px] font-mono text-slate-300">
+                                                <span className="text-slate-500">ADM:</span> {student.admissionNumber}
+                                            </div>
+                                        </div>
+
+                                        {/* Contact & Meta Details */}
+                                        <div className="space-y-2 pt-3 border-t border-[#1e2230] text-xs">
+                                            <div className="flex items-center gap-2 text-slate-400">
+                                                <Mail size={13} className="text-slate-500 shrink-0" />
+                                                <span className="truncate font-mono text-[11px]">{student.email}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-slate-400">
+                                                <GraduationCap size={13} className="text-slate-500 shrink-0" />
+                                                <span className="truncate text-[11px]">{student.course || 'Degree in Computing / Engineering'}</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Latest Logbook Snippet */}
+                                        {student.latestLogbook && (
+                                            <div className="p-3 rounded-xl bg-[#181a24] border border-[#22242f] space-y-1 text-xs">
+                                                <div className="flex items-center justify-between text-[10px]">
+                                                    <span className="font-bold text-slate-400 uppercase font-mono">Week {student.latestLogbook.weekNumber} Activity</span>
+                                                    <span className={`px-1.5 py-0.5 rounded font-bold uppercase ${
+                                                        student.latestLogbook.status === 'approved' ? 'bg-emerald-500/10 text-emerald-400' :
+                                                        student.latestLogbook.status === 'rejected' ? 'bg-rose-500/10 text-rose-400' :
+                                                        'bg-amber-500/10 text-amber-400'
+                                                    }`}>
+                                                        {student.latestLogbook.status}
+                                                    </span>
+                                                </div>
+                                                <p className="text-[11px] text-slate-300 line-clamp-1 italic">
+                                                    "{student.latestLogbook.summary || 'Weekly entry logged.'}"
+                                                </p>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Action Footers */}
+                                    <div className="pt-4 border-t border-[#1e2230] flex items-center gap-2">
+                                        {!isPresent ? (
+                                            <button
+                                                onClick={() => handleQuickCheckin(student.id)}
+                                                className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-emerald-600/20"
+                                            >
+                                                <Check size={14} />
+                                                <span>Check-in Intern</span>
+                                            </button>
+                                        ) : (
+                                            <a
+                                                href="/industry/attendance"
+                                                className="w-full py-2.5 rounded-xl bg-[#181a24] hover:bg-[#202330] border border-[#22242f] text-slate-300 hover:text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                                            >
+                                                <span>View Attendance Log</span>
+                                                <ChevronRight size={14} />
+                                            </a>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-12 text-center space-y-3">
+                        <Users size={36} className="mx-auto text-slate-600" />
+                        <h3 className="text-base font-bold text-slate-200">No student interns found</h3>
+                        <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                            No students match your active search and status filter criteria. Try adjusting the filter or search query.
+                        </p>
                     </div>
                 )}
             </div>
