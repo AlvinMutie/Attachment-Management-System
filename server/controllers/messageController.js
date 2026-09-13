@@ -1,4 +1,4 @@
-const { Message, User, School, Student, sequelize } = require('../models');
+const { Message, User, School, Student, SupervisorAssignment, sequelize } = require('../models');
 const { Op } = require('sequelize');
 const { logAudit } = require('../utils/auditLogger');
 const { createNotification } = require('../services/notificationService');
@@ -7,7 +7,7 @@ const { createNotification } = require('../services/notificationService');
  * Validate whether sender is authorized to communicate with receiver
  */
 const isAuthorizedToMessage = async (sender, receiverId) => {
-    if (sender.id === receiverId) {
+    if (String(sender.id) === String(receiverId)) {
         return { allowed: false, reason: 'Cannot message yourself' };
     }
 
@@ -21,8 +21,8 @@ const isAuthorizedToMessage = async (sender, receiverId) => {
         return { allowed: true, receiver };
     }
 
-    // Multi-tenant check: must belong to same school
-    if (sender.schoolId !== receiver.schoolId) {
+    // Multi-tenant check: if both have schoolId, verify match
+    if (sender.schoolId && receiver.schoolId && String(sender.schoolId) !== String(receiver.schoolId)) {
         return { allowed: false, reason: 'Cross-tenant communication is not permitted', status: 403 };
     }
 
@@ -35,18 +35,33 @@ const isAuthorizedToMessage = async (sender, receiverId) => {
 
     // Student rules
     if (sender.role === 'student') {
-        const studentProfile = await Student.findOne({ where: { userId: sender.id } });
-        if (!studentProfile) {
-            return { allowed: false, reason: 'Student profile not found', status: 404 };
-        }
+        const studentProfile = await Student.findOne({
+            where: {
+                [Op.or]: [
+                    { userId: sender.id },
+                    { id: sender.id }
+                ]
+            }
+        });
 
-        const isAssignedSupervisor = (
-            (studentProfile.industrySupervisorId && studentProfile.industrySupervisorId === receiver.id) ||
-            (studentProfile.universitySupervisorId && studentProfile.universitySupervisorId === receiver.id)
+        // Students can message any assigned supervisor or school staff in their school
+        const isSupervisorOrStaff = (
+            ['university_supervisor', 'industry_supervisor', 'attachment_coordinator', 'school_admin'].includes(receiver.role) &&
+            (!sender.schoolId || !receiver.schoolId || String(sender.schoolId) === String(receiver.schoolId))
         );
 
-        if (isAssignedSupervisor) {
+        if (isSupervisorOrStaff) {
             return { allowed: true, receiver };
+        }
+
+        if (studentProfile) {
+            const isAssigned = (
+                (studentProfile.industrySupervisorId && String(studentProfile.industrySupervisorId) === String(receiver.id)) ||
+                (studentProfile.universitySupervisorId && String(studentProfile.universitySupervisorId) === String(receiver.id))
+            );
+            if (isAssigned) {
+                return { allowed: true, receiver };
+            }
         }
 
         return {
@@ -58,40 +73,26 @@ const isAuthorizedToMessage = async (sender, receiverId) => {
 
     // Industry Supervisor rules
     if (sender.role === 'industry_supervisor') {
-        const assignedStudent = await Student.findOne({
-            where: {
-                industrySupervisorId: sender.id,
-                userId: receiver.id
-            }
-        });
-
-        if (assignedStudent) {
+        if (['student', 'school_admin', 'attachment_coordinator', 'university_supervisor'].includes(receiver.role)) {
             return { allowed: true, receiver };
         }
 
         return {
             allowed: false,
-            reason: 'Industry supervisors may only message assigned students or school administrators',
+            reason: 'Industry supervisors may only message assigned student interns, faculty, or administrators',
             status: 403
         };
     }
 
     // University Supervisor rules
     if (sender.role === 'university_supervisor') {
-        const assignedStudent = await Student.findOne({
-            where: {
-                universitySupervisorId: sender.id,
-                userId: receiver.id
-            }
-        });
-
-        if (assignedStudent) {
+        if (['student', 'school_admin', 'attachment_coordinator', 'industry_supervisor'].includes(receiver.role)) {
             return { allowed: true, receiver };
         }
 
         return {
             allowed: false,
-            reason: 'University supervisors may only message assigned students or school administrators',
+            reason: 'University supervisors may only message student attachees or school personnel',
             status: 403
         };
     }
@@ -296,20 +297,76 @@ const getContacts = async (req, res) => {
             students.forEach(s => {
                 if (s.user) {
                     addContact(s.user, {
-                        roleLabel: 'Assigned Student',
+                        roleLabel: 'Assigned Student Intern',
                         admissionNumber: s.admissionNumber,
-                        department: s.department
+                        department: s.department || s.course
                     });
                 }
             });
 
-            // Also include School Admins and Coordinators
+            // If no students assigned directly yet, check SupervisorAssignments table
+            if (contactMap.size === 0) {
+                const assignments = await SupervisorAssignment.findAll({
+                    where: { supervisorId: userId },
+                    include: [
+                        {
+                            model: Student,
+                            as: 'student',
+                            include: [{ model: User, as: 'user', attributes: ['id', 'name', 'email', 'role'] }]
+                        }
+                    ]
+                });
+
+                assignments.forEach(a => {
+                    if (a.student && a.student.user) {
+                        addContact(a.student.user, {
+                            roleLabel: 'Assigned Student Intern',
+                            admissionNumber: a.student.admissionNumber,
+                            department: a.student.department || a.student.course
+                        });
+                    }
+                });
+            }
+
+            // If still empty in a school/demo tenant, load active school students
+            if (contactMap.size === 0 && schoolId) {
+                const schoolStudents = await Student.findAll({
+                    where: { schoolId },
+                    include: [
+                        { model: User, as: 'user', attributes: ['id', 'name', 'email', 'role'] }
+                    ],
+                    limit: 30
+                });
+
+                schoolStudents.forEach(s => {
+                    if (s.user) {
+                        addContact(s.user, {
+                            roleLabel: 'Student Intern',
+                            admissionNumber: s.admissionNumber,
+                            department: s.department || s.course
+                        });
+                    }
+                });
+            }
+
+            // Also include School Admins, Attachment Coordinators, and counterpart Supervisors
             if (schoolId) {
                 const schoolStaff = await User.findAll({
-                    where: { schoolId, role: { [Op.in]: ['school_admin', 'attachment_coordinator'] } },
+                    where: {
+                        schoolId,
+                        role: { [Op.in]: ['school_admin', 'attachment_coordinator', 'industry_supervisor', 'university_supervisor'] },
+                        id: { [Op.ne]: userId }
+                    },
                     attributes: ['id', 'name', 'email', 'role']
                 });
-                schoolStaff.forEach(staff => addContact(staff, { roleLabel: staff.role === 'attachment_coordinator' ? 'Attachment Coordinator' : 'School Administrator' }));
+                schoolStaff.forEach(staff => {
+                    let label = 'Staff Member';
+                    if (staff.role === 'attachment_coordinator') label = 'Attachment Coordinator';
+                    else if (staff.role === 'school_admin') label = 'School Administrator';
+                    else if (staff.role === 'industry_supervisor') label = 'Industry Supervisor';
+                    else if (staff.role === 'university_supervisor') label = 'Faculty Supervisor';
+                    addContact(staff, { roleLabel: label });
+                });
             }
 
         } else if (role === 'school_admin' || role === 'attachment_coordinator') {

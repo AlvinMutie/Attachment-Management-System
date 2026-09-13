@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
     Users,
     ClipboardCheck,
@@ -13,7 +14,8 @@ import {
     CheckCircle2,
     RefreshCw,
     Plus,
-    ChevronRight
+    ChevronRight,
+    MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import DashboardLayout from '../../components/DashboardLayout';
@@ -352,13 +354,23 @@ const UniversitySupervisorDashboard = () => {
                                                     </span>
                                                 </td>
                                                 <td className="py-3.5 px-4 text-right">
-                                                    <a
-                                                        href="/university/assessments"
-                                                        className="px-2.5 py-1.5 rounded-lg bg-[#181a24] hover:bg-[#202330] border border-[#22242f] text-slate-300 hover:text-white text-xs font-semibold transition-all inline-flex items-center gap-1"
-                                                    >
-                                                        <ClipboardCheck size={12} className="text-purple-400" />
-                                                        <span>Grade</span>
-                                                    </a>
+                                                    <div className="flex items-center justify-end gap-1.5">
+                                                        <Link
+                                                            to={`/university/messages?contactId=${s.userId || s.id}`}
+                                                            className="px-2.5 py-1.5 rounded-lg bg-[#181a24] hover:bg-[#202330] border border-[#22242f] text-slate-300 hover:text-white text-xs font-semibold transition-all inline-flex items-center gap-1"
+                                                            title="Direct Message"
+                                                        >
+                                                            <MessageSquare size={12} className="text-violet-400" />
+                                                            <span>Chat</span>
+                                                        </Link>
+                                                        <Link
+                                                            to="/university/assessments"
+                                                            className="px-2.5 py-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 hover:text-white text-xs font-semibold transition-all inline-flex items-center gap-1"
+                                                        >
+                                                            <ClipboardCheck size={12} className="text-purple-400" />
+                                                            <span>Grade</span>
+                                                        </Link>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         );
