@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import {
     Users,
@@ -211,13 +212,13 @@ const SupervisorDashboard = () => {
                                 <RefreshCw size={14} className={refreshing ? 'animate-spin text-emerald-400' : ''} />
                                 <span>{refreshing ? 'Syncing...' : 'Refresh'}</span>
                             </button>
-                            <a
-                                href="/industry/presence"
+                            <Link
+                                to="/industry/presence"
                                 className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all"
                             >
                                 <QrCode size={14} />
                                 <span>Presence Terminal</span>
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -510,10 +511,10 @@ const SupervisorDashboard = () => {
                                     </h3>
                                     <p className="text-[11px] text-slate-400">Institutional compliance monitoring and instant check-in</p>
                                 </div>
-                                <a href="/industry/attendance" className="text-emerald-400 hover:text-emerald-300 text-xs font-semibold flex items-center gap-1 self-start sm:self-auto">
+                                <Link to="/industry/attendance" className="text-emerald-400 hover:text-emerald-300 text-xs font-semibold flex items-center gap-1 self-start sm:self-auto">
                                     <span>Full Audit Ledger</span>
                                     <ChevronRight size={14} />
-                                </a>
+                                </Link>
                             </div>
 
                             <div className="overflow-x-auto">

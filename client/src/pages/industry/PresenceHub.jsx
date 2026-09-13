@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
     Activity,
     MapPin,
@@ -35,9 +36,18 @@ const PresenceHub = () => {
         if (isManual) setRefreshing(true);
         try {
             const response = await getLivePresence();
-            setStudents(response.data || []);
+            let studentList = [];
+            if (Array.isArray(response.data?.data)) {
+                studentList = response.data.data;
+            } else if (Array.isArray(response.data)) {
+                studentList = response.data;
+            } else if (Array.isArray(response?.data?.students)) {
+                studentList = response.data.students;
+            }
+            setStudents(studentList);
         } catch (error) {
             console.error('Failed to fetch presence data:', error);
+            setStudents([]);
         } finally {
             setLoading(false);
             if (isManual) setRefreshing(false);
@@ -141,13 +151,13 @@ const PresenceHub = () => {
                                 <RefreshCw size={14} className={refreshing ? 'animate-spin text-emerald-400' : ''} />
                                 <span>{refreshing ? 'Refreshing...' : 'Sync Now'}</span>
                             </button>
-                            <a
-                                href="/industry/dashboard"
+                            <Link
+                                to="/industry/dashboard"
                                 className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all"
                             >
                                 <QrCode size={14} />
                                 <span>Open Scanner</span>
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -390,13 +400,13 @@ const PresenceHub = () => {
                                                 <span>Check-in Intern</span>
                                             </button>
                                         ) : (
-                                            <a
-                                                href="/industry/attendance"
+                                            <Link
+                                                to="/industry/attendance"
                                                 className="w-full py-2.5 rounded-xl bg-[#181a24] hover:bg-[#202330] border border-[#22242f] text-slate-300 hover:text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
                                             >
                                                 <span>View Attendance Log</span>
                                                 <ChevronRight size={14} />
-                                            </a>
+                                            </Link>
                                         )}
                                     </div>
                                 </div>

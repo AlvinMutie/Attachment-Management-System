@@ -87,13 +87,13 @@ const getLivePresence = async (req, res) => {
             success: true,
             data: students.map(student => ({
                 id: student.id,
-                name: student.user.name,
-                email: student.user.email,
-                course: student.course || student.department,
-                admissionNumber: student.admissionNumber,
-                presenceStatus: student.attendance.length > 0 ? student.attendance[0].status : 'not-scanned',
-                lastSeen: student.attendance.length > 0 ? student.attendance[0].timestamp : null,
-                latestLogbook: student.logbooks.length > 0 ? student.logbooks[0] : null
+                name: student.user ? student.user.name : 'Unknown Intern',
+                email: student.user ? student.user.email : '',
+                course: student.course || student.department || 'General Attachment',
+                admissionNumber: student.admissionNumber || 'N/A',
+                presenceStatus: student.attendance && student.attendance.length > 0 ? student.attendance[0].status : 'not-scanned',
+                lastSeen: student.attendance && student.attendance.length > 0 ? student.attendance[0].timestamp : null,
+                latestLogbook: student.logbooks && student.logbooks.length > 0 ? student.logbooks[0] : null
             }))
         });
     } catch (error) {
