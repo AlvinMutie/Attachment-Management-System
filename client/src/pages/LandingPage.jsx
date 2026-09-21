@@ -31,7 +31,7 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
-import ScrollLaptopMockup from '../components/landing/ScrollLaptopMockup';
+import ProductCockpit from '../components/landing/ProductCockpit';
 
 const LandingPage = () => {
     const [openFaq, setOpenFaq] = useState(null);
@@ -189,10 +189,10 @@ const LandingPage = () => {
             </section>
 
             {/* ========================================================================= */}
-            {/* 2. SCROLL-DRIVEN 3D LAPTOP SCREEN ENTRY ANIMATION                         */}
+            {/* 2. NATIVE WORKSPACE COCKPIT (CLEAN UI PREVIEW)                            */}
             {/* ========================================================================= */}
-            <section id="workspaces" className="relative w-full py-6">
-                <ScrollLaptopMockup />
+            <section id="workspaces" className="relative w-full py-12">
+                <ProductCockpit />
             </section>
 
             {/* ========================================================================= */}
