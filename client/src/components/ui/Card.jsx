@@ -8,7 +8,7 @@ export const Card = React.forwardRef(({
     ...props
 }, ref) => {
     const baseStyles = {
-        stripe: 'bg-[#101626] border border-[#1f293d] rounded-2xl shadow-lg shadow-black/40',
+        stripe: 'bg-[var(--surface-card)] border border-[var(--border-subtle)] rounded-2xl shadow-md transition-colors duration-150',
         bento: 'bento-card',
         glass: 'glass-surface rounded-2xl'
     };
@@ -18,7 +18,7 @@ export const Card = React.forwardRef(({
             ref={ref}
             className={`
                 ${baseStyles[variant] || baseStyles.stripe}
-                ${hoverable ? 'hover:border-indigo-500/30 hover:-translate-y-0.5 hover:shadow-indigo-500/10 transition-all duration-200' : ''}
+                ${hoverable ? 'hover:border-violet-500/30 hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200' : ''}
                 ${className}
             `}
             {...props}
@@ -30,19 +30,19 @@ export const Card = React.forwardRef(({
 Card.displayName = 'Card';
 
 export const CardHeader = ({ children, className = '', ...props }) => (
-    <div className={`p-5 pb-3 flex items-center justify-between border-b border-white/[0.04] ${className}`} {...props}>
+    <div className={`p-5 pb-3 flex items-center justify-between border-b border-[var(--border-subtle)] ${className}`} {...props}>
         {children}
     </div>
 );
 
 export const CardTitle = ({ children, className = '', as: Component = 'h3', ...props }) => (
-    <Component className={`text-base font-semibold text-white tracking-tight ${className}`} {...props}>
+    <Component className={`text-base font-bold text-[var(--text-primary)] tracking-tight ${className}`} {...props}>
         {children}
     </Component>
 );
 
 export const CardDescription = ({ children, className = '', ...props }) => (
-    <p className={`text-xs text-slate-400 font-normal leading-relaxed mt-0.5 ${className}`} {...props}>
+    <p className={`text-xs text-[var(--text-secondary)] font-medium leading-relaxed mt-0.5 ${className}`} {...props}>
         {children}
     </p>
 );
@@ -54,7 +54,7 @@ export const CardContent = ({ children, className = '', ...props }) => (
 );
 
 export const CardFooter = ({ children, className = '', ...props }) => (
-    <div className={`p-5 pt-3 flex items-center justify-between border-t border-white/[0.04] mt-2 ${className}`} {...props}>
+    <div className={`p-5 pt-3 flex items-center justify-between border-t border-[var(--border-subtle)] mt-2 ${className}`} {...props}>
         {children}
     </div>
 );
