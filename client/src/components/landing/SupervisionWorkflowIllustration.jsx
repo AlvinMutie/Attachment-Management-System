@@ -2,26 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     GraduationCap,
+    Briefcase,
     Building2,
     CheckCircle2,
-    FileCheck,
     Clock,
-    UserCheck,
     Check,
     RotateCcw,
-    Briefcase,
     Users,
+    Activity,
+    FileText,
+    CalendarCheck,
     ArrowRight,
     ArrowDown,
-    ShieldCheck
+    ShieldCheck,
+    SlidersHorizontal,
+    Compass
 } from 'lucide-react';
 
-export const PlacementWorkflowIllustration = () => {
-    // Stage 1: Match (Student Profile) | Stage 2: Apply (Opportunity & Application) | Stage 3: Confirm (Placement Active)
+export const SupervisionWorkflowIllustration = () => {
+    // Stage 1: Student Progress Active | Stage 2: Industry Feedback Submitted | Stage 3: University Review & Shared Alignment
     const [activeStage, setActiveStage] = useState(3);
     const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-    // Subtle, restrained automated cycle through the 3 workflow stages
+    // Subtle, restrained automated cycle through the 3 supervision stages
     useEffect(() => {
         if (!isAutoPlaying) return;
         const interval = setInterval(() => {
@@ -44,16 +47,16 @@ export const PlacementWorkflowIllustration = () => {
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-600"></span>
                     </span>
                     <span className="text-xs font-mono font-bold tracking-wider uppercase text-violet-800 dark:text-violet-400 bg-violet-100 dark:bg-violet-500/10 px-2.5 py-0.5 rounded-md border border-violet-300 dark:border-violet-500/20">
-                        Workflow 01 • Placement
+                        Workflow 02 • Supervision
                     </span>
                 </div>
 
                 {/* Step Selector Pills */}
                 <div className="flex items-center gap-1 p-1 bg-white dark:bg-[#12141c] border border-[#d6d0c2] dark:border-[#22242f] rounded-xl shadow-xs">
                     {[
-                        { step: 1, label: '01 Match' },
-                        { step: 2, label: '02 Apply' },
-                        { step: 3, label: '03 Confirm' }
+                        { step: 1, label: '01 Progress' },
+                        { step: 2, label: '02 Industry' },
+                        { step: 3, label: '03 University' }
                     ].map((s) => (
                         <button
                             key={s.step}
@@ -91,14 +94,14 @@ export const PlacementWorkflowIllustration = () => {
                 {/* Subtle Grid Background */}
                 <div className="absolute inset-0 bg-[radial-gradient(#e5e0d5_1px,transparent_1px)] dark:bg-[radial-gradient(#1f2333_1px,transparent_1px)] bg-[size:20px_20px] opacity-35 pointer-events-none" />
 
-                {/* Subtitle / Journey Flow Banner */}
+                {/* Subtitle / Storyline Header */}
                 <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 border-b border-[#e2ddd3] dark:border-[#1f2230]">
                     <div>
                         <h3 className="text-base sm:text-lg font-black text-[#0a0d14] dark:text-white tracking-tight">
-                            Student Profile → Attachment Opportunity → Application → Placement Confirmed
+                            Student Progress ↔ Industry Feedback ↔ University Oversight
                         </h3>
                         <p className="text-xs text-[#4b5563] dark:text-slate-400 font-medium mt-0.5">
-                            Automated end-to-end matching, prerequisite verification, and institutional supervisor assignment.
+                            Continuous tripartite oversight ensuring student learning outcomes, weekly logbook sign-offs, and on-site visits.
                         </p>
                     </div>
 
@@ -107,16 +110,16 @@ export const PlacementWorkflowIllustration = () => {
                     </span>
                 </div>
 
-                {/* 3-Stage Workflow Layout (Horizontal on Desktop, Vertical on Mobile) */}
+                {/* 3-Card Supervision Layout (Desktop: Horizontal Tripartite Grid | Mobile: Vertical Flow) */}
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-11 gap-4 mt-6 items-stretch">
                     
                     {/* ========================================================================= */}
-                    {/* 01 — MATCH: Student Profile Card (Col 1-3)                                 */}
+                    {/* 01 — INDUSTRY SUPERVISOR (Workplace Mentor) (Col 1-3)                     */}
                     {/* ========================================================================= */}
                     <motion.div
                         className={`lg:col-span-3 flex flex-col justify-between bg-[#fbfbfa] dark:bg-[#141620] border-2 rounded-2xl p-4.5 shadow-xs transition-all duration-300 ${
-                            activeStage >= 1
-                                ? 'border-violet-500/60 dark:border-violet-500/40 ring-2 ring-violet-500/10'
+                            activeStage >= 2
+                                ? 'border-cyan-500/60 dark:border-cyan-500/40 ring-2 ring-cyan-500/10'
                                 : 'border-[#dcd6c8] dark:border-[#242736]'
                         }`}
                         initial={{ opacity: 0, y: 10 }}
@@ -127,51 +130,49 @@ export const PlacementWorkflowIllustration = () => {
                             {/* Card Header */}
                             <div className="flex items-center justify-between pb-3 border-b border-[#e5e0d5] dark:border-[#202330]">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-lg bg-violet-600/15 border border-violet-500/30 flex items-center justify-center text-violet-700 dark:text-violet-400">
-                                        <GraduationCap size={16} />
+                                    <div className="w-8 h-8 rounded-lg bg-cyan-600/15 border border-cyan-500/30 flex items-center justify-center text-cyan-700 dark:text-cyan-400">
+                                        <Briefcase size={16} />
                                     </div>
                                     <div>
-                                        <h4 className="text-xs font-black text-[#0a0d14] dark:text-white leading-none">Student Profile</h4>
-                                        <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">Stage 01 • Match</span>
+                                        <h4 className="text-xs font-black text-[#0a0d14] dark:text-white leading-none">Industry Supervisor</h4>
+                                        <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">Workplace Mentor</span>
                                     </div>
                                 </div>
-                                <span className="text-[9px] font-mono font-bold bg-violet-100 dark:bg-violet-500/10 text-violet-900 dark:text-violet-300 px-2 py-0.5 rounded border border-violet-300 dark:border-violet-500/20">
-                                    Enrolled
+                                <span className="text-[9px] font-mono font-bold bg-cyan-100 dark:bg-cyan-500/10 text-cyan-900 dark:text-cyan-300 px-2 py-0.5 rounded border border-cyan-300 dark:border-cyan-500/20">
+                                    On-Site
                                 </span>
                             </div>
 
-                            {/* Academic Program */}
+                            {/* Mentorship Oversight Details */}
                             <div className="mt-3.5 space-y-1">
                                 <span className="text-xs font-black text-[#0a0d14] dark:text-white block">
-                                    BSc Information Technology
+                                    Weekly Logbook Review
                                 </span>
                                 <span className="text-[11px] text-[#4b5563] dark:text-slate-400 font-medium block">
-                                    Year 3 • Semester 2
+                                    Workplace Technical Supervision
                                 </span>
                             </div>
 
-                            {/* Verified Documents Checklist */}
+                            {/* Milestone checklist */}
                             <div className="mt-3.5 space-y-1.5">
                                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#5b6276] dark:text-slate-400 block">
-                                    Documents
+                                    Mentor Deliverables
                                 </span>
                                 <div className="space-y-1 text-[11px] font-medium text-[#22283a] dark:text-slate-300">
                                     <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span className="flex items-center gap-1.5">
-                                            <FileCheck size={13} className="text-violet-600 dark:text-violet-400" />
-                                            <span>Introductory Letter</span>
-                                        </span>
-                                        <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold text-[10px] flex items-center gap-0.5">
-                                            <Check size={11} /> Verified
+                                        <span>Weekly Log Sign-off</span>
+                                        <span className={`font-mono font-bold text-[10px] ${
+                                            activeStage >= 2 ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-400'
+                                        }`}>
+                                            {activeStage >= 2 ? '✓ Approved' : 'Pending'}
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span className="flex items-center gap-1.5">
-                                            <ShieldCheck size={13} className="text-violet-600 dark:text-violet-400" />
-                                            <span>Insurance Clearance</span>
-                                        </span>
-                                        <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold text-[10px] flex items-center gap-0.5">
-                                            <Check size={11} /> Verified
+                                        <span>Attendance Confirmation</span>
+                                        <span className={`font-mono font-bold text-[10px] ${
+                                            activeStage >= 2 ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-400'
+                                        }`}>
+                                            {activeStage >= 2 ? '✓ Verified' : 'Pending'}
                                         </span>
                                     </div>
                                 </div>
@@ -181,11 +182,32 @@ export const PlacementWorkflowIllustration = () => {
                         {/* Status Footer */}
                         <div className="mt-4 pt-3 border-t border-[#e5e0d5] dark:border-[#202330] flex items-center justify-between">
                             <span className="text-[10px] font-mono text-[#5b6276] dark:text-slate-400">
-                                Prerequisite Check
+                                Latest Review
                             </span>
-                            <span className="text-[10px] font-mono font-bold text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20">
-                                ✓ Complete
-                            </span>
+                            <AnimatePresence mode="wait">
+                                {activeStage === 1 && (
+                                    <motion.span
+                                        key="ind1"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="text-[10px] font-mono font-bold text-[#5b6276] dark:text-slate-400 bg-[#ece8dd] dark:bg-[#1f2230] px-2 py-0.5 rounded"
+                                    >
+                                        Pending Log
+                                    </motion.span>
+                                )}
+                                {activeStage >= 2 && (
+                                    <motion.span
+                                        key="ind2"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="text-[10px] font-mono font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20 flex items-center gap-1"
+                                    >
+                                        <Check size={11} /> Feedback Submitted
+                                    </motion.span>
+                                )}
+                            </AnimatePresence>
                         </div>
                     </motion.div>
 
@@ -195,10 +217,10 @@ export const PlacementWorkflowIllustration = () => {
                     <div className="lg:col-span-1 flex flex-col lg:flex-row items-center justify-center py-2 lg:py-0">
                         <div className="hidden lg:flex w-full items-center justify-center relative">
                             <div className={`h-0.5 w-full transition-colors duration-500 ${
-                                activeStage >= 2 ? 'bg-violet-600 dark:bg-violet-500' : 'bg-[#d6d0c2] dark:bg-[#282c3c]'
+                                activeStage >= 2 ? 'bg-cyan-600 dark:bg-cyan-500' : 'bg-[#d6d0c2] dark:bg-[#282c3c]'
                             }`} />
                             <motion.div
-                                className="absolute w-4 h-4 rounded-full bg-violet-600 text-white flex items-center justify-center shadow-xs"
+                                className="absolute w-4 h-4 rounded-full bg-cyan-600 text-white flex items-center justify-center shadow-xs"
                                 animate={{ scale: activeStage >= 2 ? [1, 1.2, 1] : 1 }}
                                 transition={{ duration: 0.4 }}
                             >
@@ -206,19 +228,15 @@ export const PlacementWorkflowIllustration = () => {
                             </motion.div>
                         </div>
                         <div className="lg:hidden flex items-center justify-center py-1">
-                            <ArrowDown size={18} className={activeStage >= 2 ? 'text-violet-600' : 'text-[#bbb3a0]'} />
+                            <ArrowDown size={18} className={activeStage >= 2 ? 'text-cyan-600' : 'text-[#bbb3a0]'} />
                         </div>
                     </div>
 
                     {/* ========================================================================= */}
-                    {/* 02 — APPLY: Attachment Opportunity & Application Card (Col 5-7)           */}
+                    {/* 02 — STUDENT PROGRESS (Visual Anchor / Center Node) (Col 5-7)             */}
                     {/* ========================================================================= */}
                     <motion.div
-                        className={`lg:col-span-3 flex flex-col justify-between bg-[#fbfbfa] dark:bg-[#141620] border-2 rounded-2xl p-4.5 shadow-xs transition-all duration-300 ${
-                            activeStage >= 2
-                                ? 'border-cyan-500/60 dark:border-cyan-500/40 ring-2 ring-cyan-500/10'
-                                : 'border-[#dcd6c8] dark:border-[#242736]'
-                        }`}
+                        className="lg:col-span-3 flex flex-col justify-between bg-[#fbfbfa] dark:bg-[#141620] border-2 border-violet-500/60 dark:border-violet-500/40 ring-2 ring-violet-500/10 rounded-2xl p-4.5 shadow-md relative overflow-hidden"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.4, delay: 0.1 }}
@@ -227,49 +245,64 @@ export const PlacementWorkflowIllustration = () => {
                             {/* Card Header */}
                             <div className="flex items-center justify-between pb-3 border-b border-[#e5e0d5] dark:border-[#202330]">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-lg bg-cyan-600/15 border border-cyan-500/30 flex items-center justify-center text-cyan-700 dark:text-cyan-400">
-                                        <Briefcase size={16} />
+                                    <div className="w-8 h-8 rounded-lg bg-violet-600/15 border border-violet-500/30 flex items-center justify-center text-violet-700 dark:text-violet-400">
+                                        <GraduationCap size={16} />
                                     </div>
                                     <div>
-                                        <h4 className="text-xs font-black text-[#0a0d14] dark:text-white leading-none">Attachment Opportunity</h4>
-                                        <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">Stage 02 • Application</span>
+                                        <h4 className="text-xs font-black text-[#0a0d14] dark:text-white leading-none">Student Progress</h4>
+                                        <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">BSc Information Tech</span>
                                     </div>
                                 </div>
-                                <span className="text-[9px] font-mono font-bold bg-cyan-100 dark:bg-cyan-500/10 text-cyan-900 dark:text-cyan-300 px-2 py-0.5 rounded border border-cyan-300 dark:border-cyan-500/20">
-                                    Opportunity
+                                <span className="text-[9px] font-mono font-bold bg-emerald-100 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-300 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20">
+                                    Attachment Active
                                 </span>
                             </div>
 
-                            {/* Position Details */}
-                            <div className="mt-3.5 space-y-1">
-                                <span className="text-xs font-black text-[#0a0d14] dark:text-white block">
-                                    Software Engineering Intern
-                                </span>
-                                <span className="text-[11px] text-[#4b5563] dark:text-slate-400 font-medium block">
-                                    Host Organization
-                                </span>
+                            {/* Progress Gauge */}
+                            <div className="mt-3.5 space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#5b6276] dark:text-slate-400">
+                                        Attachment Progress
+                                    </span>
+                                    <span className="text-xs font-mono font-black text-violet-700 dark:text-violet-400">
+                                        68% Completed
+                                    </span>
+                                </div>
+
+                                {/* Animated Progress Bar */}
+                                <div className="w-full h-2.5 bg-[#e5e0d5] dark:bg-[#202330] rounded-full overflow-hidden p-0.5">
+                                    <motion.div
+                                        className="h-full bg-gradient-to-r from-violet-600 to-indigo-600 rounded-full"
+                                        initial={{ width: 0 }}
+                                        animate={{ width: '68%' }}
+                                        transition={{ duration: 0.8, ease: "easeOut" }}
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between text-[10px] font-mono text-[#5b6276] dark:text-slate-400">
+                                    <span>Week 8 of 12</span>
+                                    <span>4 Weeks Remaining</span>
+                                </div>
                             </div>
 
-                            {/* Dual Review Status Matrix */}
+                            {/* Core Activity Items */}
                             <div className="mt-3.5 space-y-1.5">
-                                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#5b6276] dark:text-slate-400 block">
-                                    Application Review
-                                </span>
                                 <div className="space-y-1 text-[11px] font-medium text-[#22283a] dark:text-slate-300">
                                     <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span>University Review</span>
-                                        <span className={`font-mono font-bold text-[10px] ${
-                                            activeStage >= 2 ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-400'
-                                        }`}>
-                                            {activeStage >= 2 ? '✓ Approved' : 'Pending'}
+                                        <span className="flex items-center gap-1.5">
+                                            <FileText size={13} className="text-violet-600 dark:text-violet-400" />
+                                            <span>Weekly Log</span>
+                                        </span>
+                                        <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold text-[10px] flex items-center gap-0.5">
+                                            <Check size={11} /> Submitted
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span>Industry Review</span>
-                                        <span className={`font-mono font-bold text-[10px] ${
-                                            activeStage >= 2 ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-400'
-                                        }`}>
-                                            {activeStage >= 2 ? '✓ Accepted' : 'Pending'}
+                                        <span className="flex items-center gap-1.5">
+                                            <CalendarCheck size={13} className="text-violet-600 dark:text-violet-400" />
+                                            <span>Attendance</span>
+                                        </span>
+                                        <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold text-[10px] flex items-center gap-0.5">
+                                            <Check size={11} /> Up to Date
                                         </span>
                                     </div>
                                 </div>
@@ -279,32 +312,11 @@ export const PlacementWorkflowIllustration = () => {
                         {/* Status Footer */}
                         <div className="mt-4 pt-3 border-t border-[#e5e0d5] dark:border-[#202330] flex items-center justify-between">
                             <span className="text-[10px] font-mono text-[#5b6276] dark:text-slate-400">
-                                Application State
+                                Oversight Status
                             </span>
-                            <AnimatePresence mode="wait">
-                                {activeStage === 1 && (
-                                    <motion.span
-                                        key="app1"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        className="text-[10px] font-mono font-bold text-[#5b6276] dark:text-slate-400 bg-[#ece8dd] dark:bg-[#1f2230] px-2 py-0.5 rounded"
-                                    >
-                                        Draft
-                                    </motion.span>
-                                )}
-                                {activeStage >= 2 && (
-                                    <motion.span
-                                        key="app2"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        className="text-[10px] font-mono font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/20 flex items-center gap-1"
-                                    >
-                                        <Clock size={10} className="animate-spin" /> Application Submitted
-                                    </motion.span>
-                                )}
-                            </AnimatePresence>
+                            <span className="text-[10px] font-mono font-bold text-violet-800 dark:text-violet-300 bg-violet-100 dark:bg-violet-500/10 px-2 py-0.5 rounded border border-violet-300 dark:border-violet-500/20">
+                                In Continuous Review
+                            </span>
                         </div>
                     </motion.div>
 
@@ -314,10 +326,10 @@ export const PlacementWorkflowIllustration = () => {
                     <div className="lg:col-span-1 flex flex-col lg:flex-row items-center justify-center py-2 lg:py-0">
                         <div className="hidden lg:flex w-full items-center justify-center relative">
                             <div className={`h-0.5 w-full transition-colors duration-500 ${
-                                activeStage >= 3 ? 'bg-emerald-600 dark:bg-emerald-500' : 'bg-[#d6d0c2] dark:bg-[#282c3c]'
+                                activeStage >= 3 ? 'bg-violet-600 dark:bg-violet-500' : 'bg-[#d6d0c2] dark:bg-[#282c3c]'
                             }`} />
                             <motion.div
-                                className="absolute w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs"
+                                className="absolute w-4 h-4 rounded-full bg-violet-600 text-white flex items-center justify-center shadow-xs"
                                 animate={{ scale: activeStage >= 3 ? [1, 1.2, 1] : 1 }}
                                 transition={{ duration: 0.4 }}
                             >
@@ -325,17 +337,17 @@ export const PlacementWorkflowIllustration = () => {
                             </motion.div>
                         </div>
                         <div className="lg:hidden flex items-center justify-center py-1">
-                            <ArrowDown size={18} className={activeStage >= 3 ? 'text-emerald-600' : 'text-[#bbb3a0]'} />
+                            <ArrowDown size={18} className={activeStage >= 3 ? 'text-violet-600' : 'text-[#bbb3a0]'} />
                         </div>
                     </div>
 
                     {/* ========================================================================= */}
-                    {/* 03 — CONFIRM: Placement Card (Col 9-11)                                    */}
+                    {/* 03 — UNIVERSITY SUPERVISOR (Academic Oversight) (Col 9-11)                */}
                     {/* ========================================================================= */}
                     <motion.div
                         className={`lg:col-span-3 flex flex-col justify-between bg-[#fbfbfa] dark:bg-[#141620] border-2 rounded-2xl p-4.5 shadow-xs transition-all duration-300 ${
                             activeStage === 3
-                                ? 'border-emerald-500/70 dark:border-emerald-500/50 ring-2 ring-emerald-500/10'
+                                ? 'border-violet-500/70 dark:border-violet-500/50 ring-2 ring-violet-500/10'
                                 : 'border-[#dcd6c8] dark:border-[#242736]'
                         }`}
                         initial={{ opacity: 0, y: 10 }}
@@ -346,49 +358,53 @@ export const PlacementWorkflowIllustration = () => {
                             {/* Card Header */}
                             <div className="flex items-center justify-between pb-3 border-b border-[#e5e0d5] dark:border-[#202330]">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-lg bg-emerald-600/15 border border-emerald-500/30 flex items-center justify-center text-emerald-700 dark:text-emerald-400">
-                                        <CheckCircle2 size={16} />
+                                    <div className="w-8 h-8 rounded-lg bg-violet-600/15 border border-violet-500/30 flex items-center justify-center text-violet-700 dark:text-violet-400">
+                                        <Building2 size={16} />
                                     </div>
                                     <div>
-                                        <h4 className="text-xs font-black text-[#0a0d14] dark:text-white leading-none">Placement Confirmed</h4>
-                                        <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">Stage 03 • Active</span>
+                                        <h4 className="text-xs font-black text-[#0a0d14] dark:text-white leading-none">University Supervisor</h4>
+                                        <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">Academic Faculty</span>
                                     </div>
                                 </div>
-                                <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded border transition-colors ${
-                                    activeStage === 3
-                                        ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-400 border-emerald-300 dark:border-emerald-500/20'
-                                        : 'bg-[#ece8dd] dark:bg-[#1f2230] text-[#5b6276] dark:text-slate-400 border-[#cfc8b8] dark:border-[#282c3e]'
-                                }`}>
-                                    {activeStage === 3 ? 'Confirmed' : 'Approval Pending'}
+                                <span className="text-[9px] font-mono font-bold bg-violet-100 dark:bg-violet-500/10 text-violet-900 dark:text-violet-300 px-2 py-0.5 rounded border border-violet-300 dark:border-violet-500/20">
+                                    Faculty
                                 </span>
                             </div>
 
-                            {/* Placement Active Details */}
+                            {/* Academic Oversight Details */}
                             <div className="mt-3.5 space-y-1">
                                 <span className="text-xs font-black text-[#0a0d14] dark:text-white block">
-                                    Host Organization
+                                    Academic Defense & Visits
                                 </span>
                                 <span className="text-[11px] text-[#4b5563] dark:text-slate-400 font-medium block">
-                                    Software Engineering Intern
+                                    Curriculum Alignment & Rubrics
                                 </span>
                             </div>
 
-                            {/* Dual Supervisor Row (Supporting Multi-Stakeholder Metadata) */}
+                            {/* Oversight Milestones */}
                             <div className="mt-3.5 space-y-1.5">
                                 <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#5b6276] dark:text-slate-400 block">
-                                    Supervisor Allocation
+                                    Supervision Schedule
                                 </span>
                                 <div className="space-y-1 text-[11px] font-medium text-[#22283a] dark:text-slate-300">
                                     <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span className="text-[10px] font-semibold text-[#0a0d14] dark:text-white">University Supervisor</span>
-                                        <span className="text-[10px] font-mono font-bold text-violet-700 dark:text-violet-400">
-                                            Assigned
+                                        <span className="flex items-center gap-1.5">
+                                            <Compass size={13} className="text-violet-600 dark:text-violet-400" />
+                                            <span>Next Field Visit</span>
+                                        </span>
+                                        <span className="text-violet-700 dark:text-violet-400 font-mono font-bold text-[10px]">
+                                            Scheduled
                                         </span>
                                     </div>
                                     <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span className="text-[10px] font-semibold text-[#0a0d14] dark:text-white">Industry Supervisor</span>
-                                        <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400">
-                                            Assigned
+                                        <span className="flex items-center gap-1.5">
+                                            <SlidersHorizontal size={13} className="text-violet-600 dark:text-violet-400" />
+                                            <span>Rubric Evaluation</span>
+                                        </span>
+                                        <span className={`font-mono font-bold text-[10px] ${
+                                            activeStage === 3 ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-400'
+                                        }`}>
+                                            {activeStage === 3 ? '✓ Submitted' : 'Pending'}
                                         </span>
                                     </div>
                                 </div>
@@ -398,34 +414,52 @@ export const PlacementWorkflowIllustration = () => {
                         {/* Status Footer */}
                         <div className="mt-4 pt-3 border-t border-[#e5e0d5] dark:border-[#202330] flex items-center justify-between">
                             <span className="text-[10px] font-mono text-[#5b6276] dark:text-slate-400">
-                                Status
+                                Faculty Status
                             </span>
                             <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded flex items-center gap-1 ${
                                 activeStage === 3
                                     ? 'text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-300 dark:border-emerald-500/20'
                                     : 'text-[#5b6276] dark:text-slate-400 bg-[#ece8dd] dark:bg-[#1f2230]'
                             }`}>
-                                <CheckCircle2 size={11} /> {activeStage === 3 ? 'Placement Active' : 'Pending'}
+                                <CheckCircle2 size={11} /> {activeStage === 3 ? 'Review Complete' : 'Review Pending'}
                             </span>
                         </div>
                     </motion.div>
                 </div>
 
-                {/* Subtle Bottom Multi-Stakeholder Summary Bar */}
-                <div className="mt-6 pt-4 border-t border-[#e2ddd3] dark:border-[#1f2230] flex flex-wrap items-center justify-between gap-3 text-xs">
-                    <div className="flex items-center gap-2 text-[#4b5563] dark:text-slate-400 font-medium">
-                        <Users size={14} className="text-violet-600 dark:text-violet-400" />
-                        <span>Integrated Stakeholders: Student • Host Organization • University Coordinator • Mentors</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-mono font-bold text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-500/20">
-                            Governance Ready
+                {/* Shared Activity & Alignment Stream (Bottom Layer) */}
+                <div className="mt-6 pt-4 border-t border-[#e2ddd3] dark:border-[#1f2230] flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+                    <div className="flex flex-wrap items-center gap-3 text-[#374151] dark:text-slate-300 font-medium">
+                        <span className="flex items-center gap-1.5 font-bold text-[#0a0d14] dark:text-white">
+                            <Activity size={14} className="text-violet-600 dark:text-violet-400" />
+                            <span>Recent Activity:</span>
+                        </span>
+                        <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 text-[11px] font-mono font-semibold bg-emerald-50 dark:bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-500/20">
+                            <Check size={11} /> Weekly log submitted
+                        </span>
+                        <span className={`inline-flex items-center gap-1 text-[11px] font-mono font-semibold px-2 py-0.5 rounded border transition-colors ${
+                            activeStage >= 2
+                                ? 'text-cyan-800 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-500/5 border-cyan-200 dark:border-cyan-500/20'
+                                : 'text-slate-400 bg-slate-100 dark:bg-slate-800 border-transparent'
+                        }`}>
+                            <Check size={11} /> Industry feedback received
+                        </span>
+                        <span className={`inline-flex items-center gap-1 text-[11px] font-mono font-semibold px-2 py-0.5 rounded border transition-colors ${
+                            activeStage === 3
+                                ? 'text-violet-800 dark:text-violet-300 bg-violet-50 dark:bg-violet-500/5 border-violet-200 dark:border-violet-500/20'
+                                : 'text-slate-400 bg-slate-100 dark:bg-slate-800 border-transparent'
+                        }`}>
+                            <Check size={11} /> University review completed
                         </span>
                     </div>
+
+                    <span className="self-start sm:self-center text-[11px] font-mono font-bold text-violet-800 dark:text-violet-300 bg-violet-100 dark:bg-violet-500/10 px-2.5 py-0.5 rounded-full border border-violet-300 dark:border-violet-500/20 whitespace-nowrap">
+                        Everyone Stays Aligned
+                    </span>
                 </div>
             </div>
         </div>
     );
 };
 
-export default PlacementWorkflowIllustration;
+export default SupervisionWorkflowIllustration;

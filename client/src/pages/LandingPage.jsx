@@ -37,6 +37,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import ProductCockpit from '../components/landing/ProductCockpit';
 import PlacementWorkflowIllustration from '../components/landing/PlacementWorkflowIllustration';
+import SupervisionWorkflowIllustration from '../components/landing/SupervisionWorkflowIllustration';
 
 const fadeInUp = {
     initial: { opacity: 0, y: 32 },
@@ -245,9 +246,9 @@ const LandingPage = () => {
 
 
             {/* ========================================================================= */}
-            {/* 4. WORKFLOW SHOWCASE: ONE WORKFLOW. EVERY STAKEHOLDER.                    */}
+            {/* 4. WORKFLOW SHOWCASE: 01 — PLACEMENT                                      */}
             {/* ========================================================================= */}
-            <section id="workflow" className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 scroll-mt-20">
+            <section id="workflow" className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 scroll-mt-20">
                 <motion.div className="text-center max-w-3xl mx-auto mb-4" {...fadeInUp}>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-violet-800 dark:text-violet-400 bg-violet-100 dark:bg-violet-500/10 px-2.5 py-1 rounded-md border border-violet-300 dark:border-violet-500/20">
                         Workflow Architecture
@@ -266,7 +267,28 @@ const LandingPage = () => {
             </section>
 
             {/* ========================================================================= */}
-            {/* 5. 6-STAGE ATTACHMENT LIFECYCLE (NAV TARGET: #lifecycle)                  */}
+            {/* 5. WORKFLOW SHOWCASE: 02 — SUPERVISION                                    */}
+            {/* ========================================================================= */}
+            <section id="supervision" className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 scroll-mt-20">
+                <motion.div className="text-center max-w-3xl mx-auto mb-4" {...fadeInUp}>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-900 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-300 dark:border-cyan-500/20">
+                        Continuous Oversight
+                    </span>
+                    <h2 className="text-3xl sm:text-4xl font-black text-[#0a0d14] dark:text-white tracking-tight mt-3">
+                        Everyone stays aligned.
+                    </h2>
+                    <p className="text-sm text-[#374151] dark:text-slate-400 font-medium mt-2">
+                        <span className="font-bold text-[#0a0d14] dark:text-white">02 — Supervision:</span> Keep students, university supervisors, and industry supervisors connected throughout the attachment.
+                    </p>
+                </motion.div>
+
+                <motion.div {...fadeInUp}>
+                    <SupervisionWorkflowIllustration />
+                </motion.div>
+            </section>
+
+            {/* ========================================================================= */}
+            {/* 6. 6-STAGE ATTACHMENT LIFECYCLE (NAV TARGET: #lifecycle)                  */}
             {/* ========================================================================= */}
             <section id="lifecycle" className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
                 <motion.div className="text-center max-w-3xl mx-auto mb-12" {...fadeInUp}>
