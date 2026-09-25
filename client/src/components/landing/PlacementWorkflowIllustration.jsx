@@ -1,81 +1,82 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    GraduationCap,
+    Search,
     Building2,
+    Briefcase,
     CheckCircle2,
-    FileCheck,
     Clock,
-    UserCheck,
     Check,
     RotateCcw,
-    Briefcase,
+    Sparkles,
+    GraduationCap,
+    SlidersHorizontal,
+    FileCheck2,
+    ShieldCheck,
+    Send,
+    MapPin,
+    Calendar,
     Users,
-    ArrowRight,
-    ArrowDown,
-    ShieldCheck
+    BadgeCheck,
+    ArrowUpRight
 } from 'lucide-react';
 
 export const PlacementWorkflowIllustration = () => {
-    // Stage 1: Match (Student Profile) | Stage 2: Apply (Opportunity & Application) | Stage 3: Confirm (Placement Active)
-    const [activeStage, setActiveStage] = useState(3);
-    const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+    // 0: Browse & Match | 1: Submit Application | 2: Placement Active
+    const [sceneState, setSceneState] = useState(2);
+    const [isPaused, setIsPaused] = useState(false);
 
-    // Subtle, restrained automated cycle through the 3 workflow stages
+    // Subtle autonomous product interaction cycle
     useEffect(() => {
-        if (!isAutoPlaying) return;
-        const interval = setInterval(() => {
-            setActiveStage((prev) => (prev >= 3 ? 1 : prev + 1));
-        }, 4200);
-        return () => clearInterval(interval);
-    }, [isAutoPlaying]);
+        if (isPaused) return;
+        const timer = setInterval(() => {
+            setSceneState((prev) => (prev >= 2 ? 0 : prev + 1));
+        }, 4800);
+        return () => clearInterval(timer);
+    }, [isPaused]);
 
     return (
         <div
-            className="w-full max-w-5xl mx-auto my-6 relative select-none"
-            onMouseEnter={() => setIsAutoPlaying(false)}
-            onMouseLeave={() => setIsAutoPlaying(true)}
+            className="w-full max-w-5xl mx-auto my-8 relative select-none"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
         >
-            {/* Top Controller Bar */}
+            {/* Top Interactive Scene Controller */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4 px-2">
                 <div className="flex items-center gap-2">
-                    <span className="flex h-2 w-2 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-600"></span>
-                    </span>
+                    <span className="w-2 h-2 rounded-full bg-violet-600 animate-pulse" />
                     <span className="text-xs font-mono font-bold tracking-wider uppercase text-violet-800 dark:text-violet-400 bg-violet-100 dark:bg-violet-500/10 px-2.5 py-0.5 rounded-md border border-violet-300 dark:border-violet-500/20">
-                        Workflow 01 • Placement
+                        Interactive Scene • 01 Placement
                     </span>
                 </div>
 
-                {/* Step Selector Pills */}
-                <div className="flex items-center gap-1 p-1 bg-white dark:bg-[#12141c] border border-[#d6d0c2] dark:border-[#22242f] rounded-xl shadow-xs">
+                <div className="flex items-center gap-1.5 p-1 bg-white dark:bg-[#12141c] border border-[#d6d0c2] dark:border-[#22242f] rounded-xl shadow-xs">
                     {[
-                        { step: 1, label: '01 Match' },
-                        { step: 2, label: '02 Apply' },
-                        { step: 3, label: '03 Confirm' }
-                    ].map((s) => (
+                        { id: 0, label: '01 Browse & Match' },
+                        { id: 1, label: '02 Submit Application' },
+                        { id: 2, label: '03 Placement Active' }
+                    ].map((step) => (
                         <button
-                            key={s.step}
+                            key={step.id}
                             type="button"
                             onClick={() => {
-                                setIsAutoPlaying(false);
-                                setActiveStage(s.step);
+                                setIsPaused(true);
+                                setSceneState(step.id);
                             }}
                             className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                                activeStage === s.step
-                                    ? 'bg-violet-600 text-white shadow-xs shadow-violet-600/30'
+                                sceneState === step.id
+                                    ? 'bg-violet-600 text-white shadow-xs'
                                     : 'text-[#4b5563] dark:text-slate-400 hover:text-black dark:hover:text-white hover:bg-[#f4f2ea] dark:hover:bg-[#181a24]'
                             }`}
                         >
-                            {s.label}
+                            {step.label}
                         </button>
                     ))}
                     <button
                         type="button"
                         onClick={() => {
-                            setIsAutoPlaying(false);
-                            setActiveStage(1);
+                            setIsPaused(true);
+                            setSceneState(0);
                         }}
                         className="p-1 text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors ml-0.5"
                         title="Replay sequence"
@@ -86,340 +87,340 @@ export const PlacementWorkflowIllustration = () => {
                 </div>
             </div>
 
-            {/* Main Interactive Product Canvas */}
-            <div className="relative rounded-3xl bg-white dark:bg-[#101218] border-2 border-[#e2ddd3] dark:border-[#22242f] p-5 sm:p-7 shadow-xl dark:shadow-2xl overflow-hidden backdrop-blur-xl">
-                {/* Subtle Grid Background */}
-                <div className="absolute inset-0 bg-[radial-gradient(#e5e0d5_1px,transparent_1px)] dark:bg-[radial-gradient(#1f2333_1px,transparent_1px)] bg-[size:20px_20px] opacity-35 pointer-events-none" />
+            {/* Living Product Stage Container */}
+            <div className="relative rounded-3xl bg-[#faf9f6] dark:bg-[#0f1117] border-2 border-[#e2ddd3] dark:border-[#22242f] p-4 sm:p-7 shadow-xl dark:shadow-2xl overflow-hidden">
+                
+                {/* Subtle Grid Canvas Background */}
+                <div className="absolute inset-0 bg-[radial-gradient(#e5e0d5_1px,transparent_1px)] dark:bg-[radial-gradient(#1f2333_1px,transparent_1px)] bg-[size:24px_24px] opacity-40 pointer-events-none" />
 
-                {/* Subtitle / Journey Flow Banner */}
-                <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-5 border-b border-[#e2ddd3] dark:border-[#1f2230]">
-                    <div>
-                        <h3 className="text-base sm:text-lg font-black text-[#0a0d14] dark:text-white tracking-tight">
-                            Student Profile → Attachment Opportunity → Application → Placement Confirmed
-                        </h3>
-                        <p className="text-xs text-[#4b5563] dark:text-slate-400 font-medium mt-0.5">
-                            Automated end-to-end matching, prerequisite verification, and institutional supervisor assignment.
-                        </p>
+                {/* Subtle Window Header / Browser Chrome */}
+                <div className="relative z-10 flex items-center justify-between pb-3.5 mb-5 border-b border-[#e2ddd3] dark:border-[#1f2230]">
+                    <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#e2ddd3] dark:bg-[#282c3c]" />
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#e2ddd3] dark:bg-[#282c3c]" />
+                            <span className="w-2.5 h-2.5 rounded-full bg-[#e2ddd3] dark:bg-[#282c3c]" />
+                        </div>
+                        <div className="h-4 w-px bg-[#e2ddd3] dark:bg-[#22242f] mx-1" />
+                        <span className="text-xs font-mono font-bold text-[#0a0d14] dark:text-slate-200 flex items-center gap-1.5">
+                            <Building2 size={13} className="text-violet-600 dark:text-violet-400" />
+                            <span>attachpro.app / opportunities</span>
+                        </span>
                     </div>
 
-                    <span className="self-start sm:self-center text-[11px] font-mono font-bold px-2.5 py-1 rounded-full bg-[#f4f2ea] dark:bg-[#161822] text-[#0a0d14] dark:text-slate-200 border border-[#d6d0c2] dark:border-[#282c3e]">
-                        Step {activeStage} of 3
-                    </span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-mono text-[#5b6276] dark:text-slate-400 hidden sm:inline-block">
+                            Candidate Portal
+                        </span>
+                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/20">
+                            Documents Verified
+                        </span>
+                    </div>
                 </div>
 
-                {/* 3-Stage Workflow Layout (Horizontal on Desktop, Vertical on Mobile) */}
-                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-11 gap-4 mt-6 items-stretch">
+                {/* Spatial Composition: Dominant Hero Interface + Overlapping Contextual Panels */}
+                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
                     
                     {/* ========================================================================= */}
-                    {/* 01 — MATCH: Student Profile Card (Col 1-3)                                 */}
+                    {/* DOMINANT HERO INTERFACE: Attachment Opportunities Explorer (7 Cols)      */}
                     {/* ========================================================================= */}
-                    <motion.div
-                        className={`lg:col-span-3 flex flex-col justify-between bg-[#fbfbfa] dark:bg-[#141620] border-2 rounded-2xl p-4.5 shadow-xs transition-all duration-300 ${
-                            activeStage >= 1
-                                ? 'border-violet-500/60 dark:border-violet-500/40 ring-2 ring-violet-500/10'
-                                : 'border-[#dcd6c8] dark:border-[#242736]'
-                        }`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4 }}
-                    >
-                        <div>
-                            {/* Card Header */}
-                            <div className="flex items-center justify-between pb-3 border-b border-[#e5e0d5] dark:border-[#202330]">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-lg bg-violet-600/15 border border-violet-500/30 flex items-center justify-center text-violet-700 dark:text-violet-400">
-                                        <GraduationCap size={16} />
+                    <div className="lg:col-span-7 bg-white dark:bg-[#141620] border-2 border-[#e2ddd3] dark:border-[#22242f] rounded-2xl p-4 sm:p-5 shadow-md space-y-3.5 relative">
+                        
+                        {/* Search Bar with Active Cursor Micro-Interaction */}
+                        <div className="flex items-center gap-2 pb-3 border-b border-[#e5e0d5] dark:border-[#202330]">
+                            <div className="flex-1 flex items-center gap-2 bg-[#f6f5ee] dark:bg-[#1b1e2b] px-3 py-1.5 rounded-xl border border-[#e2ddd3] dark:border-[#282c3e] text-xs">
+                                <Search size={14} className="text-[#5b6276] dark:text-slate-400 shrink-0" />
+                                <span className="font-semibold text-[#0a0d14] dark:text-slate-200">
+                                    Software Engineering Intern
+                                </span>
+                                <span className="w-1.5 h-3.5 bg-violet-600 animate-pulse ml-0.5" />
+                            </div>
+                            <div className="flex items-center gap-1.5 text-xs font-mono font-bold px-2.5 py-1.5 rounded-xl bg-[#f6f5ee] dark:bg-[#1b1e2b] border border-[#e2ddd3] dark:border-[#282c3e] text-[#4b5563] dark:text-slate-300">
+                                <SlidersHorizontal size={12} />
+                                <span className="hidden sm:inline">Filters</span>
+                            </div>
+                        </div>
+
+                        {/* Opportunity Listings Stack */}
+                        <div className="space-y-2.5">
+                            
+                            {/* PRIMARY HERO OPPORTUNITY CARD */}
+                            <motion.div
+                                className={`rounded-xl p-3.5 border-2 transition-all duration-300 relative ${
+                                    sceneState >= 1
+                                        ? 'bg-violet-50/60 dark:bg-violet-950/25 border-violet-500 shadow-sm'
+                                        : 'bg-[#fbfbfa] dark:bg-[#181a26] border-violet-500/40'
+                                }`}
+                                animate={{ scale: sceneState === 1 ? 1.01 : 1 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-9 h-9 rounded-xl bg-violet-600/15 border border-violet-500/30 flex items-center justify-center text-violet-700 dark:text-violet-400 shrink-0 mt-0.5">
+                                            <Briefcase size={17} />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <h4 className="text-xs sm:text-sm font-black text-[#0a0d14] dark:text-white">
+                                                    Software Engineering Intern
+                                                </h4>
+                                                <span className="text-[9px] font-mono font-bold text-violet-700 dark:text-violet-300 bg-violet-100 dark:bg-violet-500/20 px-1.5 py-0.2 rounded border border-violet-300 dark:border-violet-500/30">
+                                                    Recommended
+                                                </span>
+                                            </div>
+                                            <p className="text-[11px] text-[#4b5563] dark:text-slate-400 font-medium mt-0.5">
+                                                Host Organization • Enterprise Partner
+                                            </p>
+                                        </div>
                                     </div>
+
+                                    {/* Real-time Status Badge */}
                                     <div>
-                                        <h4 className="text-xs font-black text-[#0a0d14] dark:text-white leading-none">Student Profile</h4>
-                                        <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">Stage 01 • Match</span>
+                                        {sceneState === 0 && (
+                                            <span className="text-[10px] font-mono font-bold text-violet-800 dark:text-violet-300 bg-violet-100 dark:bg-violet-500/10 px-2 py-0.5 rounded border border-violet-300 dark:border-violet-500/20">
+                                                1 Slot Open
+                                            </span>
+                                        )}
+                                        {sceneState === 1 && (
+                                            <span className="text-[10px] font-mono font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/20 flex items-center gap-1">
+                                                <Clock size={11} className="animate-spin" /> In Review
+                                            </span>
+                                        )}
+                                        {sceneState === 2 && (
+                                            <span className="text-[10px] font-mono font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20 flex items-center gap-1">
+                                                <CheckCircle2 size={11} /> Placement Active
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
-                                <span className="text-[9px] font-mono font-bold bg-violet-100 dark:bg-violet-500/10 text-violet-900 dark:text-violet-300 px-2 py-0.5 rounded border border-violet-300 dark:border-violet-500/20">
-                                    Enrolled
-                                </span>
-                            </div>
 
-                            {/* Academic Program */}
-                            <div className="mt-3.5 space-y-1">
-                                <span className="text-xs font-black text-[#0a0d14] dark:text-white block">
-                                    BSc Information Technology
-                                </span>
-                                <span className="text-[11px] text-[#4b5563] dark:text-slate-400 font-medium block">
-                                    Year 3 • Semester 2
-                                </span>
-                            </div>
+                                {/* Meta Attributes */}
+                                <div className="flex flex-wrap items-center gap-2 mt-3 text-[10px] font-mono text-[#5b6276] dark:text-slate-400">
+                                    <span className="inline-flex items-center gap-1 bg-white dark:bg-[#12141c] px-2 py-0.5 rounded border border-[#e2ddd3] dark:border-[#282c3e]">
+                                        <Calendar size={11} /> 12-Week Term
+                                    </span>
+                                    <span className="inline-flex items-center gap-1 bg-white dark:bg-[#12141c] px-2 py-0.5 rounded border border-[#e2ddd3] dark:border-[#282c3e]">
+                                        <MapPin size={11} /> On-Site Industry Mentor
+                                    </span>
+                                    <span className="inline-flex items-center gap-1 text-emerald-700 dark:text-emerald-400 font-bold bg-white dark:bg-[#12141c] px-2 py-0.5 rounded border border-[#e2ddd3] dark:border-[#282c3e]">
+                                        <Check size={11} /> Prerequisites Met
+                                    </span>
+                                </div>
+                            </motion.div>
 
-                            {/* Verified Documents Checklist */}
-                            <div className="mt-3.5 space-y-1.5">
-                                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#5b6276] dark:text-slate-400 block">
-                                    Documents
-                                </span>
-                                <div className="space-y-1 text-[11px] font-medium text-[#22283a] dark:text-slate-300">
-                                    <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span className="flex items-center gap-1.5">
-                                            <FileCheck size={13} className="text-violet-600 dark:text-violet-400" />
-                                            <span>Introductory Letter</span>
-                                        </span>
-                                        <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold text-[10px] flex items-center gap-0.5">
-                                            <Check size={11} /> Verified
-                                        </span>
+                            {/* SECONDARY BACKGROUND LISTING (Contextual Depth) */}
+                            <div className="rounded-xl p-3 bg-[#fbfbfa] dark:bg-[#161824] border border-[#e2ddd3] dark:border-[#242738] opacity-65 hover:opacity-100 transition-opacity">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="w-8 h-8 rounded-lg bg-[#ece8dc] dark:bg-[#202332] flex items-center justify-center text-[#5b6276] dark:text-slate-400 text-xs">
+                                            <Building2 size={14} />
+                                        </div>
+                                        <div>
+                                            <h5 className="text-xs font-bold text-[#0a0d14] dark:text-slate-200">
+                                                Network Systems & Support Attachee
+                                            </h5>
+                                            <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">
+                                                Regional Telecommunications Partner
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span className="flex items-center gap-1.5">
-                                            <ShieldCheck size={13} className="text-violet-600 dark:text-violet-400" />
-                                            <span>Insurance Clearance</span>
-                                        </span>
-                                        <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold text-[10px] flex items-center gap-0.5">
-                                            <Check size={11} /> Verified
-                                        </span>
-                                    </div>
+                                    <span className="text-[9px] font-mono text-[#5b6276] dark:text-slate-400 bg-white dark:bg-[#12141c] px-2 py-0.5 rounded border border-[#e2ddd3] dark:border-[#26293a]">
+                                        2 Slots Available
+                                    </span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Status Footer */}
-                        <div className="mt-4 pt-3 border-t border-[#e5e0d5] dark:border-[#202330] flex items-center justify-between">
-                            <span className="text-[10px] font-mono text-[#5b6276] dark:text-slate-400">
-                                Prerequisite Check
-                            </span>
-                            <span className="text-[10px] font-mono font-bold text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20">
-                                ✓ Complete
-                            </span>
-                        </div>
-                    </motion.div>
-
-                    {/* ========================================================================= */}
-                    {/* CONNECTOR 1 (Desktop: Horizontal line | Mobile: Vertical arrow)           */}
-                    {/* ========================================================================= */}
-                    <div className="lg:col-span-1 flex flex-col lg:flex-row items-center justify-center py-2 lg:py-0">
-                        <div className="hidden lg:flex w-full items-center justify-center relative">
-                            <div className={`h-0.5 w-full transition-colors duration-500 ${
-                                activeStage >= 2 ? 'bg-violet-600 dark:bg-violet-500' : 'bg-[#d6d0c2] dark:bg-[#282c3c]'
-                            }`} />
-                            <motion.div
-                                className="absolute w-4 h-4 rounded-full bg-violet-600 text-white flex items-center justify-center shadow-xs"
-                                animate={{ scale: activeStage >= 2 ? [1, 1.2, 1] : 1 }}
-                                transition={{ duration: 0.4 }}
-                            >
-                                <ArrowRight size={10} />
-                            </motion.div>
-                        </div>
-                        <div className="lg:hidden flex items-center justify-center py-1">
-                            <ArrowDown size={18} className={activeStage >= 2 ? 'text-violet-600' : 'text-[#bbb3a0]'} />
+                        <div className="pt-2 flex items-center justify-between text-[11px] font-mono text-[#5b6276] dark:text-slate-400 border-t border-[#e5e0d5] dark:border-[#202330]">
+                            <span>Verified Host Directory</span>
+                            <span className="font-bold text-violet-700 dark:text-violet-400">Institutional Governance Active</span>
                         </div>
                     </div>
 
                     {/* ========================================================================= */}
-                    {/* 02 — APPLY: Attachment Opportunity & Application Card (Col 5-7)           */}
+                    {/* OVERLAPPING CONTEXTUAL UI FRAGMENTS (5 Cols)                              */}
                     {/* ========================================================================= */}
-                    <motion.div
-                        className={`lg:col-span-3 flex flex-col justify-between bg-[#fbfbfa] dark:bg-[#141620] border-2 rounded-2xl p-4.5 shadow-xs transition-all duration-300 ${
-                            activeStage >= 2
-                                ? 'border-cyan-500/60 dark:border-cyan-500/40 ring-2 ring-cyan-500/10'
-                                : 'border-[#dcd6c8] dark:border-[#242736]'
-                        }`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.1 }}
-                    >
-                        <div>
-                            {/* Card Header */}
-                            <div className="flex items-center justify-between pb-3 border-b border-[#e5e0d5] dark:border-[#202330]">
+                    <div className="lg:col-span-5 space-y-4">
+                        
+                        {/* FRAGMENT 1: Floating Student Candidate Context Panel */}
+                        <motion.div
+                            className="bg-white dark:bg-[#141620] border-2 border-[#e2ddd3] dark:border-[#22242f] rounded-2xl p-4 shadow-md relative"
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4 }}
+                        >
+                            <div className="flex items-center justify-between pb-2.5 border-b border-[#e5e0d5] dark:border-[#202330]">
                                 <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-lg bg-cyan-600/15 border border-cyan-500/30 flex items-center justify-center text-cyan-700 dark:text-cyan-400">
-                                        <Briefcase size={16} />
+                                    <div className="w-7 h-7 rounded-lg bg-violet-600/15 text-violet-700 dark:text-violet-400 flex items-center justify-center">
+                                        <GraduationCap size={15} />
                                     </div>
                                     <div>
-                                        <h4 className="text-xs font-black text-[#0a0d14] dark:text-white leading-none">Attachment Opportunity</h4>
-                                        <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">Stage 02 • Application</span>
-                                    </div>
-                                </div>
-                                <span className="text-[9px] font-mono font-bold bg-cyan-100 dark:bg-cyan-500/10 text-cyan-900 dark:text-cyan-300 px-2 py-0.5 rounded border border-cyan-300 dark:border-cyan-500/20">
-                                    Opportunity
-                                </span>
-                            </div>
-
-                            {/* Position Details */}
-                            <div className="mt-3.5 space-y-1">
-                                <span className="text-xs font-black text-[#0a0d14] dark:text-white block">
-                                    Software Engineering Intern
-                                </span>
-                                <span className="text-[11px] text-[#4b5563] dark:text-slate-400 font-medium block">
-                                    Host Organization
-                                </span>
-                            </div>
-
-                            {/* Dual Review Status Matrix */}
-                            <div className="mt-3.5 space-y-1.5">
-                                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#5b6276] dark:text-slate-400 block">
-                                    Application Review
-                                </span>
-                                <div className="space-y-1 text-[11px] font-medium text-[#22283a] dark:text-slate-300">
-                                    <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span>University Review</span>
-                                        <span className={`font-mono font-bold text-[10px] ${
-                                            activeStage >= 2 ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-400'
-                                        }`}>
-                                            {activeStage >= 2 ? '✓ Approved' : 'Pending'}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span>Industry Review</span>
-                                        <span className={`font-mono font-bold text-[10px] ${
-                                            activeStage >= 2 ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-400'
-                                        }`}>
-                                            {activeStage >= 2 ? '✓ Accepted' : 'Pending'}
+                                        <h5 className="text-xs font-black text-[#0a0d14] dark:text-white leading-none">
+                                            Student Profile
+                                        </h5>
+                                        <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">
+                                            BSc Information Technology
                                         </span>
                                     </div>
                                 </div>
+                                <span className="text-[10px] font-mono font-bold text-violet-800 dark:text-violet-300 bg-violet-100 dark:bg-violet-500/10 px-2 py-0.5 rounded">
+                                    Year 3
+                                </span>
                             </div>
-                        </div>
 
-                        {/* Status Footer */}
-                        <div className="mt-4 pt-3 border-t border-[#e5e0d5] dark:border-[#202330] flex items-center justify-between">
-                            <span className="text-[10px] font-mono text-[#5b6276] dark:text-slate-400">
-                                Application State
-                            </span>
-                            <AnimatePresence mode="wait">
-                                {activeStage === 1 && (
-                                    <motion.span
-                                        key="app1"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        className="text-[10px] font-mono font-bold text-[#5b6276] dark:text-slate-400 bg-[#ece8dd] dark:bg-[#1f2230] px-2 py-0.5 rounded"
-                                    >
-                                        Draft
-                                    </motion.span>
-                                )}
-                                {activeStage >= 2 && (
-                                    <motion.span
-                                        key="app2"
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        className="text-[10px] font-mono font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/20 flex items-center gap-1"
-                                    >
-                                        <Clock size={10} className="animate-spin" /> Application Submitted
-                                    </motion.span>
-                                )}
-                            </AnimatePresence>
-                        </div>
-                    </motion.div>
+                            {/* Verified Prerequisite Checklist */}
+                            <div className="mt-2.5 space-y-1.5 text-xs">
+                                <div className="flex items-center justify-between text-[11px] p-1.5 rounded bg-[#f6f5ee] dark:bg-[#1a1d2b]">
+                                    <span className="text-[#4b5563] dark:text-slate-400 flex items-center gap-1.5">
+                                        <FileCheck2 size={13} className="text-violet-600 dark:text-violet-400" />
+                                        <span>Introductory Letter</span>
+                                    </span>
+                                    <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5">
+                                        <Check size={11} /> Verified
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-between text-[11px] p-1.5 rounded bg-[#f6f5ee] dark:bg-[#1a1d2b]">
+                                    <span className="text-[#4b5563] dark:text-slate-400 flex items-center gap-1.5">
+                                        <ShieldCheck size={13} className="text-violet-600 dark:text-violet-400" />
+                                        <span>Insurance Clearance</span>
+                                    </span>
+                                    <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5">
+                                        <Check size={11} /> Verified
+                                    </span>
+                                </div>
+                            </div>
+                        </motion.div>
 
-                    {/* ========================================================================= */}
-                    {/* CONNECTOR 2 (Desktop: Horizontal line | Mobile: Vertical arrow)           */}
-                    {/* ========================================================================= */}
-                    <div className="lg:col-span-1 flex flex-col lg:flex-row items-center justify-center py-2 lg:py-0">
-                        <div className="hidden lg:flex w-full items-center justify-center relative">
-                            <div className={`h-0.5 w-full transition-colors duration-500 ${
-                                activeStage >= 3 ? 'bg-emerald-600 dark:bg-emerald-500' : 'bg-[#d6d0c2] dark:bg-[#282c3c]'
-                            }`} />
-                            <motion.div
-                                className="absolute w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-xs"
-                                animate={{ scale: activeStage >= 3 ? [1, 1.2, 1] : 1 }}
-                                transition={{ duration: 0.4 }}
-                            >
-                                <ArrowRight size={10} />
-                            </motion.div>
-                        </div>
-                        <div className="lg:hidden flex items-center justify-center py-1">
-                            <ArrowDown size={18} className={activeStage >= 3 ? 'text-emerald-600' : 'text-[#bbb3a0]'} />
-                        </div>
+                        {/* FRAGMENT 2: Interactive Dynamic Workflow State Card */}
+                        <AnimatePresence mode="wait">
+                            
+                            {/* STATE 0: Ready to Apply */}
+                            {sceneState === 0 && (
+                                <motion.div
+                                    key="state-0"
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    transition={{ duration: 0.25 }}
+                                    className="bg-white dark:bg-[#141620] border-2 border-violet-500/50 rounded-2xl p-4 shadow-md space-y-3"
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs font-black text-[#0a0d14] dark:text-white">
+                                            Application Dossier
+                                        </span>
+                                        <span className="text-[10px] font-mono text-violet-700 dark:text-violet-400 font-bold bg-violet-50 dark:bg-violet-500/10 px-2 py-0.5 rounded border border-violet-200 dark:border-violet-500/20">
+                                            Ready
+                                        </span>
+                                    </div>
+                                    <p className="text-xs text-[#4b5563] dark:text-slate-400 leading-relaxed">
+                                        Prerequisites verified. One-click transmission to host organization and university coordinator.
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={() => setSceneState(1)}
+                                        className="w-full py-2 px-3 bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs rounded-xl shadow-sm flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                                    >
+                                        <Send size={13} />
+                                        <span>Submit Application</span>
+                                    </button>
+                                </motion.div>
+                            )}
+
+                            {/* STATE 1: Application Dispatched & In Review */}
+                            {sceneState === 1 && (
+                                <motion.div
+                                    key="state-1"
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    transition={{ duration: 0.25 }}
+                                    className="bg-white dark:bg-[#141620] border-2 border-amber-500/60 rounded-2xl p-4 shadow-md space-y-3"
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-1.5">
+                                            <Clock size={14} className="text-amber-600 animate-spin" />
+                                            <span className="text-xs font-black text-[#0a0d14] dark:text-white">
+                                                Application Submitted
+                                            </span>
+                                        </div>
+                                        <span className="text-[9px] font-mono font-bold text-amber-900 dark:text-amber-300 bg-amber-100 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/20">
+                                            Under Review
+                                        </span>
+                                    </div>
+                                    
+                                    <div className="space-y-1.5 text-[11px] font-medium text-[#374151] dark:text-slate-300">
+                                        <div className="flex items-center justify-between p-1.5 rounded bg-[#f6f5ee] dark:bg-[#1a1d2b]">
+                                            <span>University Review</span>
+                                            <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">✓ Approved</span>
+                                        </div>
+                                        <div className="flex items-center justify-between p-1.5 rounded bg-[#f6f5ee] dark:bg-[#1a1d2b]">
+                                            <span>Industry Review</span>
+                                            <span className="font-mono font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                                                <Clock size={10} /> In Progress
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="text-[10px] font-mono text-[#5b6276] dark:text-slate-400 pt-1">
+                                        Awaiting workplace mentor sign-off
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* STATE 2: Placement Confirmed & Supervisors Appointed */}
+                            {sceneState === 2 && (
+                                <motion.div
+                                    key="state-2"
+                                    initial={{ opacity: 0, scale: 0.98 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    transition={{ duration: 0.25 }}
+                                    className="bg-white dark:bg-[#141620] border-2 border-emerald-500/70 rounded-2xl p-4 shadow-md space-y-3"
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-1.5">
+                                            <CheckCircle2 size={15} className="text-emerald-600" />
+                                            <span className="text-xs font-black text-[#0a0d14] dark:text-white">
+                                                Placement Confirmed
+                                            </span>
+                                        </div>
+                                        <span className="text-[9px] font-mono font-bold text-emerald-900 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20">
+                                            Active Enrolment
+                                        </span>
+                                    </div>
+
+                                    {/* Multi-Stakeholder Supervisor Allocation */}
+                                    <div className="space-y-1.5 text-[11px]">
+                                        <div className="flex items-center justify-between p-1.5 rounded bg-[#f6f5ee] dark:bg-[#1a1d2b]">
+                                            <span className="text-[#4b5563] dark:text-slate-400 font-medium">University Supervisor</span>
+                                            <span className="font-mono font-bold text-violet-700 dark:text-violet-400">Assigned</span>
+                                        </div>
+                                        <div className="flex items-center justify-between p-1.5 rounded bg-[#f6f5ee] dark:bg-[#1a1d2b]">
+                                            <span className="text-[#4b5563] dark:text-slate-400 font-medium">Industry Supervisor</span>
+                                            <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">Assigned</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-1 flex items-center justify-between text-[10px] font-mono text-emerald-800 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/5 p-1.5 rounded border border-emerald-200 dark:border-emerald-500/20">
+                                        <span>75% Attendance Guard</span>
+                                        <span className="font-bold">Active Tracking</span>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
-
-                    {/* ========================================================================= */}
-                    {/* 03 — CONFIRM: Placement Card (Col 9-11)                                    */}
-                    {/* ========================================================================= */}
-                    <motion.div
-                        className={`lg:col-span-3 flex flex-col justify-between bg-[#fbfbfa] dark:bg-[#141620] border-2 rounded-2xl p-4.5 shadow-xs transition-all duration-300 ${
-                            activeStage === 3
-                                ? 'border-emerald-500/70 dark:border-emerald-500/50 ring-2 ring-emerald-500/10'
-                                : 'border-[#dcd6c8] dark:border-[#242736]'
-                        }`}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: 0.2 }}
-                    >
-                        <div>
-                            {/* Card Header */}
-                            <div className="flex items-center justify-between pb-3 border-b border-[#e5e0d5] dark:border-[#202330]">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-lg bg-emerald-600/15 border border-emerald-500/30 flex items-center justify-center text-emerald-700 dark:text-emerald-400">
-                                        <CheckCircle2 size={16} />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-xs font-black text-[#0a0d14] dark:text-white leading-none">Placement Confirmed</h4>
-                                        <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">Stage 03 • Active</span>
-                                    </div>
-                                </div>
-                                <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded border transition-colors ${
-                                    activeStage === 3
-                                        ? 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-400 border-emerald-300 dark:border-emerald-500/20'
-                                        : 'bg-[#ece8dd] dark:bg-[#1f2230] text-[#5b6276] dark:text-slate-400 border-[#cfc8b8] dark:border-[#282c3e]'
-                                }`}>
-                                    {activeStage === 3 ? 'Confirmed' : 'Approval Pending'}
-                                </span>
-                            </div>
-
-                            {/* Placement Active Details */}
-                            <div className="mt-3.5 space-y-1">
-                                <span className="text-xs font-black text-[#0a0d14] dark:text-white block">
-                                    Host Organization
-                                </span>
-                                <span className="text-[11px] text-[#4b5563] dark:text-slate-400 font-medium block">
-                                    Software Engineering Intern
-                                </span>
-                            </div>
-
-                            {/* Dual Supervisor Row (Supporting Multi-Stakeholder Metadata) */}
-                            <div className="mt-3.5 space-y-1.5">
-                                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#5b6276] dark:text-slate-400 block">
-                                    Supervisor Allocation
-                                </span>
-                                <div className="space-y-1 text-[11px] font-medium text-[#22283a] dark:text-slate-300">
-                                    <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span className="text-[10px] font-semibold text-[#0a0d14] dark:text-white">University Supervisor</span>
-                                        <span className="text-[10px] font-mono font-bold text-violet-700 dark:text-violet-400">
-                                            Assigned
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center justify-between py-1 px-2 rounded bg-white dark:bg-[#1a1d28] border border-[#e5e0d5] dark:border-[#272b3c]">
-                                        <span className="text-[10px] font-semibold text-[#0a0d14] dark:text-white">Industry Supervisor</span>
-                                        <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400">
-                                            Assigned
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Status Footer */}
-                        <div className="mt-4 pt-3 border-t border-[#e5e0d5] dark:border-[#202330] flex items-center justify-between">
-                            <span className="text-[10px] font-mono text-[#5b6276] dark:text-slate-400">
-                                Status
-                            </span>
-                            <span className={`text-[10px] font-mono font-bold px-2 py-0.5 rounded flex items-center gap-1 ${
-                                activeStage === 3
-                                    ? 'text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-300 dark:border-emerald-500/20'
-                                    : 'text-[#5b6276] dark:text-slate-400 bg-[#ece8dd] dark:bg-[#1f2230]'
-                            }`}>
-                                <CheckCircle2 size={11} /> {activeStage === 3 ? 'Placement Active' : 'Pending'}
-                            </span>
-                        </div>
-                    </motion.div>
                 </div>
 
-                {/* Subtle Bottom Multi-Stakeholder Summary Bar */}
-                <div className="mt-6 pt-4 border-t border-[#e2ddd3] dark:border-[#1f2230] flex flex-wrap items-center justify-between gap-3 text-xs">
+                {/* Living Product Bottom Context Bar */}
+                <div className="mt-5 pt-3.5 border-t border-[#e2ddd3] dark:border-[#1f2230] flex flex-wrap items-center justify-between gap-3 text-xs">
                     <div className="flex items-center gap-2 text-[#4b5563] dark:text-slate-400 font-medium">
                         <Users size={14} className="text-violet-600 dark:text-violet-400" />
-                        <span>Integrated Stakeholders: Student • Host Organization • University Coordinator • Mentors</span>
+                        <span>Connected Stakeholders: Student • Host Organization • University Faculty</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-[11px] font-mono font-bold text-emerald-800 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-500/20">
-                            Governance Ready
+                            Institutional Governance Active
                         </span>
                     </div>
                 </div>
