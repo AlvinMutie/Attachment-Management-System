@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Briefcase,
@@ -10,30 +10,59 @@ import {
     RotateCcw,
     GraduationCap,
     FileText,
-    MessageSquare,
-    UserCheck,
     Activity,
     Compass,
-    SlidersHorizontal,
-    Sparkles,
-    CalendarCheck,
     Bell,
-    ChevronRight,
     Users
 } from 'lucide-react';
 
 export const SupervisionWorkflowIllustration = () => {
-    // 0: Active Monitoring | 1: Weekly Log Submitted | 2: Industry Feedback Recorded | 3: University Review Scheduled
+    // 0: Active Workspace | 1: Log Submitted | 2: Industry Feedback Recorded | 3: University Review Scheduled
     const [sceneState, setSceneState] = useState(2);
+    const [loadingTarget, setLoadingTarget] = useState(null); // 'log' | 'industry' | 'university' | null
     const [isPaused, setIsPaused] = useState(false);
+    const timerRef = useRef(null);
 
-    // Subtle autonomous product interaction cycle
+    // Transitions with brief, realistic transient loading states (500–700ms)
+    const triggerTransition = (nextState) => {
+        if (nextState === 1) {
+            setLoadingTarget('log');
+            setTimeout(() => {
+                setSceneState(1);
+                setLoadingTarget(null);
+            }, 600);
+        } else if (nextState === 2) {
+            setLoadingTarget('industry');
+            setTimeout(() => {
+                setSceneState(2);
+                setLoadingTarget(null);
+            }, 650);
+        } else if (nextState === 3) {
+            setLoadingTarget('university');
+            setTimeout(() => {
+                setSceneState(3);
+                setLoadingTarget(null);
+            }, 600);
+        } else {
+            setSceneState(0);
+            setLoadingTarget(null);
+        }
+    };
+
+    // Subtle autonomous product interaction cycle with calm settling periods
     useEffect(() => {
         if (isPaused) return;
-        const timer = setInterval(() => {
-            setSceneState((prev) => (prev >= 3 ? 0 : prev + 1));
-        }, 4600);
-        return () => clearInterval(timer);
+        timerRef.current = setInterval(() => {
+            setSceneState((prev) => {
+                const next = prev >= 3 ? 0 : prev + 1;
+                triggerTransition(next);
+                return prev; // actual state set inside triggerTransition
+            });
+        }, 5200);
+
+        return () => {
+            if (timerRef.current) clearInterval(timerRef.current);
+        };
     }, [isPaused]);
 
     const weekDays = [
@@ -41,7 +70,7 @@ export const SupervisionWorkflowIllustration = () => {
         { day: 'T', active: true, label: 'Tue' },
         { day: 'W', active: true, label: 'Wed' },
         { day: 'T', active: true, label: 'Thu' },
-        { day: 'F', active: sceneState >= 1, label: 'Fri' }
+        { day: 'F', active: sceneState >= 1 && loadingTarget !== 'log', label: 'Fri' }
     ];
 
     const timelineWeeks = [
@@ -86,7 +115,7 @@ export const SupervisionWorkflowIllustration = () => {
                             type="button"
                             onClick={() => {
                                 setIsPaused(true);
-                                setSceneState(step.id);
+                                triggerTransition(step.id);
                             }}
                             className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                                 sceneState === step.id
@@ -101,9 +130,9 @@ export const SupervisionWorkflowIllustration = () => {
                         type="button"
                         onClick={() => {
                             setIsPaused(true);
-                            setSceneState(0);
+                            triggerTransition(0);
                         }}
-                        className="p-1 text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors ml-0.5"
+                        className="p-1 text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors ml-0.5 cursor-pointer"
                         title="Replay sequence"
                         aria-label="Replay sequence"
                     >
@@ -241,10 +270,13 @@ export const SupervisionWorkflowIllustration = () => {
                                     <Check size={13} className="text-emerald-600 shrink-0" />
                                 </div>
 
+                                {/* Friday Entry with Live Saving/Submitting State */}
                                 <motion.div
                                     className={`p-2 rounded-lg border transition-all duration-300 flex items-center justify-between ${
-                                        sceneState >= 1
+                                        sceneState >= 1 && loadingTarget !== 'log'
                                             ? 'bg-violet-50/70 dark:bg-violet-950/30 border-violet-500'
+                                            : loadingTarget === 'log'
+                                            ? 'bg-amber-50/70 dark:bg-amber-950/20 border-amber-400/80'
                                             : 'bg-[#faf9f6] dark:bg-[#181a26] border-[#e2ddd3] dark:border-[#282c3e]'
                                     }`}
                                 >
@@ -252,13 +284,25 @@ export const SupervisionWorkflowIllustration = () => {
                                         <span className="font-mono text-[10px] font-bold text-violet-700 dark:text-violet-400 bg-white dark:bg-[#12141c] px-1.5 py-0.5 rounded border border-[#e2ddd3] dark:border-[#242738]">
                                             Fri
                                         </span>
-                                        <span className="font-medium text-[#22283a] dark:text-slate-200 text-[11px]">
-                                            End-of-week revision compilation & mentor sign-off
-                                        </span>
+                                        {loadingTarget === 'log' ? (
+                                            <span className="font-medium text-amber-800 dark:text-amber-300 text-[11px] flex items-center gap-1.5">
+                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
+                                                <span>Saving weekly log submission...</span>
+                                            </span>
+                                        ) : (
+                                            <span className="font-medium text-[#22283a] dark:text-slate-200 text-[11px]">
+                                                End-of-week revision compilation & mentor sign-off
+                                            </span>
+                                        )}
                                     </div>
-                                    {sceneState >= 1 ? (
+
+                                    {loadingTarget === 'log' ? (
+                                        <span className="text-[10px] font-mono text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                                            <Clock size={11} className="animate-spin" /> Saving
+                                        </span>
+                                    ) : sceneState >= 1 ? (
                                         <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
-                                            <CheckCircle2 size={12} /> Submitted
+                                            <CheckCircle2 size={12} /> Submitted (Just now)
                                         </span>
                                     ) : (
                                         <span className="text-[10px] font-mono text-slate-400">Drafting</span>
@@ -276,7 +320,7 @@ export const SupervisionWorkflowIllustration = () => {
                                 {weekDays.map((d, i) => (
                                     <span
                                         key={i}
-                                        className={`w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-bold border ${
+                                        className={`w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-bold border transition-colors duration-300 ${
                                             d.active
                                                 ? 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 border-emerald-300 dark:border-emerald-500/30'
                                                 : 'bg-[#ece8dc] dark:bg-[#202330] text-slate-400 border-transparent'
@@ -297,8 +341,10 @@ export const SupervisionWorkflowIllustration = () => {
                         {/* CONTEXTUAL DRAWER 1: Industry Supervisor Feedback Panel */}
                         <motion.div
                             className={`bg-white dark:bg-[#141620] border-2 rounded-2xl p-4 shadow-md space-y-3 transition-all duration-300 ${
-                                sceneState >= 2
+                                sceneState >= 2 && loadingTarget !== 'industry'
                                     ? 'border-cyan-500/80 dark:border-cyan-500/60 ring-2 ring-cyan-500/10'
+                                    : loadingTarget === 'industry'
+                                    ? 'border-cyan-400/80'
                                     : 'border-[#e2ddd3] dark:border-[#22242f]'
                             }`}
                             initial={{ opacity: 0, y: 8 }}
@@ -320,21 +366,30 @@ export const SupervisionWorkflowIllustration = () => {
                                     </div>
                                 </div>
                                 <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded border transition-colors ${
-                                    sceneState >= 2
+                                    sceneState >= 2 && loadingTarget !== 'industry'
                                         ? 'bg-cyan-100 dark:bg-cyan-500/10 text-cyan-900 dark:text-cyan-300 border-cyan-300 dark:border-cyan-500/20'
+                                        : loadingTarget === 'industry'
+                                        ? 'bg-amber-100 dark:bg-amber-500/10 text-amber-900 dark:text-amber-300 border-amber-300'
                                         : 'bg-[#ece8dd] dark:bg-[#1f2230] text-slate-400 border-transparent'
                                 }`}>
-                                    {sceneState >= 2 ? 'Feedback Recorded' : 'Review Pending'}
+                                    {loadingTarget === 'industry' ? 'Syncing...' : sceneState >= 2 ? 'Feedback Recorded' : 'Review Pending'}
                                 </span>
                             </div>
 
-                            {/* Feedback Quote Bubble */}
+                            {/* Feedback Quote or Subtle Loading Skeleton */}
                             <div className="bg-[#f6f5ee] dark:bg-[#1a1d2b] p-2.5 rounded-xl border border-[#e2ddd3] dark:border-[#282c3e] space-y-1">
-                                <p className="text-[11px] text-[#22283a] dark:text-slate-200 italic leading-relaxed">
-                                    "Good progress on the API integration. Next week, focus on error handling and testing coverage."
-                                </p>
+                                {loadingTarget === 'industry' ? (
+                                    <div className="space-y-1.5 py-1 animate-pulse">
+                                        <div className="h-2.5 bg-[#e2ddd3] dark:bg-[#282c3e] rounded w-5/6" />
+                                        <div className="h-2.5 bg-[#e2ddd3] dark:bg-[#282c3e] rounded w-2/3" />
+                                    </div>
+                                ) : (
+                                    <p className="text-[11px] text-[#22283a] dark:text-slate-200 italic leading-relaxed">
+                                        "Good progress on the API integration. Next week, focus on error handling and testing coverage."
+                                    </p>
+                                )}
                                 <div className="flex items-center justify-between pt-1 text-[10px] font-mono text-[#5b6276] dark:text-slate-400">
-                                    <span>Reviewed just now</span>
+                                    <span>{loadingTarget === 'industry' ? 'Fetching review...' : 'Reviewed just now'}</span>
                                     <span className="font-bold text-emerald-700 dark:text-emerald-400 flex items-center gap-0.5">
                                         <Check size={11} /> Signed Off
                                     </span>
@@ -345,8 +400,10 @@ export const SupervisionWorkflowIllustration = () => {
                         {/* CONTEXTUAL DRAWER 2: University Supervisor Schedule Window */}
                         <motion.div
                             className={`bg-white dark:bg-[#141620] border-2 rounded-2xl p-4 shadow-md space-y-3 transition-all duration-300 ${
-                                sceneState === 3
+                                sceneState === 3 && loadingTarget !== 'university'
                                     ? 'border-violet-500/80 dark:border-violet-500/60 ring-2 ring-violet-500/10'
+                                    : loadingTarget === 'university'
+                                    ? 'border-violet-400/80'
                                     : 'border-[#e2ddd3] dark:border-[#22242f]'
                             }`}
                             initial={{ opacity: 0, y: 8 }}
@@ -374,24 +431,33 @@ export const SupervisionWorkflowIllustration = () => {
 
                             {/* Schedule & Review Details */}
                             <div className="space-y-1.5 text-xs">
-                                <div className="flex items-center justify-between p-2 rounded-lg bg-[#f6f5ee] dark:bg-[#1a1d2b] border border-[#e2ddd3] dark:border-[#282c3e]">
-                                    <span className="text-[#4b5563] dark:text-slate-400 flex items-center gap-1.5 text-[11px]">
-                                        <Calendar size={13} className="text-violet-600 dark:text-violet-400" />
-                                        <span>Next Field Visit</span>
-                                    </span>
-                                    <span className="font-mono font-bold text-[#0a0d14] dark:text-white text-[11px]">
-                                        Thursday • 10:30 AM
-                                    </span>
-                                </div>
-                                <div className="flex items-center justify-between p-2 rounded-lg bg-[#f6f5ee] dark:bg-[#1a1d2b] border border-[#e2ddd3] dark:border-[#282c3e]">
-                                    <span className="text-[#4b5563] dark:text-slate-400 flex items-center gap-1.5 text-[11px]">
-                                        <Compass size={13} className="text-violet-600 dark:text-violet-400" />
-                                        <span>Review Type</span>
-                                    </span>
-                                    <span className="font-mono font-bold text-violet-700 dark:text-violet-400 text-[11px]">
-                                        Mid-Term Evaluation
-                                    </span>
-                                </div>
+                                {loadingTarget === 'university' ? (
+                                    <div className="p-2 rounded-lg bg-[#f6f5ee] dark:bg-[#1a1d2b] border border-[#e2ddd3] dark:border-[#282c3e] space-y-2 animate-pulse">
+                                        <div className="h-2.5 bg-[#e2ddd3] dark:bg-[#282c3e] rounded w-3/4" />
+                                        <div className="h-2.5 bg-[#e2ddd3] dark:bg-[#282c3e] rounded w-1/2" />
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="flex items-center justify-between p-2 rounded-lg bg-[#f6f5ee] dark:bg-[#1a1d2b] border border-[#e2ddd3] dark:border-[#282c3e]">
+                                            <span className="text-[#4b5563] dark:text-slate-400 flex items-center gap-1.5 text-[11px]">
+                                                <Calendar size={13} className="text-violet-600 dark:text-violet-400" />
+                                                <span>Next Field Visit</span>
+                                            </span>
+                                            <span className="font-mono font-bold text-[#0a0d14] dark:text-white text-[11px]">
+                                                Thursday • 10:30 AM
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center justify-between p-2 rounded-lg bg-[#f6f5ee] dark:bg-[#1a1d2b] border border-[#e2ddd3] dark:border-[#282c3e]">
+                                            <span className="text-[#4b5563] dark:text-slate-400 flex items-center gap-1.5 text-[11px]">
+                                                <Compass size={13} className="text-violet-600 dark:text-violet-400" />
+                                                <span>Review Type</span>
+                                            </span>
+                                            <span className="font-mono font-bold text-violet-700 dark:text-violet-400 text-[11px]">
+                                                Mid-Term Evaluation
+                                            </span>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </motion.div>
                     </div>
@@ -404,23 +470,39 @@ export const SupervisionWorkflowIllustration = () => {
                             <Bell size={13} className="text-violet-600 dark:text-violet-400" />
                             <span>Live Activity:</span>
                         </span>
-                        <span className="inline-flex items-center gap-1 text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20">
-                            <Check size={10} /> Weekly log submitted
-                        </span>
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border transition-colors ${
-                            sceneState >= 2
-                                ? 'text-cyan-900 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-500/10 border-cyan-300 dark:border-cyan-500/20'
-                                : 'text-slate-400 bg-slate-100 dark:bg-slate-800 border-transparent opacity-60'
-                        }`}>
-                            <Check size={10} /> Industry supervisor reviewed Week 7
-                        </span>
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded border transition-colors ${
-                            sceneState === 3
-                                ? 'text-violet-900 dark:text-violet-300 bg-violet-100 dark:bg-violet-500/10 border-violet-300 dark:border-violet-500/20'
-                                : 'text-slate-400 bg-slate-100 dark:bg-slate-800 border-transparent opacity-60'
-                        }`}>
-                            <Check size={10} /> University review scheduled for Thursday
-                        </span>
+                        
+                        <AnimatePresence mode="popLayout">
+                            <motion.span
+                                key="act-log"
+                                initial={{ opacity: 0, y: 3 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="inline-flex items-center gap-1 text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20"
+                            >
+                                <Check size={10} /> Weekly log submitted
+                            </motion.span>
+                            
+                            {sceneState >= 2 && (
+                                <motion.span
+                                    key="act-ind"
+                                    initial={{ opacity: 0, y: 3 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="inline-flex items-center gap-1 text-cyan-900 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-300 dark:border-cyan-500/20"
+                                >
+                                    <Check size={10} /> Industry supervisor reviewed Week 7
+                                </motion.span>
+                            )}
+
+                            {sceneState === 3 && (
+                                <motion.span
+                                    key="act-univ"
+                                    initial={{ opacity: 0, y: 3 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="inline-flex items-center gap-1 text-violet-900 dark:text-violet-300 bg-violet-100 dark:bg-violet-500/10 px-2 py-0.5 rounded border border-violet-300 dark:border-violet-500/20"
+                                >
+                                    <Check size={10} /> University review scheduled for Thursday
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
                     </div>
 
                     <span className="self-start sm:self-center text-[11px] font-mono font-bold text-violet-800 dark:text-violet-300 bg-violet-100 dark:bg-violet-500/10 px-2.5 py-0.5 rounded-full border border-violet-300 dark:border-violet-500/20 whitespace-nowrap">
