@@ -39,6 +39,7 @@ import ProductCockpit from '../components/landing/ProductCockpit';
 import PlacementWorkflowIllustration from '../components/landing/PlacementWorkflowIllustration';
 import SupervisionWorkflowIllustration from '../components/landing/SupervisionWorkflowIllustration';
 import ReportingWorkflowIllustration from '../components/landing/ReportingWorkflowIllustration';
+import CompletionWorkflowIllustration from '../components/landing/CompletionWorkflowIllustration';
 
 const fadeInUp = {
     initial: { opacity: 0, y: 32 },
@@ -310,7 +311,28 @@ const LandingPage = () => {
             </section>
 
             {/* ========================================================================= */}
-            {/* 7. 6-STAGE ATTACHMENT LIFECYCLE (NAV TARGET: #lifecycle)                  */}
+            {/* 7. WORKFLOW SHOWCASE: 04 — COMPLETION                                     */}
+            {/* ========================================================================= */}
+            <section id="completion" className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 scroll-mt-20">
+                <motion.div className="text-center max-w-3xl mx-auto mb-4" {...fadeInUp}>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-900 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-300 dark:border-emerald-500/20">
+                        Final Clearance & Closure
+                    </span>
+                    <h2 className="text-3xl sm:text-4xl font-black text-[#0a0d14] dark:text-white tracking-tight mt-3">
+                        Verified, certified, and complete.
+                    </h2>
+                    <p className="text-sm text-[#374151] dark:text-slate-400 font-medium mt-2">
+                        <span className="font-bold text-[#0a0d14] dark:text-white">04 — Completion:</span> Every log, attendance requirement, and dual assessment verified for graduation clearance.
+                    </p>
+                </motion.div>
+
+                <motion.div {...fadeInUp}>
+                    <CompletionWorkflowIllustration />
+                </motion.div>
+            </section>
+
+            {/* ========================================================================= */}
+            {/* 8. 6-STAGE ATTACHMENT LIFECYCLE (NAV TARGET: #lifecycle)                  */}
             {/* ========================================================================= */}
             <section id="lifecycle" className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
                 <motion.div className="text-center max-w-3xl mx-auto mb-12" {...fadeInUp}>
