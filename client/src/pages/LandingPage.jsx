@@ -36,6 +36,7 @@ import Footer from '../components/Footer';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import ProductCockpit from '../components/landing/ProductCockpit';
+import PlacementWorkflowIllustration from '../components/landing/PlacementWorkflowIllustration';
 
 const fadeInUp = {
     initial: { opacity: 0, y: 32 },
@@ -57,13 +58,6 @@ const LandingPage = () => {
     const toggleFaq = (index) => {
         setOpenFaq(openFaq === index ? null : index);
     };
-
-    const stats = [
-        { label: 'Active Placements', value: '14,800+', note: 'Enrolled across campuses', trend: '+28%' },
-        { label: 'Verified Logbooks', value: '99.2%', note: 'Weekly reviews completed', trend: 'Audit-ready' },
-        { label: 'Partner Institutions', value: '62+', note: 'Universities & colleges', trend: 'Multi-tenant' },
-        { label: 'Host Employers', value: '1,200+', note: 'Active industry mentors', trend: 'Verified' }
-    ];
 
     const lifecycleStages = [
         {
@@ -249,40 +243,30 @@ const LandingPage = () => {
                 <ProductCockpit />
             </motion.section>
 
+
             {/* ========================================================================= */}
-            {/* 3. METRIC BENCHMARKS & STATS STRIP                                        */}
+            {/* 4. WORKFLOW SHOWCASE: ONE WORKFLOW. EVERY STAKEHOLDER.                    */}
             {/* ========================================================================= */}
-            <section className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12">
-                <motion.div
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
-                    variants={staggerContainer}
-                    initial="initial"
-                    whileInView="whileInView"
-                    viewport={{ once: true, margin: "-60px" }}
-                >
-                    {stats.map((stat, idx) => (
-                        <motion.div
-                            key={idx}
-                            variants={fadeInUp}
-                            className="bg-white dark:bg-[#12141c] border border-[#e2ddd3] dark:border-[#22242f] rounded-2xl p-5 hover:border-violet-500/40 dark:hover:border-[#2f3244] transition-all duration-200 group shadow-xs hover:shadow-md"
-                        >
-                            <div className="flex items-center justify-between">
-                                <span className="text-xs font-bold text-[#4b5563] dark:text-slate-400 uppercase tracking-wider">{stat.label}</span>
-                                <span className="text-[10px] font-mono font-bold text-violet-700 dark:text-violet-400 bg-violet-100 dark:bg-violet-500/10 px-2 py-0.5 rounded border border-violet-300 dark:border-violet-500/20">
-                                    {stat.trend}
-                                </span>
-                            </div>
-                            <span className="text-3xl font-black text-[#0a0d14] dark:text-white font-mono block mt-2 group-hover:text-violet-600 dark:group-hover:text-violet-300 transition-colors">
-                                {stat.value}
-                            </span>
-                            <span className="text-xs text-[#5b6276] dark:text-slate-500 font-medium block mt-1">{stat.note}</span>
-                        </motion.div>
-                    ))}
+            <section id="workflow" className="relative max-w-6xl mx-auto px-4 sm:px-6 py-12 scroll-mt-20">
+                <motion.div className="text-center max-w-3xl mx-auto mb-4" {...fadeInUp}>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-violet-800 dark:text-violet-400 bg-violet-100 dark:bg-violet-500/10 px-2.5 py-1 rounded-md border border-violet-300 dark:border-violet-500/20">
+                        Workflow Architecture
+                    </span>
+                    <h2 className="text-3xl sm:text-4xl font-black text-[#0a0d14] dark:text-white tracking-tight mt-3">
+                        One workflow. Every stakeholder.
+                    </h2>
+                    <p className="text-sm text-[#374151] dark:text-slate-400 font-medium mt-2">
+                        <span className="font-bold text-[#0a0d14] dark:text-white">01 — Placement:</span> From student candidate matching and verified employer requisitions to institutional coordinator lock-in.
+                    </p>
+                </motion.div>
+
+                <motion.div {...fadeInUp}>
+                    <PlacementWorkflowIllustration />
                 </motion.div>
             </section>
 
             {/* ========================================================================= */}
-            {/* 4. 6-STAGE ATTACHMENT LIFECYCLE (NAV TARGET: #lifecycle)                  */}
+            {/* 5. 6-STAGE ATTACHMENT LIFECYCLE (NAV TARGET: #lifecycle)                  */}
             {/* ========================================================================= */}
             <section id="lifecycle" className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
                 <motion.div className="text-center max-w-3xl mx-auto mb-12" {...fadeInUp}>
