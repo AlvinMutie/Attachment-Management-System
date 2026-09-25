@@ -22,13 +22,13 @@ const Button = React.forwardRef(({
     };
 
     const variantStyles = {
-        primary: 'bg-violet-600 hover:bg-violet-500 text-white shadow-sm shadow-violet-600/20 border border-violet-500/30 focus-visible:outline-violet-500 font-semibold',
-        secondary: 'bg-[#181a24] hover:bg-[#202330] text-slate-200 border border-[#2c3040] shadow-sm focus-visible:outline-slate-400',
-        outline: 'border border-[#2c3040] hover:border-slate-500 hover:bg-white/[0.03] text-slate-300 focus-visible:outline-white',
-        ghost: 'text-slate-400 hover:text-white hover:bg-white/[0.05] focus-visible:outline-slate-400',
-        danger: 'bg-rose-600 hover:bg-rose-500 text-white shadow-sm border border-rose-500/30 focus-visible:outline-rose-500 font-semibold',
-        success: 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm border border-emerald-500/30 focus-visible:outline-emerald-500 font-semibold',
-        figma: 'bg-white hover:bg-slate-100 text-slate-900 font-semibold shadow-sm'
+        primary: 'bg-violet-600 hover:bg-violet-500 !text-white shadow-md shadow-violet-600/30 border border-violet-500/40 focus-visible:outline-violet-500 font-bold',
+        secondary: 'bg-[#181a24] hover:bg-[#222534] text-slate-100 border border-[#2e3244] shadow-sm focus-visible:outline-slate-400 font-medium',
+        outline: 'border border-[#2e3244] bg-[#12141c]/80 hover:bg-[#1c1f2e] text-slate-100 focus-visible:outline-violet-400 font-medium',
+        ghost: 'text-slate-300 hover:text-white hover:bg-white/[0.06] focus-visible:outline-slate-400 font-medium',
+        danger: 'bg-rose-600 hover:bg-rose-500 !text-white shadow-sm border border-rose-500/40 focus-visible:outline-rose-500 font-bold',
+        success: 'bg-emerald-600 hover:bg-emerald-500 !text-white shadow-sm border border-emerald-500/40 focus-visible:outline-emerald-500 font-bold',
+        figma: 'bg-white hover:bg-slate-100 !text-slate-900 font-bold shadow-sm'
     };
 
     const isInteractiveDisabled = disabled || loading;

@@ -361,10 +361,42 @@ html.light {
     border-color: #e5e0d5 !important;
   }
 
-  /* Text color readability on paper */
-  .text-white,
-  .text-slate-100 {
+  /* Text color readability on paper (preserving buttons & colored badges) */
+  p.text-white,
+  h1.text-white,
+  h2.text-white,
+  h3.text-white,
+  h4.text-white,
+  h5.text-white,
+  h6.text-white,
+  div > span.text-white:not([class*="bg-violet"]):not([class*="bg-indigo"]):not([class*="bg-emerald"]):not([class*="bg-rose"]):not([class*="bg-blue"]):not([class*="bg-cyan"]),
+  p.text-slate-100,
+  h1.text-slate-100,
+  h2.text-slate-100,
+  h3.text-slate-100,
+  h4.text-slate-100 {
     color: #151821 !important;
+  }
+
+  /* Ensure primary & colored action buttons ALWAYS retain white text */
+  button.bg-violet-600,
+  button[class*="bg-violet-"],
+  button[class*="bg-indigo-"],
+  button[class*="bg-emerald-"],
+  button[class*="bg-rose-"],
+  button[class*="bg-blue-"],
+  a.bg-violet-600,
+  a[class*="bg-violet-"],
+  a[class*="bg-indigo-"],
+  .btn-primary,
+  button[class*="bg-violet"] span,
+  button[class*="bg-indigo"] span,
+  button[class*="bg-emerald"] span,
+  button[class*="bg-rose"] span,
+  button[class*="bg-blue"] span,
+  a[class*="bg-violet"] span,
+  a[class*="bg-indigo"] span {
+    color: #ffffff !important;
   }
 
   .text-slate-200,
