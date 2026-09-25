@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Menu, X, ArrowRight, GraduationCap, Building2 } from 'lucide-react';
 import Button from './ui/Button';
+import ThemeToggle from './ui/ThemeToggle';
 
 const Navbar = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -33,6 +34,7 @@ const Navbar = () => {
 
                 {/* Actions */}
                 <div className="hidden md:flex items-center gap-3">
+                    <ThemeToggle variant="icon" />
                     <Link to="/login">
                         <Button variant="ghost" size="sm">
                             Sign In
@@ -46,14 +48,17 @@ const Navbar = () => {
                 </div>
 
                 {/* Mobile Menu Toggle */}
-                <button
-                    type="button"
-                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                    className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
-                    aria-label="Toggle Navigation Menu"
-                >
-                    {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                </button>
+                <div className="flex items-center gap-2 md:hidden">
+                    <ThemeToggle variant="icon" />
+                    <button
+                        type="button"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        className="p-2 text-slate-400 hover:text-white transition-colors"
+                        aria-label="Toggle Navigation Menu"
+                    >
+                        {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                    </button>
+                </div>
             </div>
 
             {/* Mobile Drawer */}

@@ -15,10 +15,12 @@ import {
 } from 'lucide-react';
 import DashboardLayout from '../components/DashboardLayout';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { Badge, Button } from '../components/ui';
 
 const Settings = () => {
     const { user } = useAuth();
+    const { theme, setTheme, isDark } = useTheme();
     const role = user?.role || 'student';
 
     const [notifications, setNotifications] = useState({
@@ -130,29 +132,51 @@ const Settings = () => {
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="p-4 rounded-xl border-2 border-violet-600 bg-[#161924] flex flex-col justify-between space-y-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setTheme('dark')}
+                                    className={`p-4 rounded-xl border-2 flex flex-col justify-between space-y-3 text-left transition-all cursor-pointer ${
+                                        isDark
+                                            ? 'border-violet-600 bg-[#161924] shadow-md shadow-violet-600/10'
+                                            : 'border-[#22242f] bg-[#12141c] hover:border-slate-600 opacity-70'
+                                    }`}
+                                >
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center gap-2 text-violet-400">
                                             <Moon size={18} />
-                                            <span className="text-xs font-bold text-white">Obsidian Craft Dark</span>
+                                            <span className="text-xs font-bold text-white">Obsidian Dark</span>
                                         </div>
-                                        <span className="text-[10px] font-bold bg-violet-500/20 text-violet-300 px-2 py-0.5 rounded border border-violet-500/30">
-                                            Active Default
-                                        </span>
+                                        {isDark && (
+                                            <span className="text-[10px] font-bold bg-violet-500/20 text-violet-300 px-2 py-0.5 rounded border border-violet-500/30">
+                                                Active
+                                            </span>
+                                        )}
                                     </div>
-                                    <p className="text-[11px] text-slate-400">High-contrast dark canvas tuned for low-light clinical and institutional focus.</p>
-                                </div>
+                                    <p className="text-[11px] text-slate-400">Deep obsidian canvas with glowing accents for focused low-light environments.</p>
+                                </button>
 
-                                <div className="p-4 rounded-xl border border-[#22242f] bg-[#12141c] flex flex-col justify-between space-y-3 opacity-60">
+                                <button
+                                    type="button"
+                                    onClick={() => setTheme('light')}
+                                    className={`p-4 rounded-xl border-2 flex flex-col justify-between space-y-3 text-left transition-all cursor-pointer ${
+                                        !isDark
+                                            ? 'border-amber-600 bg-[#faf9f5] shadow-md shadow-amber-600/10'
+                                            : 'border-[#22242f] bg-[#12141c] hover:border-slate-600 opacity-70'
+                                    }`}
+                                >
                                     <div className="flex items-center justify-between w-full">
-                                        <div className="flex items-center gap-2 text-slate-400">
+                                        <div className="flex items-center gap-2 text-amber-600">
                                             <Sun size={18} />
-                                            <span className="text-xs font-bold text-slate-300">Classroom Light</span>
+                                            <span className="text-xs font-bold text-slate-900">Paper White Light</span>
                                         </div>
-                                        <span className="text-[10px] text-slate-500">Theme</span>
+                                        {!isDark && (
+                                            <span className="text-[10px] font-bold bg-amber-500/20 text-amber-800 px-2 py-0.5 rounded border border-amber-500/30">
+                                                Active
+                                            </span>
+                                        )}
                                     </div>
-                                    <p className="text-[11px] text-slate-500">Daytime classroom light mode for bright lecture halls and lab environments.</p>
-                                </div>
+                                    <p className="text-[11px] text-slate-500">Warm archival paper textured background tailored for daylight reading and daytime review.</p>
+                                </button>
                             </div>
                         </div>
                     </div>

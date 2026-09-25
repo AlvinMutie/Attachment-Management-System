@@ -30,7 +30,7 @@
 
 @layer base {
   :root {
-    /* Linear + Figma Graphite Canvas Tokens */
+    /* Dark Mode Tokens (Default) */
     --canvas-bg: #0d0e12;         /* Rich graphite obsidian canvas */
     --surface-main: #111318;       /* Primary panel background */
     --surface-card: #15171f;       /* Precision craft card surface */
@@ -50,7 +50,7 @@
     --text-muted: #656b7c;
     --text-disabled: #464a58;
 
-    /* Figma Component & Role Accent Palette */
+    /* Accent Palette */
     --figma-purple: #8b5cf6;
     --figma-purple-subtle: rgba(139, 92, 246, 0.12);
     --figma-purple-border: rgba(139, 92, 246, 0.25);
@@ -76,11 +76,61 @@
     --radius-lg: 0.75rem;
     --radius-xl: 1rem;
     --radius-full: 9999px;
+
+    --bg-grid-color: rgba(255, 255, 255, 0.05);
+    --scrollbar-thumb: #262936;
+    --scrollbar-hover: #393e50;
+  }
+
+  /* White Paper-ish Light Mode Tokens */
+  html.light,
+  [data-theme="light"],
+  :root[data-theme="light"] {
+    --canvas-bg: #f7f6f1;         /* Warm archival heavyweight paper */
+    --surface-main: #fbfbfa;       /* Off-white paper sheet */
+    --surface-card: #ffffff;       /* Crisp white paper card */
+    --surface-card-hover: #f4f3ec; /* Subtle pressed paper hover */
+    --surface-elevated: #ffffff;   /* Elevated parchment */
+    --surface-subtle: rgba(0, 0, 0, 0.03);
+
+    --border-subtle: #e5e0d5;      /* Subtle paper fold crease */
+    --border-medium: #d6d0c2;      /* Medium drafting outline */
+    --border-strong: #bbb3a0;      /* Distinct stroke border */
+    --border-focus: #7c3aed;
+
+    --text-primary: #151821;       /* Deep obsidian ink */
+    --text-secondary: #484f60;     /* Graphite secondary ink */
+    --text-muted: #727a8e;         /* Faded drafting note */
+    --text-disabled: #a0a7ba;
+
+    --figma-purple: #7c3aed;
+    --figma-purple-subtle: rgba(124, 58, 237, 0.08);
+    --figma-purple-border: rgba(124, 58, 237, 0.2);
+
+    --figma-blue: #2563eb;
+    --figma-blue-subtle: rgba(37, 99, 235, 0.08);
+    --figma-blue-border: rgba(37, 99, 235, 0.2);
+
+    --figma-emerald: #059669;
+    --figma-emerald-subtle: rgba(5, 150, 105, 0.08);
+    --figma-emerald-border: rgba(5, 150, 105, 0.2);
+
+    --figma-amber: #d97706;
+    --figma-amber-subtle: rgba(217, 119, 6, 0.08);
+    --figma-amber-border: rgba(217, 119, 6, 0.2);
+
+    --figma-rose: #e11d48;
+    --figma-rose-subtle: rgba(225, 29, 72, 0.08);
+    --figma-rose-border: rgba(225, 29, 72, 0.2);
+
+    --bg-grid-color: rgba(35, 25, 15, 0.06);
+    --scrollbar-thumb: #d8d3c5;
+    --scrollbar-hover: #b8b19e;
   }
 
   html {
     scroll-behavior: smooth;
-    color-scheme: dark;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   body {
@@ -90,9 +140,19 @@
     -moz-osx-font-smoothing: grayscale;
     font-family: var(--font-inter);
     min-height: 100vh;
-    background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-image: radial-gradient(var(--bg-grid-color) 1px, transparent 1px);
     background-size: 24px 24px;
     background-attachment: fixed;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  /* Paper texture overlay in light mode */
+  html.light body {
+    background-color: #f7f6f1;
+    background-image:
+      radial-gradient(rgba(30, 20, 10, 0.055) 1px, transparent 1px),
+      linear-gradient(to right, rgba(0, 0, 0, 0.015) 1px, transparent 1px);
+    background-size: 24px 24px, 96px 96px;
   }
 
   :focus-visible {
@@ -100,10 +160,10 @@
     outline-offset: 2px;
   }
 
-  /* Linear-Grade Precision Scrollbar */
+  /* Precision Scrollbar */
   ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
@@ -111,19 +171,19 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #262936;
+    background: var(--scrollbar-thumb);
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #393e50;
+    background: var(--scrollbar-hover);
   }
 }
 
 @layer components {
-  /* Figma Canvas Dot Grid Surface */
+  /* Canvas Dot Grid Surface */
   .figma-canvas-dots {
-    background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+    background-image: radial-gradient(var(--bg-grid-color) 1px, transparent 1px);
     background-size: 20px 20px;
   }
 
@@ -132,8 +192,12 @@
     background-color: var(--surface-card);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-xl);
-    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.04);
     transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html.light .craft-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 6px 16px -2px rgba(40, 30, 20, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.9);
   }
 
   .craft-card:hover {
@@ -141,13 +205,17 @@
     background-color: var(--surface-card-hover);
   }
 
-  /* Backward Compatibility Aliases for components */
+  /* Backward Compatibility Aliases */
   .stripe-card {
     background-color: var(--surface-card);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-xl);
-    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    box-shadow: 0 2px 8px -1px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.04);
     transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  html.light .stripe-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03), 0 6px 16px -2px rgba(40, 30, 20, 0.03);
   }
 
   .stripe-card:hover {
@@ -159,8 +227,12 @@
     background-color: var(--surface-card);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-xl);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
     transition: all 0.2s ease;
+  }
+
+  html.light .bento-card {
+    box-shadow: 0 2px 8px rgba(40, 30, 20, 0.04), 0 8px 24px rgba(40, 30, 20, 0.02);
   }
 
   .bento-card:hover {
@@ -168,23 +240,12 @@
     transform: translateY(-1px);
   }
 
-  /* Figma Floating Toolbar / Dock */
-  .figma-toolbar {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.25rem;
-    background-color: #12141a;
-    border: 1px solid #22242f;
-    border-radius: var(--radius-lg);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  }
-
-  /* Linear Segmented Tabs */
+  /* Segmented Tabs */
   .segmented-tabs {
     display: inline-flex;
     padding: 0.25rem;
-    background-color: #101218;
-    border: 1px solid #22242f;
+    background-color: var(--surface-main);
+    border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
   }
 
@@ -198,14 +259,14 @@
   }
 
   .segmented-tab-btn:hover {
-    color: #ffffff;
+    color: var(--text-primary);
   }
 
   .segmented-tab-btn.active {
-    background-color: #1c1e28;
-    color: #ffffff;
-    border: 1px solid #2e3242;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    background-color: var(--surface-card);
+    color: var(--text-primary);
+    border: 1px solid var(--border-medium);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 
   /* Linear Precision KPI Metric Tile */
@@ -228,13 +289,112 @@
     font-size: 1.625rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: #ffffff;
+    color: var(--text-primary);
     line-height: 1.2;
   }
 
   .glass-surface {
-    background: rgba(19, 21, 28, 0.85);
+    background: var(--surface-main);
     backdrop-filter: blur(14px);
     border: 1px solid var(--border-subtle);
+  }
+}
+
+/* ========================================================================= */
+/* LIGHT MODE PAPER-THEME UTILITY ADAPTATIONS                                */
+/* ========================================================================= */
+html.light {
+  /* Background conversions to tactile paper */
+  .bg-\[\#0d0e12\],
+  .bg-\[\#080c14\],
+  .bg-\[\#0a0e1a\] {
+    background-color: #f7f6f1 !important;
+  }
+
+  .bg-\[\#0d0e12\]\/85 {
+    background-color: rgba(247, 246, 241, 0.88) !important;
+  }
+
+  .bg-\[\#0a0e1a\]\/90 {
+    background-color: rgba(247, 246, 241, 0.92) !important;
+  }
+
+  .bg-\[\#12141c\],
+  .bg-\[\#101218\],
+  .bg-\[\#111318\],
+  .bg-\[\#15171f\] {
+    background-color: #ffffff !important;
+    border-color: #e5e0d5 !important;
+  }
+
+  .bg-\[\#12141c\]\/80,
+  .bg-\[\#12141c\]\/90 {
+    background-color: rgba(255, 255, 255, 0.92) !important;
+  }
+
+  .bg-\[\#171924\],
+  .bg-\[\#151722\],
+  .bg-\[\#1c1e28\],
+  .bg-\[\#1a1c26\],
+  .bg-\[\#181a24\] {
+    background-color: #f6f5ef !important;
+    border-color: #e4dfd3 !important;
+  }
+
+  .bg-\[\#11131b\],
+  .bg-\[\#0e1017\] {
+    background-color: #eceae1 !important;
+    border-color: #dad4c5 !important;
+  }
+
+  /* Borders adaptation */
+  .border-\[\#22242f\],
+  .border-\[\#1f2230\],
+  .border-\[\#2b2e42\],
+  .border-\[\#242738\],
+  .border-\[\#2e3242\],
+  .border-\[\#2e3244\],
+  .border-\[\#192237\],
+  .border-\[\#1a1c26\],
+  .border-\[\#26293a\],
+  .border-\[\#2f3244\] {
+    border-color: #e5e0d5 !important;
+  }
+
+  /* Text color readability on paper */
+  .text-white,
+  .text-slate-100 {
+    color: #151821 !important;
+  }
+
+  .text-slate-200,
+  .text-slate-300 {
+    color: #383f50 !important;
+  }
+
+  .text-slate-400 {
+    color: #5b6276 !important;
+  }
+
+  .text-slate-500 {
+    color: #7a8298 !important;
+  }
+
+  /* Aside / Sidebar styling */
+  aside {
+    background-color: #fbfbfa !important;
+    border-right-color: #e5e0d5 !important;
+  }
+
+  /* Inputs & Selects on Paper */
+  input, select, textarea {
+    background-color: #ffffff !important;
+    border-color: #d6d0c2 !important;
+    color: #151821 !important;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: #7c3aed !important;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15) !important;
   }
 }

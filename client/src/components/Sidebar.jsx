@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { LogOut, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ROLE_NAVIGATION, ROLE_DEFINITIONS } from '../config/navigation';
+import ThemeToggle from './ui/ThemeToggle';
 
 const SidebarItem = ({ icon: Icon, label, active, onClick }) => (
     <button
@@ -115,8 +116,13 @@ const Sidebar = ({ isOpen, onClose }) => {
             </nav>
 
             {/* User Profile Summary & Logout */}
-            <div className="pt-3 border-t border-[#1a1c26] mt-auto">
-                <div className="bg-[#151720] rounded-lg p-2.5 mb-2 flex items-center gap-2.5 border border-[#22242f]">
+            <div className="pt-3 border-t border-[#1a1c26] mt-auto space-y-2">
+                <div className="flex items-center justify-between px-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Appearance</span>
+                    <ThemeToggle variant="pill" showLabel={true} />
+                </div>
+
+                <div className="bg-[#151720] rounded-lg p-2.5 flex items-center gap-2.5 border border-[#22242f]">
                     <div className="w-7 h-7 rounded-md bg-violet-500/15 text-violet-300 font-bold text-xs flex items-center justify-center flex-shrink-0">
                         {user?.name?.charAt(0) || 'U'}
                     </div>

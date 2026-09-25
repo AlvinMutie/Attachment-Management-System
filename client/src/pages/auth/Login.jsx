@@ -8,6 +8,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import ThemeToggle from '../../components/ui/ThemeToggle';
 
 const DEMO_ACCOUNTS = [
     {
@@ -119,6 +120,11 @@ const Login = () => {
                     <Home size={14} className="text-violet-400 group-hover:-translate-y-0.5 transition-transform" />
                     <span className="text-xs font-medium tracking-tight">Back to Overview</span>
                 </Link>
+            </div>
+
+            {/* Top Right Theme Toggle */}
+            <div className="absolute top-6 right-6 z-50">
+                <ThemeToggle variant="pill" showLabel={true} />
             </div>
 
             {/* Left Panel: Linear / Figma Workflow Spotlight */}

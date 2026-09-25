@@ -5,6 +5,7 @@ import { Menu, X, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { ROLE_DEFINITIONS } from '../config/navigation';
 import NotificationDropdown from './NotificationDropdown';
+import ThemeToggle from './ui/ThemeToggle';
 
 export const DashboardLayout = ({ children, role: propRole }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -33,6 +34,7 @@ export const DashboardLayout = ({ children, role: propRole }) => {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
+                    <ThemeToggle variant="icon" />
                     <NotificationDropdown />
                     <button
                         type="button"
@@ -50,7 +52,8 @@ export const DashboardLayout = ({ children, role: propRole }) => {
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
             {/* Desktop Top Header Bar */}
-            <div className="hidden lg:flex fixed top-3 right-6 z-[50] items-center gap-3">
+            <div className="hidden lg:flex fixed top-3 right-6 z-[50] items-center gap-2.5">
+                <ThemeToggle variant="icon" />
                 <NotificationDropdown />
             </div>
 

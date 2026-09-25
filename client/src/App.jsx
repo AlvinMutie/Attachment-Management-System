@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import PrivateRoute from './components/PrivateRoute';
 
 // Auth & General (Lazy Loaded)
@@ -146,13 +147,15 @@ function AnimatedRoutes() {
 
 function App() {
     return (
-        <AuthProvider>
-            <Router>
-                <div className="min-h-screen selection:bg-blue-600/30">
-                    <AnimatedRoutes />
-                </div>
-            </Router>
-        </AuthProvider>
+        <ThemeProvider>
+            <AuthProvider>
+                <Router>
+                    <div className="min-h-screen selection:bg-blue-600/30">
+                        <AnimatedRoutes />
+                    </div>
+                </Router>
+            </AuthProvider>
+        </ThemeProvider>
     );
 }
 

@@ -16,3 +16,4 @@ export { Alert } from './Alert';
 export { Tooltip } from './Tooltip';
 export { PageHeader } from './PageHeader';
 export { Breadcrumbs } from './Breadcrumbs';
+export { default as ThemeToggle } from './ThemeToggle';
