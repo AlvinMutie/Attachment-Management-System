@@ -24,14 +24,14 @@ export const ThemeToggle = ({
             >
                 <div className="relative w-4 h-4 flex items-center justify-center">
                     {isDark ? (
-                        <Moon size={14} className="text-violet-400 transition-transform duration-300" />
+                        <Sun size={14} className="text-amber-400 transition-transform duration-300" />
                     ) : (
-                        <Sun size={14} className="text-amber-600 transition-transform duration-300" />
+                        <Moon size={14} className="text-violet-700 transition-transform duration-300" />
                     )}
                 </div>
                 {showLabel && (
                     <span className="font-mono text-[11px] tracking-tight">
-                        {isDark ? 'Dark Theme' : 'Light Theme'}
+                        {isDark ? 'Light Mode' : 'Dark Mode'}
                     </span>
                 )}
             </button>
