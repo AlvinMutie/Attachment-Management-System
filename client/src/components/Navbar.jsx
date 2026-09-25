@@ -42,7 +42,7 @@ const Navbar = () => {
                     </Link>
                     <Link to="/signup">
                         <Button variant="primary" size="sm" endIcon={ArrowRight}>
-                            Register School
+                            Register
                         </Button>
                     </Link>
                 </div>
@@ -109,7 +109,7 @@ const Navbar = () => {
                         </Link>
                         <Link to="/signup" onClick={() => setMobileMenuOpen(false)}>
                             <Button variant="primary" size="sm" className="w-full">
-                                Register Institution
+                                Register
                             </Button>
                         </Link>
                     </div>
