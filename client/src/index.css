@@ -429,4 +429,25 @@ html.light {
     border-color: #7c3aed !important;
     box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15) !important;
   }
+
+  /* Explicit high-visibility outline buttons in light mode */
+  .outline-cta-btn,
+  button.outline-cta-btn {
+    background-color: #ffffff !important;
+    border-color: #c8c2b2 !important;
+    color: #151821 !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  .outline-cta-btn:hover,
+  button.outline-cta-btn:hover {
+    background-color: #f5f3ec !important;
+    border-color: #a89f8b !important;
+    color: #000000 !important;
+  }
+
+  .outline-cta-btn span,
+  button.outline-cta-btn span {
+    color: #151821 !important;
+  }
 }
