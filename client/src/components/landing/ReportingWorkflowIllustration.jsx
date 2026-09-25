@@ -183,7 +183,7 @@ export const ReportingWorkflowIllustration = () => {
                                     Final Attachment Report & Assessment
                                 </h4>
                                 <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#5b6276] dark:text-slate-400 font-medium mt-1">
-                                    <span>Student: Brian Mwangi</span>
+                                    <span>Student: Daniel Carter</span>
                                     <span>•</span>
                                     <span>BSc IT (Year 3)</span>
                                     <span>•</span>
@@ -359,7 +359,7 @@ export const ReportingWorkflowIllustration = () => {
                                             Mentor Evaluation
                                         </h5>
                                         <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">
-                                            James Kariuki • Lead Mentor
+                                            Michael Anderson • Lead Mentor
                                         </span>
                                     </div>
                                 </div>

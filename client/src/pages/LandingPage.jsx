@@ -40,6 +40,7 @@ import PlacementWorkflowIllustration from '../components/landing/PlacementWorkfl
 import SupervisionWorkflowIllustration from '../components/landing/SupervisionWorkflowIllustration';
 import ReportingWorkflowIllustration from '../components/landing/ReportingWorkflowIllustration';
 import CompletionWorkflowIllustration from '../components/landing/CompletionWorkflowIllustration';
+import LifecycleGovernanceWorkspace from '../components/landing/LifecycleGovernanceWorkspace';
 
 const fadeInUp = {
     initial: { opacity: 0, y: 32 },
@@ -61,45 +62,6 @@ const LandingPage = () => {
     const toggleFaq = (index) => {
         setOpenFaq(openFaq === index ? null : index);
     };
-
-    const lifecycleStages = [
-        {
-            step: '01',
-            title: 'Placement Verification',
-            desc: 'Host company registration, insurance clearance, and automated coordinator approval workflows.',
-            icon: Building2
-        },
-        {
-            step: '02',
-            title: 'Daily Check-In & Rotating QR',
-            desc: 'Proof-of-presence verification with rotating 30-second on-site QR cryptographic tokens.',
-            icon: QrCode
-        },
-        {
-            step: '03',
-            title: 'Weekly Logbook Revisions',
-            desc: 'Technical reflections drafted by students, reviewed with inline industry supervisor notes & approval locks.',
-            icon: FileText
-        },
-        {
-            step: '04',
-            title: 'On-Site Faculty Visits',
-            desc: 'Academic supervisors document physical field visits, student progress, rubric evaluations, and defense milestones.',
-            icon: Compass
-        },
-        {
-            step: '05',
-            title: 'Standardized Rubrics',
-            desc: 'Dual-perspective grading: Industry workplace competency assessment + University academic defense rubric.',
-            icon: Sliders
-        },
-        {
-            step: '06',
-            title: 'Credit Board Sign-Off',
-            desc: 'Instant sanitized audit dossier and automated completion readiness diagnostic verification.',
-            icon: ShieldCheck
-        }
-    ];
 
     const pillars = [
         {
@@ -332,55 +294,23 @@ const LandingPage = () => {
             </section>
 
             {/* ========================================================================= */}
-            {/* 8. 6-STAGE ATTACHMENT LIFECYCLE (NAV TARGET: #lifecycle)                  */}
+            {/* 8. 6-STAGE ATTACHMENT LIFECYCLE WORKSPACE (NAV TARGET: #lifecycle)        */}
             {/* ========================================================================= */}
-            <section id="lifecycle" className="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 scroll-mt-20">
-                <motion.div className="text-center max-w-3xl mx-auto mb-12" {...fadeInUp}>
+            <section id="lifecycle" className="relative max-w-6xl mx-auto px-4 sm:px-6 py-10 scroll-mt-20">
+                <motion.div className="text-center max-w-3xl mx-auto mb-4" {...fadeInUp}>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-violet-800 dark:text-violet-400 bg-violet-100 dark:bg-violet-500/10 px-2.5 py-1 rounded-md border border-violet-300 dark:border-violet-500/20">
                         End-to-End Governance
                     </span>
                     <h2 className="text-3xl sm:text-4xl font-black text-[#0a0d14] dark:text-white tracking-tight mt-3">
-                        The 6-Stage Industrial Attachment Lifecycle
+                        One attachment. Every stage governed.
                     </h2>
                     <p className="text-sm text-[#374151] dark:text-slate-400 font-medium mt-2">
-                        Verifiable milestones structured for university degree compliance, credit boards, and employer partnerships.
+                        From initial placement verification to final academic credit sign-off, AttachPro keeps every milestone structured, transparent, and compliant.
                     </p>
                 </motion.div>
 
-                <motion.div
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                    variants={staggerContainer}
-                    initial="initial"
-                    whileInView="whileInView"
-                    viewport={{ once: true, margin: "-60px" }}
-                >
-                    {lifecycleStages.map((stage, idx) => {
-                        const Icon = stage.icon;
-                        return (
-                            <motion.div
-                                key={idx}
-                                variants={fadeInUp}
-                                className="bg-white dark:bg-[#12141c] border border-[#e2ddd3] dark:border-[#22242f] hover:border-violet-500/40 dark:hover:border-[#2f3244] rounded-2xl p-6 transition-all duration-300 space-y-4 shadow-xs hover:shadow-lg group relative overflow-hidden"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="w-12 h-12 rounded-xl bg-violet-600/10 border border-violet-500/20 text-violet-600 dark:text-violet-400 flex items-center justify-center group-hover:bg-violet-600 group-hover:text-white transition-all duration-300">
-                                        <Icon size={22} />
-                                    </div>
-                                    <span className="text-xs font-mono font-bold text-[#4b5563] dark:text-slate-400 bg-[#f4f2ea] dark:bg-[#181a24] px-2.5 py-1 rounded-lg border border-[#e2ddd3] dark:border-[#22242f]">
-                                        STAGE {stage.step}
-                                    </span>
-                                </div>
-                                <div>
-                                    <h3 className="text-base font-bold text-[#0a0d14] dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-300 transition-colors">
-                                        {stage.title}
-                                    </h3>
-                                    <p className="text-xs text-[#374151] dark:text-slate-400 font-medium mt-1.5 leading-relaxed">
-                                        {stage.desc}
-                                    </p>
-                                </div>
-                            </motion.div>
-                        );
-                    })}
+                <motion.div {...fadeInUp}>
+                    <LifecycleGovernanceWorkspace />
                 </motion.div>
             </section>
 

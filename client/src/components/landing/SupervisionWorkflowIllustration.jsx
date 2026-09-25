@@ -188,7 +188,7 @@ export const SupervisionWorkflowIllustration = () => {
                                     Software Engineering Attachment
                                 </h4>
                                 <div className="flex items-center gap-2 text-[11px] text-[#5b6276] dark:text-slate-400 font-medium mt-0.5">
-                                    <span>Student: Brian Mwangi</span>
+                                    <span>Student: Daniel Carter</span>
                                     <span>•</span>
                                     <span>Host: Acme Technologies</span>
                                 </div>
@@ -361,7 +361,7 @@ export const SupervisionWorkflowIllustration = () => {
                                             Industry Supervisor
                                         </h5>
                                         <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">
-                                            James Kariuki • Lead Mentor
+                                            Michael Anderson • Lead Mentor
                                         </span>
                                     </div>
                                 </div>
@@ -420,7 +420,7 @@ export const SupervisionWorkflowIllustration = () => {
                                             University Supervisor
                                         </h5>
                                         <span className="text-[10px] text-[#5b6276] dark:text-slate-400 font-medium">
-                                            Dr. Sarah Wanjiku • Academic Faculty
+                                            Dr. Emily Johnson • Academic Faculty
                                         </span>
                                     </div>
                                 </div>

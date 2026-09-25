@@ -181,7 +181,7 @@ export const CompletionWorkflowIllustration = () => {
                                     Attachment Completion Record
                                 </h4>
                                 <div className="flex flex-wrap items-center gap-2 text-[11px] text-[#5b6276] dark:text-slate-400 font-medium mt-1">
-                                    <span>Student: Brian Mwangi</span>
+                                    <span>Student: Daniel Carter</span>
                                     <span>•</span>
                                     <span>BSc IT (Class 2026)</span>
                                     <span>•</span>
@@ -389,11 +389,11 @@ export const CompletionWorkflowIllustration = () => {
 
                             <div className="space-y-1.5 text-xs">
                                 <div className="flex items-center justify-between p-1.5 rounded bg-[#f6f5ee] dark:bg-[#1a1d2b] text-[11px]">
-                                    <span className="text-[#22283a] dark:text-slate-200 font-medium">Industry: James Kariuki</span>
+                                    <span className="text-[#22283a] dark:text-slate-200 font-medium">Industry: Michael Anderson</span>
                                     <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">✓ Endorsed</span>
                                 </div>
                                 <div className="flex items-center justify-between p-1.5 rounded bg-[#f6f5ee] dark:bg-[#1a1d2b] text-[11px]">
-                                    <span className="text-[#22283a] dark:text-slate-200 font-medium">Faculty: Dr. Angela Mwende</span>
+                                    <span className="text-[#22283a] dark:text-slate-200 font-medium">Faculty: Dr. Emily Johnson</span>
                                     <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">✓ Endorsed</span>
                                 </div>
                             </div>

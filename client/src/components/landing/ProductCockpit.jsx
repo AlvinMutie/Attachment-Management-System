@@ -198,16 +198,16 @@ const ProductCockpit = () => {
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e2ddd3] dark:border-[#1f2230]">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-cyan-600/15 border border-cyan-500/30 flex items-center justify-center text-cyan-700 dark:text-cyan-400 font-black text-sm shadow-xs">
-                                    EW
+                                    MA
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h3 className="text-base font-black text-[#0a0d14] dark:text-white">Eng. Eric Wanjala</h3>
+                                        <h3 className="text-base font-black text-[#0a0d14] dark:text-white">Michael Anderson</h3>
                                         <span className="text-[10px] font-bold font-mono bg-cyan-100 dark:bg-cyan-500/10 text-cyan-900 dark:text-cyan-400 border border-cyan-300 dark:border-cyan-500/20 px-2 py-0.5 rounded">
                                             Industry Supervisor
                                         </span>
                                     </div>
-                                    <p className="text-xs text-[#374151] dark:text-slate-400 font-medium">Lead Systems Architect • Safaricom PLC Cloud Infrastructure Team</p>
+                                    <p className="text-xs text-[#374151] dark:text-slate-400 font-medium">Lead Systems Architect • Acme Technologies Cloud Infrastructure Team</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -235,9 +235,9 @@ const ProductCockpit = () => {
                                 </div>
                                 <div className="space-y-2">
                                     {[
-                                        { name: 'Samuel Amani', time: '08:24 AM', status: 'On Site' },
-                                        { name: 'Brenda Cherotich', time: '08:31 AM', status: 'On Site' },
-                                        { name: 'Kevin Otieno', time: '08:45 AM', status: 'On Site' }
+                                        { name: 'Daniel Carter', time: '08:24 AM', status: 'On Site' },
+                                        { name: 'Emma Watson', time: '08:31 AM', status: 'On Site' },
+                                        { name: 'Liam Smith', time: '08:45 AM', status: 'On Site' }
                                     ].map((intern, i) => (
                                         <div key={i} className="flex items-center justify-between p-2 rounded-lg bg-[#f0ede4] dark:bg-[#11131b] border border-[#ded9cb] dark:border-[#1f2230] text-xs">
                                             <span className="text-[#0a0d14] dark:text-slate-200 font-bold">{intern.name}</span>
@@ -260,7 +260,7 @@ const ProductCockpit = () => {
                                 </div>
                                 <div className="bg-[#f0ede4] dark:bg-[#11131b] p-3 rounded-xl border border-[#ded9cb] dark:border-[#1f2230] space-y-2 text-xs">
                                     <div className="flex items-center justify-between">
-                                        <span className="font-bold text-[#0a0d14] dark:text-white">Brenda Cherotich</span>
+                                        <span className="font-bold text-[#0a0d14] dark:text-white">Emma Watson</span>
                                         <span className="text-[#4b5563] dark:text-slate-500 font-mono text-[10px] font-bold">Week 8</span>
                                     </div>
                                     <p className="text-[#374151] dark:text-slate-400 text-[11px] font-medium">
@@ -307,16 +307,16 @@ const ProductCockpit = () => {
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e2ddd3] dark:border-[#1f2230]">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-emerald-600/15 border border-emerald-500/30 flex items-center justify-center text-emerald-700 dark:text-emerald-400 font-black text-sm shadow-xs">
-                                    FO
+                                    SW
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-2">
-                                        <h3 className="text-base font-black text-[#0a0d14] dark:text-white">Dr. Faith Ochieng</h3>
+                                        <h3 className="text-base font-black text-[#0a0d14] dark:text-white">Sarah Williams</h3>
                                         <span className="text-[10px] font-bold font-mono bg-emerald-100 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/20 px-2 py-0.5 rounded">
                                             Faculty Attachment Coordinator
                                         </span>
                                     </div>
-                                    <p className="text-xs text-[#374151] dark:text-slate-400 font-medium">School of Computing & Informatics • Strathmore University</p>
+                                    <p className="text-xs text-[#374151] dark:text-slate-400 font-medium">Faculty of Technology & Engineering • Apex University</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -342,11 +342,11 @@ const ProductCockpit = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <div className="bg-[#f0ede4] dark:bg-[#11131b] p-2.5 rounded-lg border border-[#ded9cb] dark:border-[#1f2230] flex items-center justify-between text-xs">
-                                        <span className="text-[#0a0d14] dark:text-slate-300 font-bold">Dr. Anthony Mwangi</span>
+                                        <span className="text-[#0a0d14] dark:text-slate-300 font-bold">Dr. James Wilson</span>
                                         <span className="text-[#4b5563] dark:text-slate-500 font-mono text-[11px] font-bold">18 / 20 Loaded</span>
                                     </div>
                                     <div className="bg-[#f0ede4] dark:bg-[#11131b] p-2.5 rounded-lg border border-[#ded9cb] dark:border-[#1f2230] flex items-center justify-between text-xs">
-                                        <span className="text-[#0a0d14] dark:text-slate-300 font-bold">Prof. Grace Nduta</span>
+                                        <span className="text-[#0a0d14] dark:text-slate-300 font-bold">Dr. Emily Johnson</span>
                                         <span className="text-[#4b5563] dark:text-slate-500 font-mono text-[11px] font-bold">15 / 20 Loaded</span>
                                     </div>
                                 </div>
