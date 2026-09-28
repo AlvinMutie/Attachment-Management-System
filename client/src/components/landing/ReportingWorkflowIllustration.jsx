@@ -19,6 +19,7 @@ import {
     Download,
     Users
 } from 'lucide-react';
+import M3ExpressiveProgressRing from './M3ExpressiveProgressRing';
 
 export const ReportingWorkflowIllustration = () => {
     // 0: Preparing Report | 1: Logs Imported | 2: Attendance Added | 3: Supervisor Reviews Added | 4: Report Ready
@@ -162,6 +163,17 @@ export const ReportingWorkflowIllustration = () => {
                             <span className={`w-1.5 h-1.5 rounded-full ${sceneState === 4 ? 'bg-emerald-600' : 'bg-indigo-600 animate-pulse'}`} />
                             <span>{sceneState === 4 ? 'Report Assembled' : 'Assembling Document'}</span>
                         </span>
+                        <div className="h-4 w-px bg-[#e2ddd3] dark:bg-[#22242f] mx-0.5" />
+                        <M3ExpressiveProgressRing
+                            progress={(sceneState + 1) / 5}
+                            isPaused={isPaused}
+                            onTogglePause={() => setIsPaused(!isPaused)}
+                            color="indigo"
+                            size={28}
+                            strokeWidth={3}
+                            currentStep={sceneState + 1}
+                            totalSteps={5}
+                        />
                     </div>
                 </div>
 

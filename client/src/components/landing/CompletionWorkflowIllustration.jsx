@@ -14,6 +14,7 @@ import {
     Activity,
     Lock
 } from 'lucide-react';
+import M3ExpressiveProgressRing from './M3ExpressiveProgressRing';
 
 export const CompletionWorkflowIllustration = () => {
     // 0: Verifying Records | 1: Attendance Verified | 2: Reviews Recorded | 3: Report Confirmed | 4: Attachment Complete
@@ -160,6 +161,17 @@ export const CompletionWorkflowIllustration = () => {
                             <span className={`w-1.5 h-1.5 rounded-full ${sceneState === 4 ? 'bg-emerald-600' : 'bg-amber-500 animate-pulse'}`} />
                             <span>{sceneState === 4 ? 'Completed & Locked' : 'Audit In Progress'}</span>
                         </span>
+                        <div className="h-4 w-px bg-[#e2ddd3] dark:bg-[#22242f] mx-0.5" />
+                        <M3ExpressiveProgressRing
+                            progress={(sceneState + 1) / 5}
+                            isPaused={isPaused}
+                            onTogglePause={() => setIsPaused(!isPaused)}
+                            color="emerald"
+                            size={28}
+                            strokeWidth={3}
+                            currentStep={sceneState + 1}
+                            totalSteps={5}
+                        />
                     </div>
                 </div>
 

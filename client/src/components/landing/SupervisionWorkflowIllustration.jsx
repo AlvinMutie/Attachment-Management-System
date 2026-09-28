@@ -15,6 +15,7 @@ import {
     Bell,
     Users
 } from 'lucide-react';
+import M3ExpressiveProgressRing from './M3ExpressiveProgressRing';
 
 export const SupervisionWorkflowIllustration = () => {
     // 0: Active Workspace | 1: Log Submitted | 2: Industry Feedback Recorded | 3: University Review Scheduled
@@ -170,6 +171,17 @@ export const SupervisionWorkflowIllustration = () => {
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
                             <span>Attachment Active</span>
                         </span>
+                        <div className="h-4 w-px bg-[#e2ddd3] dark:bg-[#22242f] mx-0.5" />
+                        <M3ExpressiveProgressRing
+                            progress={(sceneState + 1) / 4}
+                            isPaused={isPaused}
+                            onTogglePause={() => setIsPaused(!isPaused)}
+                            color="cyan"
+                            size={28}
+                            strokeWidth={3}
+                            currentStep={sceneState + 1}
+                            totalSteps={4}
+                        />
                     </div>
                 </div>
 

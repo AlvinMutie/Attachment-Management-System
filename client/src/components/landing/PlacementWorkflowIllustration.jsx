@@ -20,6 +20,7 @@ import {
     BadgeCheck,
     ArrowUpRight
 } from 'lucide-react';
+import M3ExpressiveProgressRing from './M3ExpressiveProgressRing';
 
 export const PlacementWorkflowIllustration = () => {
     // 0: Browse & Match | 1: Submit Application | 2: Placement Active
@@ -115,6 +116,17 @@ export const PlacementWorkflowIllustration = () => {
                         <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-500/10 text-emerald-900 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/20">
                             Documents Verified
                         </span>
+                        <div className="h-4 w-px bg-[#e2ddd3] dark:bg-[#22242f] mx-0.5" />
+                        <M3ExpressiveProgressRing
+                            progress={(sceneState + 1) / 3}
+                            isPaused={isPaused}
+                            onTogglePause={() => setIsPaused(!isPaused)}
+                            color="violet"
+                            size={28}
+                            strokeWidth={3}
+                            currentStep={sceneState + 1}
+                            totalSteps={3}
+                        />
                     </div>
                 </div>
 

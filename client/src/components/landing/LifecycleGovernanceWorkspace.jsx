@@ -20,6 +20,7 @@ import {
     Sparkles,
     Eye
 } from 'lucide-react';
+import M3ExpressiveProgressRing from './M3ExpressiveProgressRing';
 
 const STAGES = [
     {
@@ -223,6 +224,17 @@ export const LifecycleGovernanceWorkspace = () => {
                         <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded border bg-violet-100 dark:bg-violet-500/10 text-violet-900 dark:text-violet-300 border-violet-300 dark:border-violet-500/20">
                             {current.badge}
                         </span>
+                        <div className="h-4 w-px bg-[#e2ddd3] dark:bg-[#22242f] mx-0.5" />
+                        <M3ExpressiveProgressRing
+                            progress={(activeStage + 1) / STAGES.length}
+                            isPaused={isPaused}
+                            onTogglePause={() => setIsPaused(!isPaused)}
+                            color="violet"
+                            size={28}
+                            strokeWidth={3}
+                            currentStep={activeStage + 1}
+                            totalSteps={STAGES.length}
+                        />
                     </div>
                 </div>
 
