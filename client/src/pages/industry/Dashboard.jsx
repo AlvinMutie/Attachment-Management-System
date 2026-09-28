@@ -5,7 +5,6 @@ import {
     Users,
     CheckCircle,
     Camera,
-    History,
     AlertCircle,
     ArrowUpRight,
     Check,
@@ -18,11 +17,11 @@ import {
     Clock,
     FileText,
     ChevronRight,
-    Sparkles,
     UserCheck,
-    Search,
-    ExternalLink,
-    RefreshCw
+    RefreshCw,
+    ArrowRight,
+    TrendingUp,
+    Layers
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import DashboardLayout from '../../components/DashboardLayout';
@@ -34,7 +33,7 @@ import {
     getSupervisorAttendance,
     markSupervisorAttendance
 } from '../../utils/supervisorApi';
-import { Badge, Button, LoadingSkeleton } from '../../components/ui';
+import { LoadingSkeleton } from '../../components/ui';
 
 const SupervisorDashboard = () => {
     const { user } = useAuth();
@@ -48,12 +47,10 @@ const SupervisorDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
 
-    // Modal state for reviewing logbook
     const [selectedLogbook, setSelectedLogbook] = useState(null);
     const [reviewComment, setReviewComment] = useState('');
     const [reviewing, setReviewing] = useState(false);
 
-    // Quick attendance mark modal
     const [quickMarkStudent, setQuickMarkStudent] = useState(null);
     const [quickStatus, setQuickStatus] = useState('present');
     const [quickMarking, setQuickMarking] = useState(false);
@@ -62,7 +59,7 @@ const SupervisorDashboard = () => {
         if (isManualRefresh) setRefreshing(true);
         try {
             const wsRes = await getSupervisorWorkspace().catch(() => null);
-            if (wsRes && wsRes.data?.data) {
+            if (wsRes?.data?.data) {
                 const data = wsRes.data.data;
                 setWorkspace(data);
                 setStudents(data.students || []);
@@ -88,39 +85,26 @@ const SupervisorDashboard = () => {
         }
     };
 
-    useEffect(() => {
-        loadData();
-    }, []);
+    useEffect(() => { loadData(); }, []);
 
     useEffect(() => {
         let scanner;
         if (isScanning) {
-            scanner = new Html5QrcodeScanner("reader", {
-                fps: 10,
-                qrbox: { width: 220, height: 220 },
-                aspectRatio: 1.0
-            });
-
+            scanner = new Html5QrcodeScanner('reader', { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 });
             scanner.render((result) => {
                 setScanResult(result);
                 setIsScanning(false);
                 scanner.clear();
             }, () => { });
         }
-
-        return () => {
-            if (scanner) scanner.clear();
-        };
+        return () => { if (scanner) scanner.clear(); };
     }, [isScanning]);
 
     const handleReviewSubmit = async (status) => {
         if (!selectedLogbook) return;
         setReviewing(true);
         try {
-            await reviewLogbook(selectedLogbook.id, {
-                status,
-                supervisorComment: reviewComment
-            });
+            await reviewLogbook(selectedLogbook.id, { status, supervisorComment: reviewComment });
             setSelectedLogbook(null);
             setReviewComment('');
             loadData();
@@ -153,15 +137,12 @@ const SupervisorDashboard = () => {
     if (loading) {
         return (
             <DashboardLayout role="industry_supervisor">
-                <div className="space-y-4 max-w-7xl mx-auto p-4 sm:p-6 md:p-8">
-                    <LoadingSkeleton className="h-28 rounded-2xl bg-[#12141c]" />
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <LoadingSkeleton className="h-28 rounded-2xl bg-[#12141c]" />
-                        <LoadingSkeleton className="h-28 rounded-2xl bg-[#12141c]" />
-                        <LoadingSkeleton className="h-28 rounded-2xl bg-[#12141c]" />
-                        <LoadingSkeleton className="h-28 rounded-2xl bg-[#12141c]" />
+                <div className="space-y-4 max-w-7xl mx-auto">
+                    <LoadingSkeleton className="h-20 rounded-2xl" />
+                    <div className="grid grid-cols-4 gap-3.5">
+                        {[1, 2, 3, 4].map(i => <LoadingSkeleton key={i} className="h-24 rounded-xl" />)}
                     </div>
-                    <LoadingSkeleton className="h-96 rounded-2xl bg-[#12141c]" />
+                    <LoadingSkeleton className="h-96 rounded-2xl" />
                 </div>
             </DashboardLayout>
         );
@@ -170,178 +151,173 @@ const SupervisorDashboard = () => {
     const presentCount = workspace?.metrics?.todayPresent ?? todayAttendance.filter(a => a.status === 'present').length;
     const totalAssigned = workspace?.metrics?.totalAssigned ?? students.length;
     const pendingCount = workspace?.metrics?.pendingLogbooksCount ?? pendingLogbooks.length;
-    const atRiskCount = workspace?.metrics?.atRiskCount ?? students.filter(s => (s.attendanceRate !== undefined && s.attendanceRate < 75)).length;
-    const presencePercentage = totalAssigned > 0 ? Math.round((presentCount / totalAssigned) * 100) : 0;
+    const atRiskCount = workspace?.metrics?.atRiskCount ?? students.filter(s => s.attendanceRate !== undefined && s.attendanceRate < 75).length;
+    const presenceRate = totalAssigned > 0 ? Math.round((presentCount / totalAssigned) * 100) : 0;
+    const today = new Date().toLocaleDateString('en-KE', { weekday: 'long', day: 'numeric', month: 'long' });
 
     return (
         <DashboardLayout role="industry_supervisor">
-            <div className="space-y-6 max-w-7xl mx-auto pb-16 font-sans">
-                {/* Hero Header Dossier */}
-                <div className="relative overflow-hidden bg-gradient-to-b from-[#161922] to-[#0f1117] border border-[#222533] rounded-2xl p-6 md:p-8 shadow-xl">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/05 rounded-full blur-3xl pointer-events-none" />
-                    
-                    <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                        <div className="flex items-center gap-5">
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-emerald-600/20 to-teal-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-lg shadow-emerald-500/10 shrink-0">
-                                <Briefcase size={32} />
+            <div className="max-w-7xl mx-auto space-y-5 pb-16 font-sans">
+
+                {/* ============================================================= */}
+                {/* FIGMA WORKSPACE TOOLBAR                                         */}
+                {/* ============================================================= */}
+                <div className="bg-white dark:bg-[#11131a] border border-[#e2ddd3] dark:border-[#22242f] rounded-2xl p-4 sm:p-5 shadow-xs">
+                    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div className="space-y-1.5">
+                            <div className="flex items-center gap-2 text-[11px] font-mono text-[#5b6276] dark:text-slate-400">
+                                <span>Workspace</span>
+                                <span>/</span>
+                                <span className="text-emerald-700 dark:text-emerald-400 font-bold">Industry Supervisor Control</span>
                             </div>
-                            <div className="space-y-1.5">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-semibold tracking-wide uppercase">
-                                        Workplace Mentorship
-                                    </span>
-                                    <span className="px-2.5 py-0.5 rounded-full bg-slate-800/60 border border-slate-700/50 text-slate-300 text-[11px] font-mono">
-                                        {user?.email || 'supervisor@company.com'}
-                                    </span>
-                                </div>
-                                <h1 className="text-2xl md:text-3xl font-bold text-slate-100 tracking-tight">
-                                    Industry Supervisor Cockpit
+                            <div className="flex flex-wrap items-center gap-3">
+                                <h1 className="text-lg sm:text-xl font-black text-[#0a0d14] dark:text-white tracking-tight">
+                                    Good morning, {user?.name?.split(' ')[0] || 'Supervisor'}
                                 </h1>
-                                <p className="text-xs md:text-sm text-slate-400 max-w-xl">
-                                    Authenticate daily student attendance, review reflective logbooks, and monitor on-site workplace milestones.
-                                </p>
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/20">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    Live Session
+                                </span>
                             </div>
+                            <p className="text-[11px] font-mono text-[#5b6276] dark:text-slate-400">{today} · {user?.email}</p>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                        <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
                             <button
                                 onClick={() => loadData(true)}
                                 disabled={refreshing}
-                                className="px-3.5 py-2 rounded-xl bg-[#181a24] hover:bg-[#202330] border border-[#22242f] text-slate-300 text-xs font-semibold flex items-center gap-2 transition-all"
+                                className="px-3 py-1.5 rounded-lg bg-[#f6f5ee] dark:bg-[#181a24] hover:bg-[#eae8de] dark:hover:bg-[#202330] text-[#0a0d14] dark:text-slate-300 border border-[#e2ddd3] dark:border-[#2a2e40] text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
                             >
-                                <RefreshCw size={14} className={refreshing ? 'animate-spin text-emerald-400' : ''} />
-                                <span>{refreshing ? 'Syncing...' : 'Refresh'}</span>
+                                <RefreshCw size={13} className={`text-[#5b6276] dark:text-slate-400 ${refreshing ? 'animate-spin' : ''}`} />
+                                <span>{refreshing ? 'Syncing...' : 'Sync'}</span>
                             </button>
                             <Link
                                 to="/industry/presence"
-                                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all"
+                                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors"
                             >
-                                <QrCode size={14} />
+                                <QrCode size={13} />
                                 <span>Presence Terminal</span>
+                            </Link>
+                            <Link
+                                to="/industry/attendance"
+                                className="px-3 py-1.5 rounded-lg bg-[#f6f5ee] dark:bg-[#181a24] hover:bg-[#eae8de] dark:hover:bg-[#202330] text-[#0a0d14] dark:text-slate-300 border border-[#e2ddd3] dark:border-[#2a2e40] text-xs font-mono font-semibold flex items-center gap-1.5 transition-colors"
+                            >
+                                <Calendar size={13} />
+                                <span>Attendance Ledger</span>
                             </Link>
                         </div>
                     </div>
                 </div>
 
-                {/* 4-KPI Metric Strip */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {/* Total Assigned */}
-                    <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-5 hover:border-[#2a2d3d] transition-all">
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Assigned Interns</span>
-                            <div className="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400">
-                                <Users size={16} />
+                {/* ============================================================= */}
+                {/* CLEAN 4-KPI METRIC STRIP                                        */}
+                {/* ============================================================= */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+                    {[
+                        {
+                            label: 'Assigned Interns',
+                            value: totalAssigned,
+                            sub: 'Active cohort',
+                            color: 'text-[#0a0d14] dark:text-white',
+                            pill: 'bg-violet-100 dark:bg-violet-500/10 text-violet-800 dark:text-violet-400 border-violet-300 dark:border-violet-500/20',
+                            pillText: '100% attached',
+                            icon: Users,
+                            iconColor: 'text-violet-600 dark:text-violet-400'
+                        },
+                        {
+                            label: "Today's Presence",
+                            value: presentCount,
+                            sub: `of ${totalAssigned} checked-in`,
+                            color: 'text-emerald-700 dark:text-emerald-400',
+                            pill: 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border-emerald-300 dark:border-emerald-500/20',
+                            pillText: `${presenceRate}% rate`,
+                            icon: CheckCircle,
+                            iconColor: 'text-emerald-600 dark:text-emerald-400',
+                            bar: presenceRate
+                        },
+                        {
+                            label: 'Pending Reviews',
+                            value: pendingCount,
+                            sub: 'Logbook submissions',
+                            color: 'text-amber-700 dark:text-amber-400',
+                            pill: 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 border-amber-300 dark:border-amber-500/20',
+                            pillText: 'Awaiting sign-off',
+                            icon: FileText,
+                            iconColor: 'text-amber-600 dark:text-amber-400'
+                        },
+                        {
+                            label: 'Compliance Risk',
+                            value: atRiskCount,
+                            sub: 'Threshold < 75%',
+                            color: atRiskCount > 0 ? 'text-rose-700 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400',
+                            pill: atRiskCount > 0
+                                ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 border-rose-300 dark:border-rose-500/20'
+                                : 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border-emerald-300 dark:border-emerald-500/20',
+                            pillText: atRiskCount > 0 ? 'Attention needed' : 'All compliant',
+                            icon: ShieldAlert,
+                            iconColor: atRiskCount > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
+                        }
+                    ].map((m, i) => (
+                        <div key={i} className="bg-white dark:bg-[#11131a] border border-[#e2ddd3] dark:border-[#22242f] rounded-xl p-4 shadow-2xs hover:border-emerald-500/40 transition-colors flex flex-col justify-between gap-3">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[#5b6276] dark:text-slate-400">
+                                    {m.label}
+                                </span>
+                                <m.icon size={14} className={m.iconColor} />
                             </div>
-                        </div>
-                        <div className="mt-3 flex items-baseline gap-2">
-                            <span className="text-3xl font-bold text-slate-100 font-mono">{totalAssigned}</span>
-                            <span className="text-xs text-slate-500">students</span>
-                        </div>
-                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
-                            <span>Active cohort</span>
-                            <span className="text-violet-400 font-medium">100% attached</span>
-                        </div>
-                    </div>
-
-                    {/* Today's Presence */}
-                    <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-5 hover:border-[#2a2d3d] transition-all">
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Today's Presence</span>
-                            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                                <CheckCircle size={16} />
+                            <div>
+                                <span className={`text-2xl font-black font-mono tracking-tight ${m.color}`}>
+                                    {m.value}
+                                </span>
+                                <p className="text-[10px] font-mono text-[#5b6276] dark:text-slate-500 mt-0.5">{m.sub}</p>
                             </div>
+                            {m.bar !== undefined ? (
+                                <div className="space-y-1">
+                                    <div className="w-full h-1 bg-[#e5e0d5] dark:bg-[#1e2230] rounded-full overflow-hidden">
+                                        <div className="h-1 bg-emerald-500 rounded-full transition-all" style={{ width: `${m.bar}%` }} />
+                                    </div>
+                                    <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border self-start ${m.pill}`}>
+                                        {m.pillText}
+                                    </span>
+                                </div>
+                            ) : (
+                                <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border self-start ${m.pill}`}>
+                                    {m.pillText}
+                                </span>
+                            )}
                         </div>
-                        <div className="mt-3 flex items-baseline gap-2">
-                            <span className="text-3xl font-bold text-emerald-400 font-mono">{presentCount}</span>
-                            <span className="text-xs text-slate-500">/ {totalAssigned} checked-in</span>
-                        </div>
-                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
-                            <div className="w-full bg-[#181a24] rounded-full h-1.5 mr-2 overflow-hidden">
-                                <div
-                                    className="bg-emerald-500 h-1.5 rounded-full transition-all"
-                                    style={{ width: `${presencePercentage}%` }}
-                                />
-                            </div>
-                            <span className="text-emerald-400 font-mono font-semibold shrink-0">{presencePercentage}%</span>
-                        </div>
-                    </div>
-
-                    {/* Pending Logbooks */}
-                    <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-5 hover:border-[#2a2d3d] transition-all">
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pending Reviews</span>
-                            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                                <FileText size={16} />
-                            </div>
-                        </div>
-                        <div className="mt-3 flex items-baseline gap-2">
-                            <span className="text-3xl font-bold text-amber-400 font-mono">{pendingCount}</span>
-                            <span className="text-xs text-slate-500">submissions</span>
-                        </div>
-                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
-                            <span>Awaiting sign-off</span>
-                            <span className="text-amber-400 font-medium">Weekly logbooks</span>
-                        </div>
-                    </div>
-
-                    {/* At-Risk Alerts */}
-                    <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-5 hover:border-[#2a2d3d] transition-all">
-                        <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Compliance Risk</span>
-                            <div className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-                                <ShieldAlert size={16} />
-                            </div>
-                        </div>
-                        <div className="mt-3 flex items-baseline gap-2">
-                            <span className="text-3xl font-bold text-rose-400 font-mono">{atRiskCount}</span>
-                            <span className="text-xs text-slate-500">interns flagged</span>
-                        </div>
-                        <div className="mt-3 pt-3 border-t border-[#1e2230] flex items-center justify-between text-[11px] text-slate-400">
-                            <span>Threshold: &lt; 75%</span>
-                            <span className="text-rose-400 font-medium">{atRiskCount > 0 ? 'Requires attention' : 'All compliant'}</span>
-                        </div>
-                    </div>
+                    ))}
                 </div>
 
-                {/* Supervisor Action Queue */}
+                {/* Action Queue */}
                 {actionQueue.length > 0 && (
-                    <div className="p-5 rounded-2xl bg-gradient-to-r from-amber-500/10 to-amber-600/05 border border-amber-500/25 space-y-3">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2.5">
-                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                                    <AlertTriangle className="w-4 h-4" />
-                                </div>
-                                <div>
-                                    <h3 className="text-xs font-bold text-amber-300 uppercase tracking-wider">
-                                        Priority Action Queue ({actionQueue.length})
-                                    </h3>
-                                    <p className="text-[11px] text-slate-400">Items requiring immediate supervisor endorsement or resolution.</p>
-                                </div>
-                            </div>
+                    <div className="bg-white dark:bg-[#11131a] border border-amber-300 dark:border-amber-500/25 rounded-2xl p-4 shadow-xs space-y-3">
+                        <div className="flex items-center gap-2 pb-2.5 border-b border-amber-200 dark:border-amber-500/15">
+                            <AlertTriangle size={14} className="text-amber-600 dark:text-amber-400" />
+                            <h3 className="text-xs font-mono font-bold text-amber-900 dark:text-amber-300 uppercase tracking-wider">
+                                Priority Action Queue ({actionQueue.length})
+                            </h3>
                         </div>
-                        <div className="grid md:grid-cols-2 gap-3 pt-1">
+                        <div className="grid md:grid-cols-2 gap-2.5">
                             {actionQueue.map((item, idx) => (
-                                <div key={idx} className="p-3.5 rounded-xl bg-[#12141c]/90 border border-[#22242f] flex items-start justify-between gap-3 hover:border-amber-500/30 transition-all">
+                                <div key={idx} className="p-3 rounded-xl bg-amber-50 dark:bg-[#161822] border border-amber-200 dark:border-[#22242f] flex items-start justify-between gap-3">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${
-                                                item.priority === 'urgent' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' :
-                                                item.priority === 'high' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-                                                'bg-violet-500/20 text-violet-400 border border-violet-500/30'
+                                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase border ${
+                                                item.priority === 'urgent'
+                                                    ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 border-rose-300 dark:border-rose-500/20'
+                                                    : 'bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 border-amber-300 dark:border-amber-500/20'
                                             }`}>
                                                 {item.priority}
                                             </span>
-                                            <h4 className="text-xs font-semibold text-slate-200">{item.title}</h4>
+                                            <h4 className="text-xs font-bold text-[#0a0d14] dark:text-slate-200">{item.title}</h4>
                                         </div>
-                                        <p className="text-[11px] text-slate-400 leading-normal">{item.description}</p>
+                                        <p className="text-[11px] text-[#5b6276] dark:text-slate-400">{item.description}</p>
                                     </div>
-                                    <a
-                                        href={item.actionUrl || '/industry/attendance'}
-                                        className="shrink-0"
-                                    >
-                                        <button className="px-2.5 py-1.5 rounded-lg bg-[#181a24] hover:bg-[#202330] border border-[#22242f] text-slate-200 text-xs font-medium flex items-center gap-1">
+                                    <a href={item.actionUrl || '/industry/attendance'} className="shrink-0">
+                                        <button className="px-2.5 py-1.5 rounded-lg bg-white dark:bg-[#11131a] border border-[#e2ddd3] dark:border-[#22242f] text-[#0a0d14] dark:text-slate-300 text-xs font-mono font-semibold flex items-center gap-1 cursor-pointer hover:border-emerald-500/40 transition-colors">
                                             <span>Resolve</span>
-                                            <ArrowUpRight size={12} />
+                                            <ArrowUpRight size={11} />
                                         </button>
                                     </a>
                                 </div>
@@ -350,40 +326,48 @@ const SupervisorDashboard = () => {
                     </div>
                 )}
 
-                {/* Main 2-Column Grid */}
-                <div className="grid lg:grid-cols-3 gap-6">
-                    {/* Left Column: QR Quick Scanner & Today's Stream */}
-                    <div className="lg:col-span-1 space-y-6">
-                        {/* QR Scanner Module */}
-                        <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-6 space-y-5">
-                            <div className="flex items-center justify-between pb-3 border-b border-[#1e2230]">
-                                <div className="space-y-0.5">
-                                    <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-                                        <QrCode size={16} className="text-emerald-400" />
-                                        <span>Presence Terminal</span>
-                                    </h3>
-                                    <p className="text-[11px] text-slate-400">Scan student's dynamic QR code</p>
-                                </div>
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                {/* ============================================================= */}
+                {/* MAIN GRID: 4 + 8 COLS                                           */}
+                {/* ============================================================= */}
+                <div className="grid lg:grid-cols-12 gap-5">
+
+                    {/* LEFT COLUMN (4 cols): QR Scanner + Today's Check-ins */}
+                    <div className="lg:col-span-4 space-y-5">
+
+                        {/* QR Scanner Card */}
+                        <div className="bg-white dark:bg-[#11131a] border border-[#e2ddd3] dark:border-[#22242f] rounded-2xl p-4 sm:p-5 shadow-xs space-y-4">
+                            <div className="flex items-center justify-between pb-2.5 border-b border-[#e5e0d5] dark:border-[#202330]">
+                                <h3 className="text-xs font-mono font-bold text-[#0a0d14] dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                                    <QrCode size={13} className="text-emerald-600 dark:text-emerald-400" />
+                                    Presence Terminal
+                                </h3>
+                                <span className="flex items-center gap-1.5 text-[10px] font-mono text-emerald-700 dark:text-emerald-400">
+                                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                                    10 FPS
+                                </span>
                             </div>
 
                             {!isScanning ? (
                                 <div
                                     onClick={() => setIsScanning(true)}
-                                    className="w-full aspect-square max-w-[220px] mx-auto bg-[#181a24] border-2 border-dashed border-[#262a3a] hover:border-emerald-500/50 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all group"
+                                    className="w-full aspect-square max-w-[200px] mx-auto bg-[#faf9f6] dark:bg-[#161822] border-2 border-dashed border-[#d6d0c2] dark:border-[#2a2e40] hover:border-emerald-500/60 rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all group"
                                 >
-                                    <div className="w-14 h-14 bg-emerald-500/10 group-hover:bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center mb-3 transition-all border border-emerald-500/20">
-                                        <Camera size={26} />
+                                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-500/10 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-2.5 border border-emerald-300 dark:border-emerald-500/20 transition-colors">
+                                        <Camera size={22} />
                                     </div>
-                                    <span className="text-slate-300 text-xs font-semibold group-hover:text-emerald-300">Activate Camera</span>
-                                    <span className="text-slate-500 text-[10px] mt-1 font-mono">10 FPS Real-time</span>
+                                    <span className="text-xs font-bold text-[#0a0d14] dark:text-slate-200 group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">
+                                        Activate Camera
+                                    </span>
+                                    <span className="text-[10px] font-mono text-[#5b6276] dark:text-slate-500 mt-0.5">
+                                        Scan student QR code
+                                    </span>
                                 </div>
                             ) : (
                                 <div className="space-y-3">
                                     <div id="reader" className="w-full overflow-hidden rounded-xl border border-emerald-500/40 bg-black" />
                                     <button
                                         onClick={() => setIsScanning(false)}
-                                        className="w-full py-2 bg-[#181a24] hover:bg-[#202330] border border-[#22242f] text-slate-300 text-xs font-semibold rounded-xl"
+                                        className="w-full py-2 bg-[#f6f5ee] dark:bg-[#181a24] hover:bg-[#eae8de] dark:hover:bg-[#202330] border border-[#e2ddd3] dark:border-[#22242f] text-[#0a0d14] dark:text-slate-300 text-xs font-mono font-semibold rounded-xl cursor-pointer transition-colors"
                                     >
                                         Cancel Scanner
                                     </button>
@@ -391,17 +375,17 @@ const SupervisorDashboard = () => {
                             )}
 
                             {scanResult && (
-                                <div className="w-full bg-emerald-500/10 border border-emerald-500/25 p-3.5 rounded-xl text-center space-y-2">
-                                    <div className="flex items-center justify-center gap-1.5 text-emerald-400 text-xs font-semibold">
-                                        <CheckCircle size={15} />
-                                        <span>Authenticated Student Node</span>
+                                <div className="w-full bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-300 dark:border-emerald-500/25 p-3 rounded-xl text-center space-y-2">
+                                    <div className="flex items-center justify-center gap-1.5 text-emerald-800 dark:text-emerald-400 text-xs font-semibold">
+                                        <CheckCircle size={13} />
+                                        <span>Student Authenticated</span>
                                     </div>
-                                    <p className="text-[11px] font-mono text-slate-300 break-all bg-[#12141c] p-2 rounded border border-[#22242f]">
+                                    <p className="text-[11px] font-mono text-[#22283a] dark:text-slate-300 break-all bg-white dark:bg-[#11131a] p-2 rounded border border-emerald-300 dark:border-emerald-500/20">
                                         {scanResult}
                                     </p>
                                     <button
                                         onClick={() => setScanResult(null)}
-                                        className="text-xs text-emerald-400 hover:text-emerald-300 font-semibold pt-1 block mx-auto underline"
+                                        className="text-xs text-emerald-700 dark:text-emerald-400 font-bold underline cursor-pointer"
                                     >
                                         Ready for Next Scan
                                     </button>
@@ -410,185 +394,193 @@ const SupervisorDashboard = () => {
                         </div>
 
                         {/* Today's Check-ins Stream */}
-                        <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-6 space-y-4">
-                            <div className="flex items-center justify-between pb-3 border-b border-[#1e2230]">
-                                <div className="flex items-center gap-2">
-                                    <Clock size={16} className="text-violet-400" />
-                                    <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider">Today's Check-ins</h3>
-                                </div>
-                                <span className="text-[11px] font-mono text-slate-400">{todayAttendance.length} records</span>
+                        <div className="bg-white dark:bg-[#11131a] border border-[#e2ddd3] dark:border-[#22242f] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3.5">
+                            <div className="flex items-center justify-between pb-2.5 border-b border-[#e5e0d5] dark:border-[#202330]">
+                                <h3 className="text-xs font-mono font-bold text-[#0a0d14] dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                                    <Clock size={13} className="text-violet-600 dark:text-violet-400" />
+                                    Today's Check-ins
+                                </h3>
+                                <span className="text-[10px] font-mono text-[#5b6276] dark:text-slate-400">
+                                    {todayAttendance.length} records
+                                </span>
                             </div>
 
-                            <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
+                            <div className="space-y-2 max-h-64 overflow-y-auto pr-0.5">
                                 {todayAttendance.length > 0 ? (
                                     todayAttendance.map((log) => (
-                                        <div key={log.id} className="flex items-center justify-between p-3 bg-[#181a24] rounded-xl border border-[#22242f] text-xs hover:border-[#2a2d3d] transition-colors">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold text-xs uppercase">
-                                                    {log.student?.user?.name ? log.student.user.name.charAt(0) : 'S'}
+                                        <div key={log.id} className="flex items-center justify-between p-2.5 bg-[#faf9f6] dark:bg-[#161822] rounded-xl border border-[#e2ddd3] dark:border-[#22242f] text-xs">
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-7 h-7 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-300 dark:border-emerald-500/20 flex items-center justify-center font-bold text-emerald-700 dark:text-emerald-400 text-xs uppercase">
+                                                    {log.student?.user?.name?.charAt(0) || 'S'}
                                                 </div>
                                                 <div>
-                                                    <p className="font-semibold text-slate-100">{log.student?.user?.name || 'Intern'}</p>
-                                                    <p className="text-[10px] text-slate-400 font-mono">{log.verificationMethod || 'Verified QR'}</p>
+                                                    <p className="font-bold text-[#0a0d14] dark:text-slate-200 text-xs">
+                                                        {log.student?.user?.name || 'Intern'}
+                                                    </p>
+                                                    <p className="text-[10px] text-[#5b6276] dark:text-slate-400 font-mono">
+                                                        {log.verificationMethod || 'QR Verified'}
+                                                    </p>
                                                 </div>
                                             </div>
-                                            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border-emerald-300 dark:border-emerald-500/20 capitalize">
                                                 {log.status || 'Present'}
                                             </span>
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="py-8 text-center text-slate-500 text-xs space-y-1">
-                                        <p>No check-in entries logged today yet.</p>
-                                        <p className="text-[11px] text-slate-600">Activate scanner when students arrive.</p>
+                                    <div className="py-8 text-center space-y-1">
+                                        <Clock size={20} className="text-[#d6d0c2] dark:text-slate-600 mx-auto" />
+                                        <p className="text-xs font-medium text-[#5b6276] dark:text-slate-400">No check-ins yet today</p>
+                                        <p className="text-[11px] text-[#a09d93] dark:text-slate-500">Activate scanner when students arrive</p>
                                     </div>
                                 )}
                             </div>
                         </div>
                     </div>
 
-                    {/* Right Column: Pending Logbook Reviews & Student Roster */}
-                    <div className="lg:col-span-2 space-y-6">
-                        {/* Pending Reviews Box */}
-                        <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-6 space-y-4">
-                            <div className="flex items-center justify-between pb-3 border-b border-[#1e2230]">
-                                <div className="space-y-0.5">
-                                    <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-                                        <FileText size={16} className="text-amber-400" />
-                                        <span>Weekly Logbook Submissions</span>
+                    {/* RIGHT COLUMN (8 cols): Logbooks + Student Roster */}
+                    <div className="lg:col-span-8 space-y-5">
+
+                        {/* Pending Logbook Submissions */}
+                        <div className="bg-white dark:bg-[#11131a] border border-[#e2ddd3] dark:border-[#22242f] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3.5">
+                            <div className="flex items-center justify-between pb-2.5 border-b border-[#e5e0d5] dark:border-[#202330]">
+                                <div>
+                                    <h3 className="text-sm font-bold text-[#0a0d14] dark:text-white flex items-center gap-2">
+                                        <FileText size={15} className="text-amber-600 dark:text-amber-400" />
+                                        Weekly Logbook Submissions
                                     </h3>
-                                    <p className="text-[11px] text-slate-400">Review student technical tasks and sign off</p>
+                                    <p className="text-[11px] text-[#5b6276] dark:text-slate-400 mt-0.5">
+                                        Review student technical tasks and sign off
+                                    </p>
                                 </div>
-                                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded border bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 border-amber-300 dark:border-amber-500/20">
                                     {pendingLogbooks.length} Pending
                                 </span>
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-2.5">
                                 {pendingLogbooks.length > 0 ? (
                                     pendingLogbooks.map((log) => (
-                                        <div key={log.id} className="p-4 rounded-xl bg-[#181a24] border border-[#22242f] hover:border-[#2a2d3d] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                            <div className="space-y-1.5 max-w-lg">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="px-2 py-0.5 rounded bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[10px] font-bold font-mono">
-                                                        WEEK {log.weekNumber}
+                                        <div key={log.id} className="p-3.5 rounded-xl bg-[#faf9f6] dark:bg-[#161822] border border-[#e2ddd3] dark:border-[#22242f] hover:border-amber-500/30 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+                                            <div className="space-y-1.5 min-w-0">
+                                                <div className="flex flex-wrap items-center gap-2">
+                                                    <span className="px-1.5 py-0.5 rounded bg-violet-100 dark:bg-violet-500/10 border border-violet-300 dark:border-violet-500/20 text-violet-800 dark:text-violet-400 text-[10px] font-mono font-bold">
+                                                        W{log.weekNumber < 10 ? `0${log.weekNumber}` : log.weekNumber}
                                                     </span>
-                                                    <h4 className="text-xs font-bold text-slate-100">{log.student?.user?.name || 'Intern'}</h4>
-                                                    <span className="text-[10px] text-slate-500 font-mono">• {log.startDate} to {log.endDate}</span>
+                                                    <span className="text-xs font-bold text-[#0a0d14] dark:text-slate-100">
+                                                        {log.student?.user?.name || 'Intern'}
+                                                    </span>
+                                                    <span className="text-[10px] text-[#5b6276] dark:text-slate-500 font-mono">
+                                                        {log.startDate} → {log.endDate}
+                                                    </span>
                                                 </div>
-                                                <p className="text-slate-300 text-xs italic line-clamp-2 bg-[#12141c] p-2.5 rounded-lg border border-[#22242f]">
+                                                <p className="text-xs text-[#22283a] dark:text-slate-300 italic line-clamp-2 bg-white dark:bg-[#11131a] p-2.5 rounded-lg border border-[#e2ddd3] dark:border-[#22242f]">
                                                     "{log.summary || 'Summary submitted for supervisor evaluation.'}"
                                                 </p>
                                             </div>
-                                            <div className="shrink-0">
-                                                <button
-                                                    onClick={() => { setSelectedLogbook(log); setReviewComment(log.supervisorComment || ''); }}
-                                                    className="w-full sm:w-auto px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-semibold shadow-lg shadow-violet-600/20 flex items-center justify-center gap-1.5 transition-all"
-                                                >
-                                                    <span>Review Entry</span>
-                                                    <ArrowUpRight size={13} />
-                                                </button>
-                                            </div>
+                                            <button
+                                                onClick={() => { setSelectedLogbook(log); setReviewComment(log.supervisorComment || ''); }}
+                                                className="shrink-0 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-mono font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                                            >
+                                                <span>Review</span>
+                                                <ArrowRight size={12} />
+                                            </button>
                                         </div>
                                     ))
                                 ) : (
-                                    <div className="py-8 text-center text-slate-500 text-xs space-y-1">
-                                        <CheckCircle size={24} className="mx-auto text-emerald-500/40 mb-2" />
-                                        <p className="text-slate-300 font-medium">All logbook submissions are up-to-date.</p>
-                                        <p className="text-[11px] text-slate-500">No pending student submissions waiting for sign-off.</p>
+                                    <div className="py-8 text-center space-y-1.5">
+                                        <CheckCircle size={22} className="mx-auto text-emerald-500/60" />
+                                        <p className="text-xs font-bold text-[#0a0d14] dark:text-slate-200">All logbooks up-to-date</p>
+                                        <p className="text-[11px] text-[#5b6276] dark:text-slate-500">No pending student submissions waiting for sign-off.</p>
                                     </div>
                                 )}
                             </div>
                         </div>
 
                         {/* Assigned Interns Ledger */}
-                        <div className="bg-[#12141c] border border-[#22242f] rounded-2xl p-6 space-y-4">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-[#1e2230] gap-2">
-                                <div className="space-y-0.5">
-                                    <h3 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-                                        <Users size={16} className="text-emerald-400" />
-                                        <span>Assigned Interns & Attendance Standing</span>
+                        <div className="bg-white dark:bg-[#11131a] border border-[#e2ddd3] dark:border-[#22242f] rounded-2xl p-4 sm:p-5 shadow-xs space-y-3.5">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-2.5 border-b border-[#e5e0d5] dark:border-[#202330] gap-2">
+                                <div>
+                                    <h3 className="text-sm font-bold text-[#0a0d14] dark:text-white flex items-center gap-2">
+                                        <Users size={15} className="text-emerald-600 dark:text-emerald-400" />
+                                        Assigned Interns & Attendance Standing
                                     </h3>
-                                    <p className="text-[11px] text-slate-400">Institutional compliance monitoring and instant check-in</p>
+                                    <p className="text-[11px] text-[#5b6276] dark:text-slate-400 mt-0.5">Compliance monitoring and instant check-in</p>
                                 </div>
-                                <Link to="/industry/attendance" className="text-emerald-400 hover:text-emerald-300 text-xs font-semibold flex items-center gap-1 self-start sm:self-auto">
+                                <Link to="/industry/attendance" className="text-emerald-700 dark:text-emerald-400 text-xs font-mono font-bold flex items-center gap-1 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors shrink-0">
                                     <span>Full Audit Ledger</span>
-                                    <ChevronRight size={14} />
+                                    <ChevronRight size={13} />
                                 </Link>
                             </div>
 
-                            <div className="overflow-x-auto">
+                            <div className="overflow-x-auto rounded-xl border border-[#e5e0d5] dark:border-[#202330]">
                                 <table className="w-full text-left text-xs">
-                                    <thead className="bg-[#181a24] text-slate-400 font-semibold border-b border-[#22242f]">
+                                    <thead className="bg-[#f0eee6] dark:bg-[#161822] border-b border-[#e5e0d5] dark:border-[#202330]">
                                         <tr>
-                                            <th className="py-3 px-4 rounded-l-xl">Student Intern</th>
-                                            <th className="py-3 px-4">Adm Number</th>
-                                            <th className="py-3 px-4">Attendance Rate</th>
-                                            <th className="py-3 px-4">Compliance</th>
-                                            <th className="py-3 px-4 text-right rounded-r-xl">Quick Action</th>
+                                            {['Intern', 'Adm. No.', 'Attendance', 'Status', 'Action'].map((h, i) => (
+                                                <th key={i} className={`py-2.5 px-3 text-[10px] font-mono font-bold uppercase tracking-wider text-[#5b6276] dark:text-slate-400 ${i === 4 ? 'text-right' : ''}`}>
+                                                    {h}
+                                                </th>
+                                            ))}
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-[#1e2230]">
-                                        {students.length > 0 ? (
-                                            students.map((s) => {
-                                                const attRate = s.attendanceRate !== undefined ? s.attendanceRate : 85;
-                                                const isAtRisk = attRate < 75;
-                                                return (
-                                                    <tr key={s.id} className="hover:bg-[#181a24]/60 transition-colors">
-                                                        <td className="py-3 px-4">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="w-8 h-8 rounded-lg bg-slate-800 border border-[#22242f] flex items-center justify-center font-bold text-slate-300 text-xs">
-                                                                    {s.user?.name ? s.user.name.charAt(0) : 'S'}
-                                                                </div>
-                                                                <div>
-                                                                    <p className="font-semibold text-slate-100">{s.user?.name || 'Intern'}</p>
-                                                                    <p className="text-[10px] text-slate-400 font-mono">{s.user?.email}</p>
-                                                                </div>
+                                    <tbody className="divide-y divide-[#e5e0d5] dark:divide-[#202330]">
+                                        {students.length > 0 ? students.map((s) => {
+                                            const rate = s.attendanceRate ?? 85;
+                                            const atRisk = rate < 75;
+                                            return (
+                                                <tr key={s.id} className="hover:bg-[#f7f6f2] dark:hover:bg-[#161822] transition-colors">
+                                                    <td className="py-3 px-3">
+                                                        <div className="flex items-center gap-2.5">
+                                                            <div className="w-7 h-7 rounded-lg bg-[#e5e0d5] dark:bg-[#22242f] border border-[#d6d0c2] dark:border-[#2a2e40] flex items-center justify-center font-bold text-[#5b6276] dark:text-slate-400 text-xs uppercase">
+                                                                {s.user?.name?.charAt(0) || 'S'}
                                                             </div>
-                                                        </td>
-                                                        <td className="py-3 px-4 text-slate-300 font-mono text-[11px]">{s.admissionNumber || 'N/A'}</td>
-                                                        <td className="py-3 px-4 text-slate-300">
-                                                            <div className="space-y-1">
-                                                                <div className="flex items-center justify-between text-[11px] font-mono">
-                                                                    <span className={isAtRisk ? 'text-rose-400 font-bold' : 'text-emerald-400 font-bold'}>
-                                                                        {attRate}%
-                                                                    </span>
-                                                                </div>
-                                                                <div className="w-20 bg-[#181a24] rounded-full h-1.5 overflow-hidden">
-                                                                    <div
-                                                                        className={`h-1.5 rounded-full ${isAtRisk ? 'bg-rose-500' : 'bg-emerald-500'}`}
-                                                                        style={{ width: `${Math.min(attRate, 100)}%` }}
-                                                                    />
-                                                                </div>
+                                                            <div>
+                                                                <p className="font-bold text-[#0a0d14] dark:text-slate-100">{s.user?.name || 'Intern'}</p>
+                                                                <p className="text-[10px] text-[#5b6276] dark:text-slate-400 font-mono">{s.user?.email}</p>
                                                             </div>
-                                                        </td>
-                                                        <td className="py-3 px-4">
-                                                            {isAtRisk ? (
-                                                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                                                                    AT RISK
-                                                                </span>
-                                                            ) : (
-                                                                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                                                    COMPLIANT
-                                                                </span>
-                                                            )}
-                                                        </td>
-                                                        <td className="py-3 px-4 text-right">
-                                                            <button
-                                                                onClick={() => { setQuickMarkStudent(s); setQuickStatus('present'); }}
-                                                                className="px-2.5 py-1.5 rounded-lg bg-[#181a24] hover:bg-[#202330] border border-[#22242f] text-slate-300 hover:text-white text-xs font-semibold transition-all inline-flex items-center gap-1"
-                                                            >
-                                                                <UserCheck size={12} className="text-emerald-400" />
-                                                                <span>Check-in</span>
-                                                            </button>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            })
-                                        ) : (
+                                                        </div>
+                                                    </td>
+                                                    <td className="py-3 px-3 text-[#5b6276] dark:text-slate-400 font-mono text-[11px]">
+                                                        {s.admissionNumber || '—'}
+                                                    </td>
+                                                    <td className="py-3 px-3">
+                                                        <div className="space-y-1">
+                                                            <span className={`text-[11px] font-mono font-bold ${atRisk ? 'text-rose-700 dark:text-rose-400' : 'text-emerald-700 dark:text-emerald-400'}`}>
+                                                                {rate}%
+                                                            </span>
+                                                            <div className="w-20 bg-[#e5e0d5] dark:bg-[#1e2230] rounded-full h-1 overflow-hidden">
+                                                                <div
+                                                                    className={`h-1 rounded-full ${atRisk ? 'bg-rose-500' : 'bg-emerald-500'}`}
+                                                                    style={{ width: `${Math.min(rate, 100)}%` }}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td className="py-3 px-3">
+                                                        <span className={`text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${
+                                                            atRisk
+                                                                ? 'bg-rose-100 dark:bg-rose-500/10 text-rose-800 dark:text-rose-400 border-rose-300 dark:border-rose-500/20'
+                                                                : 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 border-emerald-300 dark:border-emerald-500/20'
+                                                        }`}>
+                                                            {atRisk ? 'AT RISK' : 'COMPLIANT'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="py-3 px-3 text-right">
+                                                        <button
+                                                            onClick={() => { setQuickMarkStudent(s); setQuickStatus('present'); }}
+                                                            className="px-2.5 py-1.5 rounded-lg bg-[#faf9f6] dark:bg-[#181a24] hover:bg-[#eae8de] dark:hover:bg-[#202330] border border-[#e2ddd3] dark:border-[#22242f] text-[#0a0d14] dark:text-slate-300 text-xs font-mono font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                                                        >
+                                                            <UserCheck size={12} className="text-emerald-600 dark:text-emerald-400" />
+                                                            <span>Check-in</span>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        }) : (
                                             <tr>
-                                                <td colSpan={5} className="text-center py-8 text-slate-500 text-xs">
-                                                    No students assigned to your supervision yet.
+                                                <td colSpan={5} className="text-center py-8 text-[#5b6276] dark:text-slate-500 text-xs">
+                                                    No interns assigned to your supervision yet.
                                                 </td>
                                             </tr>
                                         )}
@@ -600,42 +592,52 @@ const SupervisorDashboard = () => {
                 </div>
             </div>
 
-            {/* Logbook Review Modal */}
+            {/* ============================================================= */}
+            {/* LOGBOOK REVIEW MODAL                                            */}
+            {/* ============================================================= */}
             {selectedLogbook && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-                    <div className="relative w-full max-w-xl bg-[#12141c] border border-[#22242f] rounded-2xl p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto animate-fade-in">
-                        <div className="flex items-center justify-between pb-3 border-b border-[#1e2230]">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="relative w-full max-w-xl bg-white dark:bg-[#11131a] border border-[#e2ddd3] dark:border-[#22242f] rounded-2xl p-5 shadow-2xl max-h-[90vh] overflow-y-auto space-y-4">
+                        <div className="flex items-center justify-between pb-3 border-b border-[#e5e0d5] dark:border-[#202330]">
                             <div className="space-y-0.5">
-                                <span className="px-2.5 py-0.5 rounded bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-bold font-mono">
+                                <span className="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/20 text-amber-800 dark:text-amber-400 text-[10px] font-mono font-bold">
                                     WEEK {selectedLogbook.weekNumber} REVIEW
                                 </span>
-                                <h3 className="text-base font-bold text-slate-100">
+                                <h3 className="text-sm font-black text-[#0a0d14] dark:text-white mt-1">
                                     {selectedLogbook.student?.user?.name || 'Intern Submission'}
                                 </h3>
-                                <p className="text-xs text-slate-400 font-mono">{selectedLogbook.startDate} — {selectedLogbook.endDate}</p>
+                                <p className="text-[11px] text-[#5b6276] dark:text-slate-400 font-mono">
+                                    {selectedLogbook.startDate} — {selectedLogbook.endDate}
+                                </p>
                             </div>
                             <button
                                 onClick={() => setSelectedLogbook(null)}
-                                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-[#181a24] transition-colors"
+                                className="text-[#5b6276] dark:text-slate-400 hover:text-[#0a0d14] dark:hover:text-white p-1 rounded-lg cursor-pointer"
                             >
-                                <X size={18} />
+                                <X size={16} />
                             </button>
                         </div>
 
-                        <div className="space-y-4 text-xs">
-                            <div className="p-4 rounded-xl bg-[#181a24] border border-[#22242f] space-y-1.5">
-                                <span className="text-[10px] font-bold uppercase tracking-wider text-violet-400">Weekly Reflection Summary</span>
-                                <p className="text-slate-200 leading-relaxed text-xs">{selectedLogbook.summary}</p>
+                        <div className="space-y-3.5 text-xs">
+                            <div className="p-3.5 rounded-xl bg-[#faf9f6] dark:bg-[#161822] border border-[#e2ddd3] dark:border-[#22242f] space-y-1">
+                                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-violet-700 dark:text-violet-400">
+                                    Weekly Reflection Summary
+                                </span>
+                                <p className="text-[#22283a] dark:text-slate-200 leading-relaxed">
+                                    {selectedLogbook.summary}
+                                </p>
                             </div>
 
                             {selectedLogbook.dailyEntries && typeof selectedLogbook.dailyEntries === 'object' && (
                                 <div className="space-y-2">
-                                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Daily Breakdown Log</span>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#5b6276] dark:text-slate-400">
+                                        Daily Breakdown Log
+                                    </span>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                                         {Object.entries(selectedLogbook.dailyEntries).map(([day, text]) => (
-                                            <div key={day} className="p-3 bg-[#181a24] rounded-xl border border-[#22242f] space-y-1">
-                                                <span className="font-bold uppercase text-[10px] text-emerald-400 block">{day}</span>
-                                                <span className="text-slate-300 text-[11px] line-clamp-3">{text || 'No task logged'}</span>
+                                            <div key={day} className="p-2.5 bg-[#faf9f6] dark:bg-[#161822] rounded-xl border border-[#e2ddd3] dark:border-[#22242f] space-y-1">
+                                                <span className="font-mono font-bold uppercase text-[10px] text-emerald-700 dark:text-emerald-400 block">{day}</span>
+                                                <span className="text-[#22283a] dark:text-slate-300 text-[11px] line-clamp-3">{text || 'No task logged'}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -643,23 +645,25 @@ const SupervisorDashboard = () => {
                             )}
 
                             <div className="space-y-1.5">
-                                <label className="text-xs font-semibold text-slate-300">Supervisor Feedback & Guidance</label>
+                                <label className="text-[11px] font-mono font-semibold text-[#5b6276] dark:text-slate-400 uppercase tracking-wider">
+                                    Supervisor Feedback
+                                </label>
                                 <textarea
                                     rows={3}
                                     value={reviewComment}
                                     onChange={(e) => setReviewComment(e.target.value)}
                                     placeholder="Add feedback on technical competency, work ethic, or required adjustments..."
-                                    className="w-full p-3 rounded-xl bg-[#181a24] border border-[#22242f] text-xs text-slate-100 placeholder-slate-500 resize-none outline-none focus:border-violet-500 font-sans transition-all"
+                                    className="w-full p-3 rounded-xl bg-[#faf9f6] dark:bg-[#161822] border border-[#e2ddd3] dark:border-[#22242f] text-xs text-[#0a0d14] dark:text-white placeholder-[#a09d93] dark:placeholder-slate-500 resize-none outline-none focus:border-emerald-500 transition-colors"
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#1e2230]">
+                        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#e5e0d5] dark:border-[#202330]">
                             <button
                                 type="button"
                                 disabled={reviewing}
                                 onClick={() => handleReviewSubmit('rejected')}
-                                className="px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-semibold transition-all"
+                                className="px-4 py-2 rounded-xl bg-rose-100 dark:bg-rose-500/10 hover:bg-rose-200 dark:hover:bg-rose-500/20 border border-rose-300 dark:border-rose-500/30 text-rose-800 dark:text-rose-400 text-xs font-mono font-semibold cursor-pointer transition-colors disabled:opacity-60"
                             >
                                 Request Revision
                             </button>
@@ -667,9 +671,9 @@ const SupervisorDashboard = () => {
                                 type="button"
                                 disabled={reviewing}
                                 onClick={() => handleReviewSubmit('approved')}
-                                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 flex items-center gap-1.5 transition-all"
+                                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-mono font-semibold flex items-center gap-1.5 cursor-pointer transition-colors disabled:opacity-60"
                             >
-                                <Check size={14} />
+                                <Check size={13} />
                                 <span>{reviewing ? 'Endorsing...' : 'Approve & Sign Off'}</span>
                             </button>
                         </div>
@@ -677,50 +681,50 @@ const SupervisorDashboard = () => {
                 </div>
             )}
 
-            {/* Quick Mark Attendance Modal */}
+            {/* ============================================================= */}
+            {/* QUICK CHECK-IN MODAL                                            */}
+            {/* ============================================================= */}
             {quickMarkStudent && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-                    <div className="relative w-full max-w-md bg-[#12141c] border border-[#22242f] rounded-2xl p-6 space-y-5 shadow-2xl animate-fade-in">
-                        <div className="flex items-center justify-between pb-3 border-b border-[#1e2230]">
-                            <div className="space-y-0.5">
-                                <h3 className="text-base font-bold text-slate-100">Manual Check-in</h3>
-                                <p className="text-xs text-slate-400">{quickMarkStudent.user?.name} ({quickMarkStudent.admissionNumber})</p>
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="relative w-full max-w-sm bg-white dark:bg-[#11131a] border border-[#e2ddd3] dark:border-[#22242f] rounded-2xl p-5 shadow-2xl space-y-4">
+                        <div className="flex items-center justify-between pb-3 border-b border-[#e5e0d5] dark:border-[#202330]">
+                            <div>
+                                <h3 className="text-sm font-black text-[#0a0d14] dark:text-white">Manual Check-in</h3>
+                                <p className="text-[11px] font-mono text-[#5b6276] dark:text-slate-400 mt-0.5">
+                                    {quickMarkStudent.user?.name} · {quickMarkStudent.admissionNumber}
+                                </p>
                             </div>
-                            <button
-                                onClick={() => setQuickMarkStudent(null)}
-                                className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-[#181a24]"
-                            >
-                                <X size={18} />
+                            <button onClick={() => setQuickMarkStudent(null)} className="text-[#5b6276] dark:text-slate-400 hover:text-[#0a0d14] dark:hover:text-white p-1 rounded cursor-pointer">
+                                <X size={16} />
                             </button>
                         </div>
 
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Date</label>
+                        <div className="space-y-3">
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-mono font-semibold text-[#5b6276] dark:text-slate-400 uppercase tracking-wider">Date</label>
                                 <input
                                     type="date"
                                     disabled
                                     defaultValue={new Date().toISOString().split('T')[0]}
-                                    className="w-full bg-[#181a24] border border-[#22242f] rounded-xl px-3.5 py-2.5 text-xs text-slate-300 select-none opacity-80"
+                                    className="w-full bg-[#f0eee6] dark:bg-[#161822] border border-[#e2ddd3] dark:border-[#22242f] rounded-xl px-3 py-2 text-xs text-[#5b6276] dark:text-slate-400 font-mono opacity-80"
                                 />
                             </div>
-
-                            <div>
-                                <label className="block text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5">Status</label>
+                            <div className="space-y-1.5">
+                                <label className="text-[11px] font-mono font-semibold text-[#5b6276] dark:text-slate-400 uppercase tracking-wider">Status</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {['present', 'late', 'absent'].map((st) => (
                                         <button
                                             key={st}
                                             type="button"
                                             onClick={() => setQuickStatus(st)}
-                                            className={`py-2 rounded-xl text-xs font-semibold capitalize border transition-all ${
+                                            className={`py-2 rounded-xl text-xs font-mono font-bold capitalize border transition-all cursor-pointer ${
                                                 quickStatus === st
                                                     ? st === 'present'
-                                                        ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                                                        ? 'bg-emerald-100 dark:bg-emerald-500/20 border-emerald-400 dark:border-emerald-500/40 text-emerald-800 dark:text-emerald-300'
                                                         : st === 'late'
-                                                            ? 'bg-amber-500/20 border-amber-500/40 text-amber-300'
-                                                            : 'bg-rose-500/20 border-rose-500/40 text-rose-300'
-                                                    : 'bg-[#181a24] border-[#22242f] text-slate-400 hover:text-slate-200'
+                                                            ? 'bg-amber-100 dark:bg-amber-500/20 border-amber-400 dark:border-amber-500/40 text-amber-800 dark:text-amber-300'
+                                                            : 'bg-rose-100 dark:bg-rose-500/20 border-rose-400 dark:border-rose-500/40 text-rose-800 dark:text-rose-300'
+                                                    : 'bg-[#faf9f6] dark:bg-[#161822] border-[#e2ddd3] dark:border-[#22242f] text-[#5b6276] dark:text-slate-400'
                                             }`}
                                         >
                                             {st}
@@ -730,11 +734,11 @@ const SupervisorDashboard = () => {
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#1e2230]">
+                        <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[#e5e0d5] dark:border-[#202330]">
                             <button
                                 type="button"
                                 onClick={() => setQuickMarkStudent(null)}
-                                className="px-4 py-2 rounded-xl bg-[#181a24] hover:bg-[#202330] text-slate-400 text-xs font-semibold"
+                                className="px-4 py-2 rounded-xl bg-[#f6f5ee] dark:bg-[#181a24] border border-[#e2ddd3] dark:border-[#22242f] text-[#5b6276] dark:text-slate-400 text-xs font-mono font-semibold cursor-pointer"
                             >
                                 Cancel
                             </button>
@@ -742,7 +746,7 @@ const SupervisorDashboard = () => {
                                 type="button"
                                 disabled={quickMarking}
                                 onClick={handleQuickMarkAttendance}
-                                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20"
+                                className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-mono font-semibold cursor-pointer transition-colors disabled:opacity-60"
                             >
                                 {quickMarking ? 'Saving...' : 'Record Status'}
                             </button>
