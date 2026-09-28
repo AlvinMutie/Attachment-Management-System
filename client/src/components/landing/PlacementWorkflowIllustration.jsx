@@ -27,21 +27,17 @@ export const PlacementWorkflowIllustration = () => {
     const [sceneState, setSceneState] = useState(2);
     const [isPaused, setIsPaused] = useState(false);
 
-    // Subtle autonomous product interaction cycle
+    // Fast, satisfying autonomous product interaction cycle (2200ms)
     useEffect(() => {
         if (isPaused) return;
         const timer = setInterval(() => {
             setSceneState((prev) => (prev >= 2 ? 0 : prev + 1));
-        }, 4800);
+        }, 2200);
         return () => clearInterval(timer);
     }, [isPaused]);
 
     return (
-        <div
-            className="w-full max-w-5xl mx-auto my-8 relative select-none"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-        >
+        <div className="w-full max-w-5xl mx-auto my-8 relative select-none">
             {/* Top Interactive Scene Controller */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4 px-2">
                 <div className="flex items-center gap-2">

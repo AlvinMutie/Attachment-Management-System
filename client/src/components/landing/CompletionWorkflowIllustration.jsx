@@ -23,39 +23,39 @@ export const CompletionWorkflowIllustration = () => {
     const [isPaused, setIsPaused] = useState(false);
     const timerRef = useRef(null);
 
-    // Transitions with brief, believable transient loading states (450–700ms)
+    // Fast, responsive transient loading states (200ms)
     const triggerTransition = (nextState) => {
         if (nextState === 1) {
             setLoadingTarget('attendance');
             setTimeout(() => {
                 setSceneState(1);
                 setLoadingTarget(null);
-            }, 550);
+            }, 200);
         } else if (nextState === 2) {
             setLoadingTarget('reviews');
             setTimeout(() => {
                 setSceneState(2);
                 setLoadingTarget(null);
-            }, 600);
+            }, 200);
         } else if (nextState === 3) {
             setLoadingTarget('report');
             setTimeout(() => {
                 setSceneState(3);
                 setLoadingTarget(null);
-            }, 550);
+            }, 200);
         } else if (nextState === 4) {
             setLoadingTarget('final');
             setTimeout(() => {
                 setSceneState(4);
                 setLoadingTarget(null);
-            }, 650);
+            }, 200);
         } else {
             setSceneState(0);
             setLoadingTarget(null);
         }
     };
 
-    // Autonomous calm product interaction cycle
+    // Autonomous product interaction cycle (fast & human satisfying: 2200ms)
     useEffect(() => {
         if (isPaused) return;
         timerRef.current = setInterval(() => {
@@ -64,22 +64,15 @@ export const CompletionWorkflowIllustration = () => {
                 triggerTransition(next);
                 return prev;
             });
-        }, 5200);
+        }, 2200);
 
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
     }, [isPaused]);
 
-    // Unique Scene 04 Squiggly Progress calculation (Verify -> Review -> Finalize -> Complete)
-    const squiggleProgress = sceneState === 0 ? 0.2 : sceneState === 1 ? 0.45 : sceneState === 2 ? 0.7 : sceneState === 3 ? 0.88 : 1.0;
-
     return (
-        <div
-            className="w-full max-w-5xl mx-auto my-8 relative select-none"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-        >
+        <div className="w-full max-w-5xl mx-auto my-8 relative select-none">
             {/* Top Interactive Scene Controller */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4 px-2">
                 <div className="flex items-center gap-2">
@@ -408,62 +401,6 @@ export const CompletionWorkflowIllustration = () => {
                                     <span className="text-[#22283a] dark:text-slate-200 font-medium">Faculty: Dr. Emily Johnson</span>
                                     <span className="text-emerald-700 dark:text-emerald-400 font-mono font-bold">✓ Endorsed</span>
                                 </div>
-                            </div>
-                        </div>
-
-                        {/* FRAGMENT 3: The Signature Material 3 Squiggly Completion Tracker */}
-                        <div className="bg-white dark:bg-[#141620] border-2 border-emerald-500/50 rounded-2xl p-4 shadow-md space-y-2 relative overflow-hidden">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-1.5">
-                                    <ShieldCheck size={14} className="text-emerald-600 dark:text-emerald-400" />
-                                    <span className="text-xs font-black text-[#0a0d14] dark:text-white">
-                                        Closure Verification Flow
-                                    </span>
-                                </div>
-                                <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300">
-                                    {Math.round(squiggleProgress * 100)}%
-                                </span>
-                            </div>
-
-                            {/* Tactile Material 3 Serpentine Completion Path */}
-                            <div className="relative py-2 px-1">
-                                <svg className="w-full h-10 overflow-visible" viewBox="0 0 280 32" fill="none">
-                                    {/* Background reference guide */}
-                                    <path
-                                        d="M 10 8 C 50 8, 50 24, 90 24 S 130 8, 170 8 S 210 24, 250 24 L 270 24"
-                                        stroke="currentColor"
-                                        strokeWidth="3"
-                                        strokeLinecap="round"
-                                        className="text-[#e2ddd3] dark:text-[#282c3e]"
-                                    />
-                                    {/* Tactile animated squiggly progress path */}
-                                    <motion.path
-                                        d="M 10 8 C 50 8, 50 24, 90 24 S 130 8, 170 8 S 210 24, 250 24 L 270 24"
-                                        stroke="url(#completion-squiggle-gradient)"
-                                        strokeWidth="4"
-                                        strokeLinecap="round"
-                                        initial={{ pathLength: 0.2 }}
-                                        animate={{ pathLength: squiggleProgress }}
-                                        transition={{ duration: 0.7, ease: "easeInOut" }}
-                                    />
-                                    <defs>
-                                        <linearGradient id="completion-squiggle-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                            <stop offset="0%" stopColor="#059669" />
-                                            <stop offset="50%" stopColor="#10b981" />
-                                            <stop offset="100%" stopColor="#34d399" />
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                            </div>
-
-                            {/* Lifecycle Closure State Label */}
-                            <div className="flex items-center justify-between text-[10px] font-mono text-[#5b6276] dark:text-slate-400 pt-0.5">
-                                <span>Verify → Review → Finalize</span>
-                                {sceneState === 4 ? (
-                                    <span className="font-bold text-emerald-700 dark:text-emerald-400">✓ Attachment Complete</span>
-                                ) : (
-                                    <span className="font-bold text-amber-700 dark:text-amber-400">Finalizing</span>
-                                )}
                             </div>
                         </div>
                     </div>

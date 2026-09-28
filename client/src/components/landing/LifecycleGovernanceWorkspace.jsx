@@ -85,12 +85,12 @@ export const LifecycleGovernanceWorkspace = () => {
     const [isTransitioning, setIsTransitioning] = useState(false);
     const timerRef = useRef(null);
 
-    // Auto-advance lifecycle stages (4.8s rhythm)
+    // Auto-advance lifecycle stages (crisp 2.2s rhythm for human satisfaction)
     useEffect(() => {
         if (isPaused) return;
         timerRef.current = setInterval(() => {
             setActiveStage((prev) => (prev >= STAGES.length - 1 ? 0 : prev + 1));
-        }, 4800);
+        }, 2200);
 
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
@@ -108,11 +108,7 @@ export const LifecycleGovernanceWorkspace = () => {
     const progressPercent = ((activeStage + 1) / STAGES.length) * 100;
 
     return (
-        <div
-            className="w-full max-w-6xl mx-auto my-8 relative select-none"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-        >
+        <div className="w-full max-w-6xl mx-auto my-8 relative select-none">
             {/* Header & Stage Scrubber */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 px-1">
                 <div>

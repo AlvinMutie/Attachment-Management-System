@@ -28,26 +28,26 @@ export const ReportingWorkflowIllustration = () => {
     const [isPaused, setIsPaused] = useState(false);
     const timerRef = useRef(null);
 
-    // Transitions with brief, realistic transient loading states (500–700ms)
+    // Fast, responsive transient loading states (200ms)
     const triggerTransition = (nextState) => {
         if (nextState === 1) {
             setLoadingTarget('logs');
             setTimeout(() => {
                 setSceneState(1);
                 setLoadingTarget(null);
-            }, 600);
+            }, 200);
         } else if (nextState === 2) {
             setLoadingTarget('attendance');
             setTimeout(() => {
                 setSceneState(2);
                 setLoadingTarget(null);
-            }, 600);
+            }, 200);
         } else if (nextState === 3) {
             setLoadingTarget('reviews');
             setTimeout(() => {
                 setSceneState(3);
                 setLoadingTarget(null);
-            }, 650);
+            }, 200);
         } else if (nextState === 4) {
             setSceneState(4);
             setLoadingTarget(null);
@@ -57,7 +57,7 @@ export const ReportingWorkflowIllustration = () => {
         }
     };
 
-    // Autonomous product interaction cycle
+    // Autonomous product interaction cycle (fast & human satisfying: 2200ms)
     useEffect(() => {
         if (isPaused) return;
         timerRef.current = setInterval(() => {
@@ -66,22 +66,15 @@ export const ReportingWorkflowIllustration = () => {
                 triggerTransition(next);
                 return prev;
             });
-        }, 5000);
+        }, 2200);
 
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
     }, [isPaused]);
 
-    // Squiggly M3 progress calculation
-    const squiggleProgress = sceneState === 0 ? 0.15 : sceneState === 1 ? 0.4 : sceneState === 2 ? 0.65 : sceneState === 3 ? 0.85 : 1.0;
-
     return (
-        <div
-            className="w-full max-w-5xl mx-auto my-8 relative select-none"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-        >
+        <div className="w-full max-w-5xl mx-auto my-8 relative select-none">
             {/* Top Interactive Scene Controller */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4 px-2">
                 <div className="flex items-center gap-2">
@@ -383,62 +376,6 @@ export const ReportingWorkflowIllustration = () => {
                             <p className="text-[11px] text-[#22283a] dark:text-slate-300 italic bg-[#f6f5ee] dark:bg-[#1a1d2b] p-2 rounded-lg border border-[#e2ddd3] dark:border-[#282c3e]">
                                 "Candidate performed exceptionally throughout the 12 weeks. High technical competence and adherence to standards."
                             </p>
-                        </div>
-
-                        {/* FRAGMENT 3: The Signature Material 3 Squiggly Assembly Progress Tracker */}
-                        <div className="bg-white dark:bg-[#141620] border-2 border-indigo-500/50 rounded-2xl p-4 shadow-md space-y-2 relative overflow-hidden">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-1.5">
-                                    <Sparkles size={14} className="text-indigo-600 dark:text-indigo-400" />
-                                    <span className="text-xs font-black text-[#0a0d14] dark:text-white">
-                                        Report Assembly Engine
-                                    </span>
-                                </div>
-                                <span className="text-[10px] font-mono font-bold text-indigo-700 dark:text-indigo-300">
-                                    {Math.round(squiggleProgress * 100)}%
-                                </span>
-                            </div>
-
-                            {/* Tactile Material 3 Sinuous Squiggly Path */}
-                            <div className="relative py-2 px-1">
-                                <svg className="w-full h-10 overflow-visible" viewBox="0 0 280 32" fill="none">
-                                    {/* Background reference guide */}
-                                    <path
-                                        d="M 10 16 Q 40 4, 70 16 T 130 16 T 190 16 T 250 16 L 270 16"
-                                        stroke="currentColor"
-                                        strokeWidth="3"
-                                        strokeLinecap="round"
-                                        className="text-[#e2ddd3] dark:text-[#282c3e]"
-                                    />
-                                    {/* Tactile animated squiggly progress path */}
-                                    <motion.path
-                                        d="M 10 16 Q 40 4, 70 16 T 130 16 T 190 16 T 250 16 L 270 16"
-                                        stroke="url(#squiggly-gradient)"
-                                        strokeWidth="4"
-                                        strokeLinecap="round"
-                                        initial={{ pathLength: 0.15 }}
-                                        animate={{ pathLength: squiggleProgress }}
-                                        transition={{ duration: 0.7, ease: "easeInOut" }}
-                                    />
-                                    <defs>
-                                        <linearGradient id="squiggly-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                            <stop offset="0%" stopColor="#6366f1" />
-                                            <stop offset="60%" stopColor="#8b5cf6" />
-                                            <stop offset="100%" stopColor="#10b981" />
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                            </div>
-
-                            {/* Assembly Phase Label */}
-                            <div className="flex items-center justify-between text-[10px] font-mono text-[#5b6276] dark:text-slate-400 pt-0.5">
-                                <span>Phase: Collect → Assemble → Verify</span>
-                                {sceneState === 4 ? (
-                                    <span className="font-bold text-emerald-700 dark:text-emerald-400">✓ Ready</span>
-                                ) : (
-                                    <span className="font-bold text-indigo-700 dark:text-indigo-400">Processing</span>
-                                )}
-                            </div>
                         </div>
                     </div>
                 </div>

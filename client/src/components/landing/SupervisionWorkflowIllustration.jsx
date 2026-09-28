@@ -24,42 +24,42 @@ export const SupervisionWorkflowIllustration = () => {
     const [isPaused, setIsPaused] = useState(false);
     const timerRef = useRef(null);
 
-    // Transitions with brief, realistic transient loading states (500–700ms)
+    // Fast, responsive transient loading states (200ms)
     const triggerTransition = (nextState) => {
         if (nextState === 1) {
             setLoadingTarget('log');
             setTimeout(() => {
                 setSceneState(1);
                 setLoadingTarget(null);
-            }, 600);
+            }, 200);
         } else if (nextState === 2) {
             setLoadingTarget('industry');
             setTimeout(() => {
                 setSceneState(2);
                 setLoadingTarget(null);
-            }, 650);
+            }, 200);
         } else if (nextState === 3) {
             setLoadingTarget('university');
             setTimeout(() => {
                 setSceneState(3);
                 setLoadingTarget(null);
-            }, 600);
+            }, 200);
         } else {
             setSceneState(0);
             setLoadingTarget(null);
         }
     };
 
-    // Subtle autonomous product interaction cycle with calm settling periods
+    // Autonomous product interaction cycle (fast & human satisfying: 2200ms)
     useEffect(() => {
         if (isPaused) return;
         timerRef.current = setInterval(() => {
             setSceneState((prev) => {
                 const next = prev >= 3 ? 0 : prev + 1;
                 triggerTransition(next);
-                return prev; // actual state set inside triggerTransition
+                return prev;
             });
-        }, 5200);
+        }, 2200);
 
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
@@ -90,11 +90,7 @@ export const SupervisionWorkflowIllustration = () => {
     ];
 
     return (
-        <div
-            className="w-full max-w-5xl mx-auto my-8 relative select-none"
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-        >
+        <div className="w-full max-w-5xl mx-auto my-8 relative select-none">
             {/* Top Interactive Scene Controller */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4 px-2">
                 <div className="flex items-center gap-2">
