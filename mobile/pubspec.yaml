@@ -1,5 +1,5 @@
-name: ams_supervisor
-description: "AMS Industry Supervisor - Manage student attachments on the go"
+name: attachpro_student
+description: "AttachPro Student - Industrial Attachment & Logbook System"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -12,12 +12,11 @@ dependencies:
   cupertino_icons: ^1.0.8
   http: ^1.4.0
   flutter_secure_storage: ^9.2.4
-  mobile_scanner: ^7.0.2
   provider: ^6.1.5
   google_fonts: ^6.2.1
   flutter_animate: ^4.5.2
   intl: ^0.20.2
-  shimmer: ^3.0.0
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
