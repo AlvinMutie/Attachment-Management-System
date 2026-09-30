@@ -1,0 +1,331 @@
+<!DOCTYPE html><html class="light" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_tab" name="shell-type"><title>AttachPro</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-variant": "#dae2fd", "primary-fixed-dim": "#b8c4ff", "error-container": "#ffdad6", "inverse-primary": "#b8c4ff", "on-secondary": "#ffffff", "on-secondary-fixed": "#001d31", "secondary-container": "#5bb8fe", "surface": "#faf8ff", "on-tertiary-fixed": "#00201d", "outline": "#757684", "surface-container": "#eaedff", "surface-container-lowest": "#ffffff", "on-primary-container": "#a8b8ff", "surface-dim": "#d2d9f4", "on-error-container": "#93000a", "surface-container-low": "#f2f3ff", "background": "#faf8ff", "error": "#ba1a1a", "primary-fixed": "#dde1ff", "on-secondary-fixed-variant": "#004b73", "on-background": "#131b2e", "tertiary-container": "#00554f", "surface-tint": "#3755c3", "primary-container": "#1e40af", "inverse-surface": "#283044", "on-surface-variant": "#444653", "on-primary": "#ffffff", "on-surface": "#131b2e", "on-error": "#ffffff", "tertiary-fixed": "#9cf2e8", "tertiary": "#003c37", "surface-container-high": "#e2e7ff", "primary": "#00288e", "inverse-on-surface": "#eef0ff", "on-primary-fixed": "#001453", "secondary": "#006398", "on-tertiary": "#ffffff", "surface-bright": "#faf8ff", "tertiary-fixed-dim": "#80d5cb", "on-secondary-container": "#00476e", "on-tertiary-fixed-variant": "#00504a", "secondary-fixed": "#cce5ff", "on-tertiary-container": "#75cac1", "secondary-fixed-dim": "#93ccff", "on-primary-fixed-variant": "#173bab", "surface-container-highest": "#dae2fd", "outline-variant": "#c4c5d5" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-3xl": "2.5rem", "space-xs": "0.5rem", "space-2xl": "2rem", "gutter": "1rem", "space-2xs": "0.25rem", "space-sm": "0.75rem", "space-lg": "1.25rem", "margin": "1.25rem", "space-xl": "1.5rem", "space-md": "1rem" }, "fontFamily": { "label-sm": ["Inter"], "label-md": ["Inter"], "headline-lg": ["Inter"], "display-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "title-md": ["Inter"], "body-lg": ["Inter"], "headline-sm": ["Inter"], "headline-md": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.025em", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-lg": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "title-md": ["16px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "600" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0.005em", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400" }] } } } }</script><style>@layer base { html, body { width: 100%; min-height: 100%; margin: 0; padding: 0; } body { overscroll-behavior-y: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; } .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; } body { min-height: max(884px, 100dvh); }</style></head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen relative selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-11 px-5 flex items-center justify-between text-on-surface font-label-md text-label-md select-none"><span class="tracking-tight font-semibold">9:41</span><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[17px] leading-none">signal_cellular_alt</span><span class="material-symbols-outlined text-[17px] leading-none">wifi</span><span class="material-symbols-outlined text-[19px] leading-none rotate-90">battery_full</span></div></div><div class="h-14 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Go back" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><div class="flex items-center gap-2"><img alt="AttachPro App Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo8ewrDsMOvFH0LHOZyyZvxnGSIuphqoWvhUE3QpFFMRf-HYcn5ktC0qCzXwbPz-gh9Tt2ZQ3EJ7D13arB5oGiEO8BmCN-HcMzuB5zKTh9vW4AQpPgulsqVR_ZE8Nnyw_b3GonsRrXtJnx_eTA7NI0Sr5VCf1lU7-Kx_RwPGXrB-XHng2pAfJVI11BrfAE9tIMc5QpjJ0dMPkYfUMmX3VjjSXUfkpWxt26LPeaZd8Uq9O3WqzxuE2fJw"><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-tight truncate">Attachment Details</h1></div></div><div class="flex items-center gap-1"><button aria-label="Help and Verification Info" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">info</span></button><button aria-label="Student Profile" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmsp-eXvGk_IvFQQLRlG4j_pWsydhpGDDui7SY0T_kTeBJwM21Ykko4zU4l6bFXtJW_0U85Ri_r5AMaNzNYou8WMhe4hYuZPL8X1a298D6tFdJ_LvnMc9cFQLLNwAORBvgdsiFYp7gvoLq4jSStNXJ_8s4gnXoS1ZkxYLkFADIhbrBT6lu2hgE14iw9Iqv28C-aMxFnA1rhostHiDdnx-xi-do0GUXaAIUPxRwI6gwiwGh8jgniWTFNw"></button></div></div></header><main class="flex flex-col relative w-full pt-[100px] pb-[104px] px-margin bg-surface min-h-screen"><div class="flex flex-col w-full space-y-space-lg pb-space-2xl">
+<!-- Status Banner & Verified Pill -->
+<div class="flex items-center justify-between bg-surface-container-high px-space-md py-space-xs rounded-xl shadow-sm">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-container animate-pulse"></span>
+<span class="font-label-md text-label-md text-on-surface uppercase tracking-wider">Active Placement</span>
+</div>
+<div class="flex items-center gap-1 text-tertiary-container bg-tertiary-fixed px-space-xs py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[15px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-sm text-label-sm font-semibold">MoU Verified</span>
+</div>
+</div>
+<!-- Primary Placement Card (Hero summary) -->
+<div class="relative bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col space-y-space-md overflow-hidden">
+<!-- Subtle architectural visual accent -->
+<div class="absolute -right-12 -top-12 w-40 h-40 bg-surface-variant/40 rounded-full blur-2xl pointer-events-none"></div>
+<div class="flex items-start gap-space-md relative z-10">
+<div class="w-14 h-14 rounded-xl bg-primary-container text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[30px]">apartment</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center gap-2">
+<span class="bg-surface-container-high text-on-surface-variant px-2 py-0.5 rounded text-[11px] font-label-sm uppercase">Full-Time On-site</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-bold tracking-tight truncate mt-0.5">Tech Solutions Ltd</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Engineering &amp; Cloud Operations</p>
+</div>
+</div>
+<!-- Role & Department Details -->
+<div class="bg-surface-container-low rounded-lg p-space-md space-y-space-xs">
+<div class="flex justify-between items-center text-on-surface">
+<span class="font-label-md text-label-md text-on-surface-variant">Designation</span>
+<span class="font-label-lg text-label-lg font-bold text-primary">Software Development Intern</span>
+</div>
+<div class="flex justify-between items-center text-on-surface">
+<span class="font-label-md text-label-md text-on-surface-variant">Department</span>
+<span class="font-body-sm text-body-sm font-medium text-right text-on-surface">Cloud Infrastructure &amp; APIs</span>
+</div>
+<div class="flex justify-between items-center text-on-surface">
+<span class="font-label-md text-label-md text-on-surface-variant">Intern Cohort</span>
+<span class="font-body-sm text-body-sm text-on-surface">01 Jul 2026 — 29 Aug 2026</span>
+</div>
+</div>
+<!-- Progress Meter -->
+<div class="flex flex-col space-y-2 pt-1">
+<div class="flex items-baseline justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold">Progress: Week 7 of 10</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">42 of 60 Days (68%)</span>
+</div>
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden flex">
+<div class="bg-primary-container h-full rounded-full transition-all duration-500 ease-out" style="width: 68%;"></div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant pt-0.5">
+<span class="font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary-container">check_circle</span>
+          18 Business Days Left
+        </span>
+<span class="font-label-sm text-label-sm">8-Week Minimum Target</span>
+</div>
+</div>
+</div>
+<!-- Student & Institutional Meta Tile -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-label-lg shrink-0">
+        AK
+      </div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface truncate">Alvin Kiprop</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Reg: SC211/0458/2022</span>
+</div>
+</div>
+<div class="text-right shrink-0">
+<span class="font-label-sm text-label-sm bg-surface-container-high text-on-surface px-2.5 py-1 rounded-full font-medium">B.Sc. Comp Sci</span>
+</div>
+</div>
+<!-- Workstation Location & Geofence -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col space-y-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">pin_drop</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Assigned Workstation</h3>
+</div>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed text-[11px] font-label-sm font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span> Geofence Active
+      </span>
+</div>
+<!-- Mini Map Static Placeholder Component -->
+<div class="relative w-full h-36 rounded-lg overflow-hidden shadow-sm" data-location="Nairobi Innovation Hub, Waiyaki Way, Nairobi, Kenya" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDGib-_pzr2btJh7udSu6PY55g9eaGZrbTZKmLFAHxGilUcBhiamqaNH3iBofywCklfmfWBnGvxh0-dEpYDx9Hoc1CiJSbpuGiIy82Q-o-GpXWesgWSZczBVanF4ig7eBw0SVfqdNwgmIUDmFp0CdgzlWbjxoUNTfen86PkJyeYB-VWEhOY4LJTnBwD8FudbAwW0tQSt6TGZm-92G7G751TWiWUgprIfSkhdXLelR41O_EXXdw7hRtlbw')">
+<div class="absolute inset-0 bg-primary-container/10"></div>
+<div class="absolute bottom-2 left-2 bg-surface-container-lowest/90 backdrop-blur-md px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-sm text-on-surface">
+<span class="material-symbols-outlined text-primary text-[16px]">radar</span>
+<span class="font-label-sm text-label-sm font-medium">Verified On-Site Radius (250m)</span>
+</div>
+</div>
+<div class="flex flex-col space-y-1">
+<p class="font-label-lg text-label-lg text-on-surface font-semibold">Lab Building B, 4th Floor — Workspace 4B-12</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Tech Solutions HQ, Nairobi Innovation Hub, Off Waiyaki Way, Westlands</p>
+<div class="pt-1 flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[15px]">my_location</span>
+<span>-1.2638° S, 36.8021° E</span>
+<span class="text-outline-variant">•</span>
+<button class="text-primary font-medium underline" onclick="navigator.clipboard &amp;&amp; navigator.clipboard.writeText('-1.2638,36.8021')">Copy GPS</button>
+</div>
+</div>
+</div>
+<!-- Supervisors Contacts Section -->
+<div class="flex flex-col space-y-space-sm">
+<div class="flex items-center justify-between px-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Supervision Team</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Direct Contacts</span>
+</div>
+<!-- Industry Supervisor -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col space-y-space-sm">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high shrink-0">
+<img class="w-full h-full object-cover" data-alt="Headshot of Eng John Kamau, an African male software architect in smart formal wear, natural office lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnS8Q5uutAcqXKbNmiIrEs5LFdycNExXoffeEKkwmA6eyOw0_MqLOXd4Par4AjwoKh0af2fs61RT-6W4rU67pvyBZDwaCLeA3iYtVjhB7gKhlNKiBa-nX4XZqQIA1imbkv9TX_eAN4RX26PETNJ4GV2opsdWAQA3np9_O00HKJ9MMFMe9t2czhvia5YWGMadI403aUcVvXmVVsHb-EObzxNqQ7Cd9PAmoTYHpm7OFpPzQKpqIAVRBCTQ">
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Eng. John Kamau</span>
+<span class="bg-surface-container-high text-on-surface-variant text-[10px] font-label-sm px-1.5 py-0.5 rounded">Industry</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Principal Software Architect</span>
+<span class="font-label-sm text-label-sm text-primary">Tech Solutions Ltd</span>
+</div>
+</div>
+</div>
+<!-- Supervisor Action Pills -->
+<div class="grid grid-cols-3 gap-2 pt-1">
+<a class="flex items-center justify-center gap-1.5 py-2 px-3 bg-surface-container-low hover:bg-surface-container-high text-primary rounded-lg transition-colors" href="tel:+254700000001">
+<span class="material-symbols-outlined text-[18px]">call</span>
+<span class="font-label-md text-label-md">Call</span>
+</a>
+<a class="flex items-center justify-center gap-1.5 py-2 px-3 bg-surface-container-low hover:bg-surface-container-high text-primary rounded-lg transition-colors" href="mailto:j.kamau@techsolutions.ke">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+<span class="font-label-md text-label-md">Email</span>
+</a>
+<a class="flex items-center justify-center gap-1.5 py-2 px-3 bg-tertiary-fixed text-on-tertiary-fixed rounded-lg transition-colors" href="https://wa.me/254700000001">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+<span class="font-label-md text-label-md font-semibold">WhatsApp</span>
+</a>
+</div>
+</div>
+<!-- University Academic Supervisor -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col space-y-space-sm">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high shrink-0">
+<img class="w-full h-full object-cover" data-alt="Headshot of Dr Faith Nduta, an African female university lecturer smiling warmly in academic professional setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoySJgWe9-8ewPIf0HSZrsI6WbyTQDWXU_cUYOe-No1IOwYb68rPyIkATkkPIVmLMaQ2Ehzd1CXg0ebA4iD5LleaLDXLqV3m4TH6_ZNtBPWmbtZQKUwemCTCBX5CAUgpWELIO1V6gBaw2-2QmizmpUvIPzx-mOmHoB3EkA7M5H5uqVCkM2hnZWgEee_UyQysd2VyH0L0920LKTkH8awMdXFPxFQFSKzw88pH4Zm3c2g-tRwq_4IqLtTg">
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label-lg text-label-lg font-bold text-on-surface">Dr. Faith Nduta</span>
+<span class="bg-primary-fixed text-on-primary-fixed text-[10px] font-label-sm px-1.5 py-0.5 rounded">Faculty</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Senior Lecturer</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Dept of Computer Science &amp; Informatics</span>
+</div>
+</div>
+</div>
+<!-- Academic Actions -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<a class="flex items-center justify-center gap-1.5 py-2 px-3 bg-surface-container-low hover:bg-surface-container-high text-primary rounded-lg transition-colors" href="mailto:fnduta@uon.ac.ke">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+<span class="font-label-md text-label-md">Email Faculty</span>
+</a>
+<button class="flex items-center justify-center gap-1.5 py-2 px-3 bg-secondary-fixed text-on-secondary-fixed rounded-lg transition-colors" id="btnRequestVisit">
+<span class="material-symbols-outlined text-[18px]">event_available</span>
+<span class="font-label-md text-label-md font-semibold">Request Visit</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Academic Requirements & Compliance Grid -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col space-y-space-md">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">Academic Milestones</h3>
+<span class="font-label-sm text-label-sm text-tertiary-container font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">fact_check</span> Good Standing
+      </span>
+</div>
+<!-- Requirements List -->
+<div class="flex flex-col space-y-3">
+<!-- Attendance Requirement -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Attendance Log</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Min. 80% mandatory</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-lg text-label-lg font-bold text-tertiary-container">95.2%</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">Compliant</span>
+</div>
+</div>
+<!-- Weekly Logbooks -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">history_edu</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Weekly Logbooks</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">6 of 8 submitted &amp; signed</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-lg text-label-lg font-bold text-primary">6 / 8</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">2 Pending</span>
+</div>
+</div>
+<!-- Mid-Term Faculty Assessment -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Mid-Term Assessment</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Supervised Site Visit</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-lg text-label-lg font-bold text-tertiary-container">Grade A</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">Completed</span>
+</div>
+</div>
+<!-- Final Evaluation -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">hourglass_empty</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Final Employer Report</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Due Week 10</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-md text-label-md font-semibold text-on-surface-variant">Pending</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">Unlocks Aug 20</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Documents & Official Downloads -->
+<div class="flex flex-col space-y-space-sm">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase px-1 font-semibold tracking-wider">Placement Documentation</span>
+<div class="flex flex-col space-y-2">
+<!-- Letter Download -->
+<button class="w-full flex items-center justify-between p-space-md bg-surface-container-lowest hover:bg-surface-container transition-colors rounded-xl shadow-sm text-left" id="btnDownloadLetter">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">picture_as_pdf</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">Official Placement Letter</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Signed by Dean of Informatics • PDF (420 KB)</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary text-[22px]">download</span>
+</button>
+<!-- Host Agreement Terms -->
+<button class="w-full flex items-center justify-between p-space-md bg-surface-container-lowest hover:bg-surface-container transition-colors rounded-xl shadow-sm text-left" id="btnViewAgreement">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">gavel</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">Host Agreement Terms</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">NDA, IP Policy &amp; Code of Conduct</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-[22px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Interactive Modal / Toast Notification Feedback -->
+<div class="fixed bottom-24 inset-x-margin max-w-sm mx-auto bg-inverse-surface text-inverse-on-surface px-space-md py-space-sm rounded-xl shadow-xl flex items-center justify-between opacity-0 pointer-events-none transition-all duration-300 transform translate-y-4 z-50" id="toastNotification">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-fixed text-[20px]" id="toastIcon">check_circle</span>
+<span class="font-label-md text-label-md" id="toastMessage">Placement letter download initiated...</span>
+</div>
+<button class="text-inverse-on-surface/70 hover:text-inverse-on-surface" onclick="hideToast()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<script>
+  function showToast(message, icon = 'check_circle') {
+    const toast = document.getElementById('toastNotification');
+    const toastMsg = document.getElementById('toastMessage');
+    const toastIcon = document.getElementById('toastIcon');
+    if (!toast) return;
+    
+    toastMsg.textContent = message;
+    toastIcon.textContent = icon;
+    toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+    toast.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+    
+    setTimeout(() => {
+      hideToast();
+    }, 3500);
+  }
+
+  function hideToast() {
+    const toast = document.getElementById('toastNotification');
+    if (!toast) return;
+    toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+    toast.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+  }
+
+  document.getElementById('btnDownloadLetter')?.addEventListener('click', () => {
+    showToast('Downloading Placement_Letter_SC211_0458_2022.pdf', 'file_download');
+  });
+
+  document.getElementById('btnRequestVisit')?.addEventListener('click', () => {
+    showToast('Assessment request sent to Dr. Faith Nduta', 'send');
+  });
+
+  document.getElementById('btnViewAgreement')?.addEventListener('click', () => {
+    showToast('Opening Host Agreement and Terms of Service...', 'open_in_new');
+  });
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-xl pb-safe shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="[&amp;_.nav-pill]:bg-surface-variant [&amp;_.nav-pill]:text-primary [&amp;_.nav-label]:text-primary [&amp;_.nav-label]:font-semibold [&amp;_.material-symbols-outlined]:[font-variation-settings:'FILL'_1]"><div class="h-20 px-2 flex items-center justify-around"><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="overview-dashboard" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">dashboard</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Home</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="attachment-logbook" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">menu_book</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Logbook</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="evaluations-and-reports" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">assignment_turned_in</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Reports</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="activity-notifications" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200 relative"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-3.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Alerts</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="more-settings" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">apps</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">More</span></a></div><div class="w-full flex justify-center pb-2 pt-1 pointer-events-none"><div class="w-32 h-1 bg-on-surface/20 rounded-full"></div></div></nav></body></html>

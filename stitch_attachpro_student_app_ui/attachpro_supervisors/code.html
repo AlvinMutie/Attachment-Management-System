@@ -1,0 +1,336 @@
+<!DOCTYPE html><html class="light" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_tab" name="shell-type"><title>AttachPro</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-variant": "#dae2fd", "primary-fixed-dim": "#b8c4ff", "error-container": "#ffdad6", "inverse-primary": "#b8c4ff", "on-secondary": "#ffffff", "on-secondary-fixed": "#001d31", "secondary-container": "#5bb8fe", "surface": "#faf8ff", "on-tertiary-fixed": "#00201d", "outline": "#757684", "surface-container": "#eaedff", "surface-container-lowest": "#ffffff", "on-primary-container": "#a8b8ff", "surface-dim": "#d2d9f4", "on-error-container": "#93000a", "surface-container-low": "#f2f3ff", "background": "#faf8ff", "error": "#ba1a1a", "primary-fixed": "#dde1ff", "on-secondary-fixed-variant": "#004b73", "on-background": "#131b2e", "tertiary-container": "#00554f", "surface-tint": "#3755c3", "primary-container": "#1e40af", "inverse-surface": "#283044", "on-surface-variant": "#444653", "on-primary": "#ffffff", "on-surface": "#131b2e", "on-error": "#ffffff", "tertiary-fixed": "#9cf2e8", "tertiary": "#003c37", "surface-container-high": "#e2e7ff", "primary": "#00288e", "inverse-on-surface": "#eef0ff", "on-primary-fixed": "#001453", "secondary": "#006398", "on-tertiary": "#ffffff", "surface-bright": "#faf8ff", "tertiary-fixed-dim": "#80d5cb", "on-secondary-container": "#00476e", "on-tertiary-fixed-variant": "#00504a", "secondary-fixed": "#cce5ff", "on-tertiary-container": "#75cac1", "secondary-fixed-dim": "#93ccff", "on-primary-fixed-variant": "#173bab", "surface-container-highest": "#dae2fd", "outline-variant": "#c4c5d5" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-3xl": "2.5rem", "space-xs": "0.5rem", "space-2xl": "2rem", "gutter": "1rem", "space-2xs": "0.25rem", "space-sm": "0.75rem", "space-lg": "1.25rem", "margin": "1.25rem", "space-xl": "1.5rem", "space-md": "1rem" }, "fontFamily": { "label-sm": ["Inter"], "label-md": ["Inter"], "headline-lg": ["Inter"], "display-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "title-md": ["Inter"], "body-lg": ["Inter"], "headline-sm": ["Inter"], "headline-md": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.025em", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-lg": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "title-md": ["16px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "600" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0.005em", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400" }] } } } }</script><style>@layer base { html, body { width: 100%; min-height: 100%; margin: 0; padding: 0; } body { overscroll-behavior-y: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; } .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; } body { min-height: max(884px, 100dvh); }</style></head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen relative selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-11 px-5 flex items-center justify-between text-on-surface font-label-md text-label-md select-none"><span class="tracking-tight font-semibold">9:41</span><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[17px] leading-none">signal_cellular_alt</span><span class="material-symbols-outlined text-[17px] leading-none">wifi</span><span class="material-symbols-outlined text-[19px] leading-none rotate-90">battery_full</span></div></div><div class="h-14 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Go back" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><div class="flex items-center gap-2"><img alt="AttachPro App Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo8ewrDsMOvFH0LHOZyyZvxnGSIuphqoWvhUE3QpFFMRf-HYcn5ktC0qCzXwbPz-gh9Tt2ZQ3EJ7D13arB5oGiEO8BmCN-HcMzuB5zKTh9vW4AQpPgulsqVR_ZE8Nnyw_b3GonsRrXtJnx_eTA7NI0Sr5VCf1lU7-Kx_RwPGXrB-XHng2pAfJVI11BrfAE9tIMc5QpjJ0dMPkYfUMmX3VjjSXUfkpWxt26LPeaZd8Uq9O3WqzxuE2fJw"><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-tight truncate">Supervisors</h1></div></div><div class="flex items-center gap-1"><button aria-label="Help and Verification Info" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">info</span></button><button aria-label="Student Profile" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmsp-eXvGk_IvFQQLRlG4j_pWsydhpGDDui7SY0T_kTeBJwM21Ykko4zU4l6bFXtJW_0U85Ri_r5AMaNzNYou8WMhe4hYuZPL8X1a298D6tFdJ_LvnMc9cFQLLNwAORBvgdsiFYp7gvoLq4jSStNXJ_8s4gnXoS1ZkxYLkFADIhbrBT6lu2hgE14iw9Iqv28C-aMxFnA1rhostHiDdnx-xi-do0GUXaAIUPxRwI6gwiwGh8jgniWTFNw"></button></div></div></header><main class="flex flex-col relative w-full pt-[100px] pb-[104px] px-margin bg-surface min-h-screen"><div class="flex flex-col w-full pb-6 space-y-space-xl">
+<!-- Header Overview Summary Banner -->
+<section class="relative overflow-hidden rounded-xl bg-surface-container-high p-space-md shadow-sm">
+<div class="flex items-start gap-space-sm">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-sm">
+<span class="material-symbols-outlined text-[26px]">badge</span>
+</div>
+<div class="min-w-0 flex-1">
+<div class="flex items-center gap-space-2xs mb-1">
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm">Active Trimester</span>
+<span class="px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm">Dual Mentorship</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Assigned Mentors</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 leading-snug">
+          Two certified supervisors oversee your practical competency development and academic accreditation records.
+        </p>
+</div>
+</div>
+<!-- Quick Status Ribbon Metric -->
+<div class="mt-space-md grid grid-cols-2 gap-space-xs pt-space-xs">
+<div class="p-space-sm rounded-lg bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Logbook Sync</span>
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-primary mt-1">95.2%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Industry Verified</span>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-lowest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Faculty Review</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary-container" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-tertiary-container mt-1">Grade A</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Mid-term Completed</span>
+</div>
+</div>
+</section>
+<!-- Section 1: Industry Supervisor -->
+<section class="space-y-space-sm">
+<div class="flex items-center justify-between px-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<h3 class="font-title-md text-title-md text-on-surface">Industry Supervisor</h3>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-label-sm">Primary Host</span>
+</div>
+<!-- Supervisor Card -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm space-y-space-md">
+<!-- Profile Header -->
+<div class="flex items-start gap-space-sm">
+<div class="relative flex-shrink-0">
+<img class="w-16 h-16 rounded-xl object-cover shadow-sm" data-alt="Professional portrait of Eng. John Kamau, a middle-aged African lead architect wearing smart business attire with glasses, warmly smiling in a modern bright tech office environment with clean glass background and soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB75ENN0G-kHqm7nao7d5LuGkOV9uWzsf7Yto-zzHDF2wwqYFIiU2oLAwJLym6pHX72bxMxtXqG5eI0kB3QIV5a7nhfdWil6vwVj_GaIS4jXNeR-ze-ynyjL8aqRiRdK25ZtPxKTrJhh__MQKTVzhR4aXBFfX2QFGIjElYukkW-7w2g7z5sLRlK02v-IiURcq0GFUvpnZtQozL9Z4FHGXywEHNBhoSdn7qQT1TPIMrk6aOUz7cnw6VRHA">
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-tertiary-fixed-dim rounded-full border-2 border-surface-container-lowest flex items-center justify-center" title="Online &amp; On-duty">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<h4 class="font-headline-sm text-headline-sm text-on-surface truncate">Eng. John Kamau</h4>
+<span class="px-2 py-0.5 rounded-md bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm flex-shrink-0">Host Mentor</span>
+</div>
+<p class="font-label-lg text-label-lg text-primary truncate mt-0.5">Lead Architect</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Tech Solutions Ltd • Systems Architecture</p>
+</div>
+</div>
+<!-- Verification Record Micro-Metrics -->
+<div class="p-space-sm rounded-lg bg-surface-container-low space-y-space-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Host Verification Record</span>
+<div class="grid grid-cols-3 gap-space-2xs text-center pt-1">
+<div class="p-2 rounded-lg bg-surface-container-lowest">
+<p class="font-headline-sm text-headline-sm text-on-surface leading-tight">40<span class="font-label-md text-label-md text-on-surface-variant">/42</span></p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Attendance</p>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-lowest">
+<p class="font-headline-sm text-headline-sm text-primary leading-tight">6<span class="font-label-md text-label-md text-on-surface-variant"> wks</span></p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Logs Signed</p>
+</div>
+<div class="p-2 rounded-lg bg-surface-container-lowest">
+<p class="font-headline-sm text-headline-sm text-secondary leading-tight">2</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Reviews Given</p>
+</div>
+</div>
+</div>
+<!-- Availability Details -->
+<div class="flex items-start gap-space-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-primary flex-shrink-0 mt-0.5">schedule</span>
+<div class="min-w-0 flex-1">
+<p class="font-label-md text-label-md text-on-surface">Mon – Fri, 08:30 AM – 05:00 PM</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Best reach via AttachPro instant messaging or workstation Slack.</p>
+</div>
+</div>
+<!-- Contact Channels Quick List -->
+<div class="space-y-space-2xs pt-1">
+<a class="flex items-center justify-between p-space-sm rounded-lg bg-surface hover:bg-surface-container transition-colors group" href="tel:+254712345678">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined text-[18px]">call</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">+254 712 345 678</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Direct Corporate Line</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">chevron_right</span>
+</a>
+<a class="flex items-center justify-between p-space-sm rounded-lg bg-surface hover:bg-surface-container transition-colors group" href="mailto:j.kamau@techsolutions.co.ke">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">j.kamau@techsolutions.co.ke</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Official Host Email</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-primary transition-colors">chevron_right</span>
+</a>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">desk</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface">Ext. 4022</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Main Tech Floor • Pod 4B</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Desk Phone</span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="grid grid-cols-2 gap-space-xs pt-space-2xs">
+<button class="h-12 px-space-xs rounded-full bg-primary-container text-on-primary flex items-center justify-center gap-1.5 shadow-sm active:opacity-90 transition-opacity" onclick="showFeedbackToast('Opening direct chat with Eng. John Kamau...')" type="button">
+<span class="material-symbols-outlined text-[18px]">forum</span>
+<span class="font-label-lg text-label-lg whitespace-nowrap">Direct Message</span>
+</button>
+<button class="h-12 px-space-xs rounded-full bg-surface-container text-primary flex items-center justify-center gap-1.5 active:bg-surface-variant transition-colors" onclick="showFeedbackToast('Scheduling request sent to Host Calendar.')" type="button">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+<span class="font-label-lg text-label-lg whitespace-nowrap">Work Review</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Section 2: University Academic Supervisor -->
+<section class="space-y-space-sm">
+<div class="flex items-center justify-between px-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<h3 class="font-title-md text-title-md text-on-surface">Academic Supervisor</h3>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-variant text-on-surface-variant font-label-sm text-label-sm">Faculty Liaison</span>
+</div>
+<!-- Supervisor Card -->
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm space-y-space-md">
+<!-- Profile Header -->
+<div class="flex items-start gap-space-sm">
+<div class="relative flex-shrink-0">
+<img class="w-16 h-16 rounded-xl object-cover shadow-sm" data-alt="Professional portrait of Dr. Faith Nduta, an accomplished female African academic lecturer with braided hair wearing formal blazer and stylish spectacles, standing with notes in a university faculty conference library" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSjKWIrFlbDLR7WnQviF5NCU3X3I_CUHsh3Ow8Grr8RDJ6CiFPBeipadDwCYKiPRHk6lmUmKnkUIU16MRNxdnkYs0M1LnD2Y-nqdj4KBAIIIn2LQ_RxMpr3AYzD9Y5ayfxLwqiMUdH5XXkMiK2ZIx9uuSXke_gkA2AHboRr3P6uwON72cIZfDi_YTqyiXtov_QMg0BtX0scI962KnQ7DTA1n7K_ZQLfGWNnDPiJ9_oZmmL6zuQpniPHQ">
+<span class="absolute -bottom-1 -right-1 w-4 h-4 bg-primary-fixed rounded-full border-2 border-surface-container-lowest flex items-center justify-center" title="Faculty Assessor">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+</span>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<h4 class="font-headline-sm text-headline-sm text-on-surface truncate">Dr. Faith Nduta</h4>
+<span class="px-2 py-0.5 rounded-md bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm flex-shrink-0">Senior Lecturer</span>
+</div>
+<p class="font-label-lg text-label-lg text-secondary truncate mt-0.5">School of Computing &amp; Informatics</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Computer Science &amp; Software Eng.</p>
+</div>
+</div>
+<!-- Academic Accreditation Status Banner -->
+<div class="p-space-sm rounded-lg bg-surface-container-low space-y-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Accreditation Milestones</span>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-primary font-label-sm text-label-sm font-semibold">1/2 Visits Done</span>
+</div>
+<div class="space-y-space-2xs pt-1">
+<!-- Grade Assessment Card -->
+<div class="flex items-center justify-between p-space-xs rounded-lg bg-surface-container-lowest">
+<div class="flex items-center gap-space-xs">
+<div class="w-7 h-7 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-[16px]">grade</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Mid-Term Assessment</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Rubric verified &amp; submitted</p>
+</div>
+</div>
+<span class="px-2 py-1 rounded bg-secondary-fixed text-on-secondary-fixed font-label-md text-label-md font-bold">Grade A (5.0/5.0)</span>
+</div>
+<!-- Site Visit Tracker -->
+<div class="flex items-center justify-between p-space-xs rounded-lg bg-surface-container-lowest">
+<div class="flex items-center gap-space-xs">
+<div class="w-7 h-7 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed">
+<span class="material-symbols-outlined text-[16px]">directions_walk</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Final Site Visit</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Scheduled on Week 8 of Attachment</p>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant font-label-sm text-label-sm">Upcoming</span>
+</div>
+</div>
+</div>
+<!-- Availability Details -->
+<div class="flex items-start gap-space-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-secondary flex-shrink-0 mt-0.5">school</span>
+<div class="min-w-0 flex-1">
+<p class="font-label-md text-label-md text-on-surface">Office Hours: Tue &amp; Thu, 2:00 PM – 4:00 PM</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Science Complex Block C, Faculty Consultation Room 304.</p>
+</div>
+</div>
+<!-- Contact Options -->
+<div class="space-y-space-2xs pt-1">
+<a class="flex items-center justify-between p-space-sm rounded-lg bg-surface hover:bg-surface-container transition-colors group" href="mailto:f.nduta@university.ac.ke">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[18px]">alternate_email</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">f.nduta@university.ac.ke</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Official University Portal Email</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant group-hover:text-secondary transition-colors">chevron_right</span>
+</a>
+<div class="flex items-center justify-between p-space-sm rounded-lg bg-surface">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface truncate">Block C • Room 304</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Faculty of Science &amp; Tech Campus</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Office</span>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="grid grid-cols-2 gap-space-xs pt-space-2xs">
+<button class="h-12 px-space-xs rounded-full bg-primary-container text-on-primary flex items-center justify-center gap-1.5 shadow-sm active:opacity-90 transition-opacity" onclick="showFeedbackToast('Request for Week 8 Site Visit dispatched to faculty.')" type="button">
+<span class="material-symbols-outlined text-[18px]">commute</span>
+<span class="font-label-lg text-label-lg whitespace-nowrap">Request Visit</span>
+</button>
+<button class="h-12 px-space-xs rounded-full bg-surface-container text-primary flex items-center justify-center gap-1.5 active:bg-surface-variant transition-colors" onclick="showFeedbackToast('Opening Academic Inquiry submission form...')" type="button">
+<span class="material-symbols-outlined text-[18px]">help_center</span>
+<span class="font-label-lg text-label-lg whitespace-nowrap">Faculty Inquiry</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Section 3: Faculty Supervision Policy & Escalation Guidance -->
+<section class="rounded-xl bg-surface-container p-space-md space-y-space-sm shadow-sm">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">policy</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-on-surface">Supervision Policy &amp; Escalation</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">University Code of Conduct &amp; Industrial Safety</p>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+      AttachPro maintains a zero-delay policy for unresolved supervisor disputes, attendance verification discrepancies, or workplace welfare concerns.
+    </p>
+<!-- Dispute / Policy Items -->
+<div class="space-y-space-xs pt-1">
+<!-- Item 1 -->
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary flex-shrink-0 mt-0.5">timer</span>
+<div class="min-w-0 flex-1">
+<p class="font-label-md text-label-md text-on-surface">Logbook Signing Disputes</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 leading-snug">
+            If weekly entries are unreviewed for &gt; 10 business days, notify Dr. Nduta via Academic Inquiry to trigger automatic faculty validation.
+          </p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-error flex-shrink-0 mt-0.5">emergency</span>
+<div class="min-w-0 flex-1">
+<p class="font-label-md text-label-md text-on-surface">Emergency &amp; Medical Absence</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 leading-snug">
+            Immediate notification must be sent simultaneously to Eng. Kamau and the university dean's liaison within 24 hours of absence.
+          </p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="p-space-sm rounded-lg bg-surface-container-lowest flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-secondary flex-shrink-0 mt-0.5">assignment_turned_in</span>
+<div class="min-w-0 flex-1">
+<p class="font-label-md text-label-md text-on-surface">Final Assessment Grading</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 leading-snug">
+            Final industrial appraisal marks contribute 40% while the faculty site visit rubric constitutes 60% of total accreditation credits.
+          </p>
+</div>
+</div>
+</div>
+<!-- Escalate Action Link -->
+<div class="pt-space-2xs flex justify-end">
+<button class="inline-flex items-center gap-1 text-primary hover:text-on-primary-fixed-variant font-label-md text-label-md" onclick="showFeedbackToast('Connecting to Attachment Placement Office desk...')" type="button">
+<span>Contact Industrial Liaison Office</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- Interactive Toast Notification Container -->
+<div class="fixed bottom-24 inset-x-6 z-50 pointer-events-none transform translate-y-6 opacity-0 transition-all duration-300 flex items-center justify-center" id="actionToast">
+<div class="bg-inverse-surface text-inverse-on-surface px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 max-w-sm">
+<span class="material-symbols-outlined text-[20px] text-tertiary-fixed">info</span>
+<span class="font-body-sm text-body-sm" id="actionToastMsg">Action initiated.</span>
+</div>
+</div>
+</div>
+<script>
+  function showFeedbackToast(message) {
+    const toast = document.getElementById('actionToast');
+    const toastMsg = document.getElementById('actionToastMsg');
+    if (!toast || !toastMsg) return;
+    
+    toastMsg.textContent = message;
+    toast.classList.remove('translate-y-6', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+
+    clearTimeout(window.__toastTimeout);
+    window.__toastTimeout = setTimeout(() => {
+      toast.classList.add('translate-y-6', 'opacity-0');
+      toast.classList.remove('translate-y-0', 'opacity-100');
+    }, 3200);
+  }
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-xl pb-safe shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="[&amp;_.nav-pill]:bg-surface-variant [&amp;_.nav-pill]:text-primary [&amp;_.nav-label]:text-primary [&amp;_.nav-label]:font-semibold [&amp;_.material-symbols-outlined]:[font-variation-settings:'FILL'_1]"><div class="h-20 px-2 flex items-center justify-around"><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="overview-dashboard" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">dashboard</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Home</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="attachment-logbook" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">menu_book</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Logbook</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="evaluations-and-reports" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">assignment_turned_in</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Reports</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="activity-notifications" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200 relative"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-3.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Alerts</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="more-settings" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">apps</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">More</span></a></div><div class="w-full flex justify-center pb-2 pt-1 pointer-events-none"><div class="w-32 h-1 bg-on-surface/20 rounded-full"></div></div></nav></body></html>

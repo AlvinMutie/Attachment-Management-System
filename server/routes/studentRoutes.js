@@ -8,6 +8,7 @@ const {
     getStudentProgress,
     getStudentAttendance,
     recordStudentCheckIn,
+    getStudentQrToken,
     getStudentAssessments,
     submitLogbook,
     getMyLogbooks,
@@ -33,6 +34,7 @@ router.get('/progress', getStudentProgress);
 
 // Attendance
 router.get('/attendance', getStudentAttendance);
+router.get('/attendance/qr-token', getStudentQrToken);
 router.post('/attendance/check-in', recordStudentCheckIn);
 
 // Assessments

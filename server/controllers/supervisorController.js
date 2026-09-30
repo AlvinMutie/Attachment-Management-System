@@ -2,6 +2,7 @@ const { Student, User, Attendance, Logbook, Assessment } = require('../models');
 const { Op } = require('sequelize');
 const { notifyLogbookReviewed, notifyAssessmentSubmitted } = require('../services/notificationService');
 const academicPolicyService = require('../services/academicPolicyService');
+const jwt = require('jsonwebtoken');
 
 /**
  * Get assigned students for the industry supervisor
@@ -297,8 +298,7 @@ const markSupervisorAttendance = async (req, res) => {
         const student = await Student.findOne({
             where: {
                 id: studentId,
-                industrySupervisorId: req.user.id,
-                schoolId: req.schoolId
+                industrySupervisorId: req.user.id
             }
         });
 
@@ -326,7 +326,7 @@ const markSupervisorAttendance = async (req, res) => {
         } else {
             record = await Attendance.create({
                 studentId,
-                schoolId: req.schoolId,
+                schoolId: student.schoolId || req.schoolId,
                 date,
                 timestamp: new Date(),
                 status,
@@ -344,6 +344,139 @@ const markSupervisorAttendance = async (req, res) => {
     } catch (error) {
         console.error('Mark attendance error:', error);
         res.status(500).json({ success: false, message: 'Failed to record attendance' });
+    }
+};
+
+/**
+ * Scan and verify a dynamic student attendance QR token
+ */
+const scanSupervisorQrAttendance = async (req, res) => {
+    try {
+        const token = (req.body.token || req.body.qrToken || '').toString().trim();
+
+        if (!token) {
+            return res.status(400).json({
+                success: false,
+                message: 'Attendance QR token is required.'
+            });
+        }
+
+        // 1. Verify token signature and expiration
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (jwtErr) {
+            if (jwtErr.name === 'TokenExpiredError') {
+                return res.status(400).json({
+                    success: false,
+                    code: 'TOKEN_EXPIRED',
+                    message: 'QR code has expired. Please ask student to generate a fresh QR code.'
+                });
+            }
+            return res.status(400).json({
+                success: false,
+                code: 'INVALID_TOKEN',
+                message: 'Invalid or tampered attendance QR token.'
+            });
+        }
+
+        // 2. Validate token type and payload structure
+        if (decoded.type !== 'ATTENDANCE_QR' || !decoded.sub) {
+            return res.status(400).json({
+                success: false,
+                code: 'INVALID_PAYLOAD',
+                message: 'Invalid QR token payload.'
+            });
+        }
+
+        const studentId = decoded.sub;
+
+        // 3. Find student and verify identity
+        const student = await Student.findByPk(studentId, {
+            include: [
+                {
+                    model: User,
+                    as: 'user',
+                    attributes: ['id', 'name', 'email']
+                }
+            ]
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student record not found for this QR token.'
+            });
+        }
+
+        // 4. Verify supervisor assignment
+        if (student.industrySupervisorId !== req.user.id) {
+            return res.status(403).json({
+                success: false,
+                code: 'UNAUTHORIZED_SUPERVISOR',
+                message: 'Access denied: You are not the assigned industry supervisor for this student.'
+            });
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+
+        // 5. Check if attendance already verified today (anti-duplicate / anti-replay)
+        const existingAttendance = await Attendance.findOne({
+            where: {
+                studentId: student.id,
+                date: today
+            }
+        });
+
+        if (existingAttendance && existingAttendance.status === 'present') {
+            return res.status(409).json({
+                success: false,
+                code: 'ALREADY_VERIFIED',
+                message: `Attendance for ${student.user ? student.user.name : student.admissionNumber} has already been verified for today.`,
+                data: existingAttendance
+            });
+        }
+
+        // 6. Record or update attendance
+        let record;
+        if (existingAttendance) {
+            record = await existingAttendance.update({
+                status: 'present',
+                scannedBy: req.user.id,
+                verificationMethod: 'qr_scanner',
+                notes: req.body.notes || 'Verified via Dynamic QR Scan'
+            });
+        } else {
+            record = await Attendance.create({
+                studentId: student.id,
+                schoolId: student.schoolId || req.schoolId,
+                date: today,
+                timestamp: new Date(),
+                status: 'present',
+                scannedBy: req.user.id,
+                verificationMethod: 'qr_scanner',
+                notes: req.body.notes || 'Verified via Dynamic QR Scan'
+            });
+        }
+
+        res.status(201).json({
+            success: true,
+            message: `Attendance verified successfully for ${student.user ? student.user.name : student.admissionNumber}.`,
+            data: {
+                attendance: record,
+                student: {
+                    id: student.id,
+                    name: student.user ? student.user.name : null,
+                    admissionNumber: student.admissionNumber,
+                    organizationName: student.organizationName
+                },
+                verifiedAt: record.timestamp,
+                verificationMethod: record.verificationMethod
+            }
+        });
+    } catch (error) {
+        console.error('Scan supervisor QR attendance error:', error);
+        res.status(500).json({ success: false, message: 'Failed to verify attendance QR token' });
     }
 };
 
@@ -620,6 +753,7 @@ module.exports = {
     reviewLogbook,
     getSupervisorAttendance,
     markSupervisorAttendance,
+    scanSupervisorQrAttendance,
     getSupervisorAssessments,
     submitSupervisorAssessment,
     getSupervisorWorkspace

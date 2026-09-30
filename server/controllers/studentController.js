@@ -3,6 +3,8 @@ const { refineSummary } = require('../services/aiService');
 const { Op } = require('sequelize');
 const { notifyPlacementSubmitted, notifyLogbookSubmitted } = require('../services/notificationService');
 const academicPolicyService = require('../services/academicPolicyService');
+const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 /**
  * Get student profile with placement and supervisor details
@@ -297,6 +299,86 @@ const recordStudentCheckIn = async (req, res) => {
     } catch (error) {
         console.error('Record student check-in error:', error);
         res.status(500).json({ success: false, message: 'Failed to record check-in' });
+    }
+};
+
+/**
+ * Generate a short-lived, cryptographically signed dynamic QR token for attendance
+ * Valid for 5 minutes (300 seconds)
+ */
+const getStudentQrToken = async (req, res) => {
+    try {
+        const student = await Student.findOne({
+            where: { userId: req.user.id },
+            include: [
+                {
+                    model: User,
+                    as: 'industrySupervisor',
+                    attributes: ['id', 'name', 'email']
+                }
+            ]
+        });
+
+        if (!student) {
+            return res.status(404).json({ success: false, message: 'Student profile not found' });
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+
+        // Check if attendance is already recorded for today
+        const existingAttendance = await Attendance.findOne({
+            where: {
+                studentId: student.id,
+                date: today
+            }
+        });
+
+        const isAlreadyVerified = existingAttendance && existingAttendance.status === 'present';
+
+        const expiresInSeconds = 300; // 5 minutes
+        const currentTimestamp = Math.floor(Date.now() / 1000);
+        const expiresAt = currentTimestamp + expiresInSeconds;
+
+        // Secure minimal payload signed by server
+        const tokenPayload = {
+            sub: student.id,
+            sid: student.schoolId,
+            isid: student.industrySupervisorId || null,
+            type: 'ATTENDANCE_QR',
+            iat: currentTimestamp,
+            exp: expiresAt,
+            jti: crypto.randomBytes(8).toString('hex')
+        };
+
+        const token = jwt.sign(tokenPayload, process.env.JWT_SECRET);
+
+        // Deterministic human-readable security reference tag matching Stitch UI (e.g. AP-8842-SEC-KEN-2026)
+        const admSuffix = student.admissionNumber ? student.admissionNumber.replace(/[^a-zA-Z0-9]/g, '').slice(-4).toUpperCase() : '8842';
+        const securityHash = `AP-${admSuffix}-SEC-${Date.now().toString().slice(-4)}`;
+
+        res.json({
+            success: true,
+            data: {
+                token,
+                securityHash,
+                expiresInSeconds,
+                expiresAt: new Date(expiresAt * 1000).toISOString(),
+                date: today,
+                alreadyVerified: isAlreadyVerified,
+                existingAttendance: existingAttendance || null,
+                student: {
+                    id: student.id,
+                    name: req.user.name,
+                    admissionNumber: student.admissionNumber,
+                    organizationName: student.organizationName,
+                    hasSupervisorAssigned: !!student.industrySupervisorId,
+                    supervisorName: student.industrySupervisor ? student.industrySupervisor.name : null
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Generate student QR token error:', error);
+        res.status(500).json({ success: false, message: 'Failed to generate attendance QR token' });
     }
 };
 
@@ -717,6 +799,7 @@ module.exports = {
     getStudentProgress,
     getStudentAttendance,
     recordStudentCheckIn,
+    getStudentQrToken,
     getStudentAssessments,
     submitLogbook,
     getMyLogbooks,

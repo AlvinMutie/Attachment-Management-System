@@ -1,4 +1,5 @@
-const { User, School, Student } = require('../models');
+const { User, School, Student, sequelize } = require('../models');
+const { Op } = require('sequelize');
 const jwt = require('jsonwebtoken');
 const { logAudit } = require('../utils/auditLogger');
 
@@ -115,17 +116,44 @@ exports.register = async (req, res) => {
  * Enforces password verification, account lock checks, and failed attempt tracking
  */
 exports.login = async (req, res) => {
-    const { email, password } = req.body;
+    const identifier = (req.body.email || req.body.identifier || req.body.admissionNumber || '').toString().trim();
+    const { password } = req.body;
 
     try {
-        if (!email || !password) {
-            return res.status(400).json({ success: false, message: 'Email and password are required' });
+        if (!identifier || !password) {
+            return res.status(400).json({ success: false, message: 'Email or admission number and password are required' });
         }
 
-        const user = await User.findOne({
-            where: { email: email.toLowerCase().trim() },
-            include: [{ model: School, as: 'school', attributes: ['name', 'logo', 'primaryColor', 'status'] }]
-        });
+        let user = null;
+        if (identifier.includes('@')) {
+            user = await User.findOne({
+                where: {
+                    [Op.or]: [
+                        { email: identifier },
+                        { email: identifier.toLowerCase() },
+                        sequelize.where(sequelize.fn('LOWER', sequelize.col('User.email')), identifier.toLowerCase())
+                    ]
+                },
+                include: [{ model: School, as: 'school', attributes: ['name', 'logo', 'primaryColor', 'status'] }]
+            });
+        } else {
+            // Check student admission number first
+            const student = await Student.findOne({
+                where: { admissionNumber: identifier }
+            });
+
+            if (student) {
+                user = await User.findByPk(student.userId, {
+                    include: [{ model: School, as: 'school', attributes: ['name', 'logo', 'primaryColor', 'status'] }]
+                });
+            } else {
+                // Fallback check against User.email directly
+                user = await User.findOne({
+                    where: { email: identifier.toLowerCase() },
+                    include: [{ model: School, as: 'school', attributes: ['name', 'logo', 'primaryColor', 'status'] }]
+                });
+            }
+        }
 
         // Check if user is locked
         if (user && user.status === 'locked') {

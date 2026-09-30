@@ -1,0 +1,336 @@
+<!DOCTYPE html><html class="light" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_tab" name="shell-type"><title>AttachPro</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-variant": "#dae2fd", "primary-fixed-dim": "#b8c4ff", "error-container": "#ffdad6", "inverse-primary": "#b8c4ff", "on-secondary": "#ffffff", "on-secondary-fixed": "#001d31", "secondary-container": "#5bb8fe", "surface": "#faf8ff", "on-tertiary-fixed": "#00201d", "outline": "#757684", "surface-container": "#eaedff", "surface-container-lowest": "#ffffff", "on-primary-container": "#a8b8ff", "surface-dim": "#d2d9f4", "on-error-container": "#93000a", "surface-container-low": "#f2f3ff", "background": "#faf8ff", "error": "#ba1a1a", "primary-fixed": "#dde1ff", "on-secondary-fixed-variant": "#004b73", "on-background": "#131b2e", "tertiary-container": "#00554f", "surface-tint": "#3755c3", "primary-container": "#1e40af", "inverse-surface": "#283044", "on-surface-variant": "#444653", "on-primary": "#ffffff", "on-surface": "#131b2e", "on-error": "#ffffff", "tertiary-fixed": "#9cf2e8", "tertiary": "#003c37", "surface-container-high": "#e2e7ff", "primary": "#00288e", "inverse-on-surface": "#eef0ff", "on-primary-fixed": "#001453", "secondary": "#006398", "on-tertiary": "#ffffff", "surface-bright": "#faf8ff", "tertiary-fixed-dim": "#80d5cb", "on-secondary-container": "#00476e", "on-tertiary-fixed-variant": "#00504a", "secondary-fixed": "#cce5ff", "on-tertiary-container": "#75cac1", "secondary-fixed-dim": "#93ccff", "on-primary-fixed-variant": "#173bab", "surface-container-highest": "#dae2fd", "outline-variant": "#c4c5d5" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-3xl": "2.5rem", "space-xs": "0.5rem", "space-2xl": "2rem", "gutter": "1rem", "space-2xs": "0.25rem", "space-sm": "0.75rem", "space-lg": "1.25rem", "margin": "1.25rem", "space-xl": "1.5rem", "space-md": "1rem" }, "fontFamily": { "label-sm": ["Inter"], "label-md": ["Inter"], "headline-lg": ["Inter"], "display-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "title-md": ["Inter"], "body-lg": ["Inter"], "headline-sm": ["Inter"], "headline-md": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.025em", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-lg": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "title-md": ["16px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "600" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0.005em", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400" }] } } } }</script><style>@layer base { html, body { width: 100%; min-height: 100%; margin: 0; padding: 0; } body { overscroll-behavior-y: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; } .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; } body { min-height: max(884px, 100dvh); }</style></head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen relative selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-11 px-5 flex items-center justify-between text-on-surface font-label-md text-label-md select-none"><span class="tracking-tight font-semibold">9:41</span><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[17px] leading-none">signal_cellular_alt</span><span class="material-symbols-outlined text-[17px] leading-none">wifi</span><span class="material-symbols-outlined text-[19px] leading-none rotate-90">battery_full</span></div></div><div class="h-14 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Go back" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><div class="flex items-center gap-2"><img alt="AttachPro App Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo8ewrDsMOvFH0LHOZyyZvxnGSIuphqoWvhUE3QpFFMRf-HYcn5ktC0qCzXwbPz-gh9Tt2ZQ3EJ7D13arB5oGiEO8BmCN-HcMzuB5zKTh9vW4AQpPgulsqVR_ZE8Nnyw_b3GonsRrXtJnx_eTA7NI0Sr5VCf1lU7-Kx_RwPGXrB-XHng2pAfJVI11BrfAE9tIMc5QpjJ0dMPkYfUMmX3VjjSXUfkpWxt26LPeaZd8Uq9O3WqzxuE2fJw"><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-tight truncate">Announcements</h1></div></div><div class="flex items-center gap-1"><button aria-label="Help and Verification Info" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">info</span></button><button aria-label="Student Profile" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmsp-eXvGk_IvFQQLRlG4j_pWsydhpGDDui7SY0T_kTeBJwM21Ykko4zU4l6bFXtJW_0U85Ri_r5AMaNzNYou8WMhe4hYuZPL8X1a298D6tFdJ_LvnMc9cFQLLNwAORBvgdsiFYp7gvoLq4jSStNXJ_8s4gnXoS1ZkxYLkFADIhbrBT6lu2hgE14iw9Iqv28C-aMxFnA1rhostHiDdnx-xi-do0GUXaAIUPxRwI6gwiwGh8jgniWTFNw"></button></div></div></header><main class="flex flex-col relative w-full pt-[100px] pb-[104px] px-margin bg-surface min-h-screen"><div class="flex flex-col w-full pb-6 space-y-space-lg">
+<!-- Top Welcome & Search Utility -->
+<section class="flex flex-col space-y-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-primary-fixed text-primary">
+<span class="material-symbols-outlined text-[16px]">campaign</span>
+</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Official Dispatch</span>
+</div>
+<div class="flex items-center space-x-1.5 bg-surface-container px-2.5 py-1 rounded-full text-secondary font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span>Synced 2m ago</span>
+</div>
+</div>
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full h-11 pl-10 pr-4 bg-surface-container-low text-on-surface placeholder:text-outline text-body-sm font-body-sm rounded-xl focus:outline-none focus:bg-surface-container-lowest focus:shadow-sm transition-all" placeholder="Search notices, memos, supervisors..." type="text">
+</div>
+</section>
+<!-- Filter Chips Bar -->
+<section class="w-full overflow-x-auto no-scrollbar -mx-margin px-margin">
+<div class="flex items-center space-x-2 py-0.5" id="announcement-filter-chips">
+<button class="filter-chip active flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-primary text-on-primary text-label-md font-label-md shadow-sm whitespace-nowrap transition-transform active:scale-95" data-filter="all">
+<span>All</span>
+<span class="px-1.5 py-0.2 rounded-full bg-white/20 text-label-sm font-label-sm">5</span>
+</button>
+<button class="filter-chip flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface text-label-md font-label-md whitespace-nowrap transition-all active:scale-95" data-filter="university">
+<span>University Faculty</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-variant text-on-surface-variant text-label-sm font-label-sm">3</span>
+</button>
+<button class="filter-chip flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface text-label-md font-label-md whitespace-nowrap transition-all active:scale-95" data-filter="host">
+<span>Tech Solutions Ltd</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-variant text-on-surface-variant text-label-sm font-label-sm">2</span>
+</button>
+<button class="filter-chip flex items-center space-x-1 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant hover:text-on-surface text-label-md font-label-md whitespace-nowrap transition-all active:scale-95" data-filter="urgent">
+<span class="material-symbols-outlined text-[16px] text-error">priority_high</span>
+<span>Important</span>
+</button>
+</div>
+</section>
+<!-- High Priority / Pinned Announcement Card -->
+<section class="flex flex-col space-y-2.5" id="pinned-notice-section">
+<div class="flex items-center justify-between px-0.5">
+<div class="flex items-center space-x-1.5 text-primary">
+<span class="material-symbols-outlined text-[18px]">push_pin</span>
+<span class="font-label-lg text-label-lg">Pinned Notice</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Action Required</span>
+</div>
+<div class="relative overflow-hidden rounded-xl bg-surface-container-lowest p-space-md shadow-sm border-l-4 border-error space-y-space-sm">
+<div class="flex items-start justify-between gap-2">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-error-container text-on-error-container font-label-sm text-label-sm font-semibold">
+            Urgent / University Notice
+          </span>
+<span class="inline-flex items-center text-on-surface-variant font-label-sm text-label-sm">
+            14 Aug 2026 • 2 hrs ago
+          </span>
+</div>
+<button aria-label="Bookmark announcement" class="text-on-surface-variant hover:text-primary transition-colors p-1 -mr-1">
+<span class="material-symbols-outlined text-[20px]">bookmark_border</span>
+</button>
+</div>
+<div class="space-y-1">
+<h2 class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-snug">
+          Mandatory Submission Window for Final Logbooks &amp; Academic Defense Date
+        </h2>
+<div class="flex items-center space-x-1 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-primary">account_balance</span>
+<span class="truncate">University Industrial Attachment Directorate &amp; School of Computing</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        All 60-day industrial attachments conclude on 29 August. Final bound reports and oral project defenses are scheduled for 08-12 September 2026. Review the defense rubric and guideline document.
+      </p>
+<!-- Key Dates Mini-Strip -->
+<div class="grid grid-cols-2 gap-2 p-2.5 rounded-lg bg-surface-container-low">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-[18px] text-error">event_busy</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Logbook Close</span>
+<span class="font-label-md text-label-md text-on-surface truncate">29 Aug 2026</span>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-[18px] text-primary">record_voice_over</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Oral Defense</span>
+<span class="font-label-md text-label-md text-on-surface truncate">08–12 Sep 2026</span>
+</div>
+</div>
+</div>
+<div class="pt-1 flex items-center justify-between gap-3">
+<a class="inline-flex items-center justify-center w-full h-11 px-4 rounded-full bg-primary text-on-primary font-label-lg text-label-lg shadow-sm hover:bg-on-primary-fixed-variant transition-colors" href="#">
+<span>Read Guidelines &amp; Schedule</span>
+<span class="material-symbols-outlined text-[18px] ml-1.5">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Feed Visual Anchor & Organization Info -->
+<section class="relative rounded-xl overflow-hidden shadow-sm bg-gradient-to-r from-primary to-primary-container text-on-primary p-space-md">
+<div class="relative z-10 flex items-center justify-between">
+<div class="space-y-1 max-w-[70%]">
+<span class="px-2 py-0.5 rounded-full bg-white/20 font-label-sm text-label-sm text-white inline-block">Active Host Facility</span>
+<h3 class="font-title-md text-title-md text-white font-bold leading-tight">Tech Solutions Innovation Center</h3>
+<p class="font-body-sm text-body-sm text-white/90">Site Liaison: Eng. David Ochieng • Sector: DevOps &amp; Cloud</p>
+</div>
+<div class="w-14 h-14 rounded-xl overflow-hidden shadow-md flex-shrink-0 bg-white/10">
+<img class="w-full h-full object-cover" data-alt="Modern high-tech software engineering office with server racks and students working on laptops in a bright glass lab, ambient sapphire lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgM2TlGaJhY3F1D3TU4_2jedogRXLygjy1K1FxQ-JwbLmi22VqwuRLJ5XS9JiUaWicc44Egf2CiTULlVrFtoKqwDph3vLmyd9HZfq0suTQY1ve32BWU6hYnPSZmmN0MQpjtSRDMkryaICiM2F1jtclUxZ52GL6rWoB5_Imp6PUrDyJ3mWs0VTrgKZ3V7rndYMJOlcy6Hld3kjAShh7bf-oBce5BXTABJll30XWAAZ-3XTqJkgdETEbJQ">
+</div>
+</div>
+</section>
+<!-- Recent Feed Section -->
+<section class="flex flex-col space-y-space-sm" id="feed-container">
+<div class="flex items-center justify-between px-0.5">
+<h3 class="font-title-md text-title-md text-on-surface">Recent Updates</h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Chronological</span>
+</div>
+<!-- Feed Card 1: Host Organization -->
+<article class="feed-item bg-surface-container-lowest rounded-xl p-space-md shadow-sm space-y-2.5 transition-all hover:bg-surface-bright" data-category="host">
+<div class="flex items-start justify-between gap-2">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-semibold">
+            Host Organization
+          </span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">
+            12 Aug 2026
+          </span>
+</div>
+<button aria-label="More options" class="text-on-surface-variant hover:text-on-surface p-1">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+<div class="space-y-1">
+<h4 class="font-title-md text-title-md text-on-surface font-semibold leading-snug">
+          Tech Solutions Ltd: Cloud Infrastructure Maintenance Window &amp; On-site Drill
+        </h4>
+<div class="flex items-center space-x-1.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-secondary">corporate_fare</span>
+<span>Tech Solutions Admin &amp; John Kamau</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        Internal network maintenance scheduled for this Saturday. Workstations in Lab B will undergo server upgrades. No student shifts impacted.
+      </p>
+<div class="pt-1 flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="inline-flex items-center space-x-1 text-secondary">
+<span class="material-symbols-outlined text-[16px]">domain_verification</span>
+<span>No Attendance Disruption</span>
+</span>
+<button class="inline-flex items-center space-x-0.5 text-primary font-label-md text-label-md hover:underline">
+<span>Details</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</article>
+<!-- Feed Card 2: Faculty Notice -->
+<article class="feed-item bg-surface-container-lowest rounded-xl p-space-md shadow-sm space-y-2.5 transition-all hover:bg-surface-bright" data-category="university">
+<div class="flex items-start justify-between gap-2">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-surface-container-high text-primary font-label-sm text-label-sm font-semibold">
+            Faculty Notice
+          </span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">
+            10 Aug 2026
+          </span>
+</div>
+<span class="inline-flex items-center px-1.5 py-0.5 rounded bg-primary-fixed text-primary font-label-sm text-label-sm">
+          Site Assessment
+        </span>
+</div>
+<div class="space-y-1">
+<h4 class="font-title-md text-title-md text-on-surface font-semibold leading-snug">
+          Notice on Academic Supervisor On-Site Visits (Round 2)
+        </h4>
+<div class="flex items-center space-x-1.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-primary">school</span>
+<span>Dr. Faith Nduta (School of Computing)</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        Second physical verification visits commence next week for engineering interns in Nairobi industrial zone. Ensure daily logbook is up to date and signed daily.
+      </p>
+<div class="flex items-center justify-between p-2.5 rounded-lg bg-surface-container-low text-on-surface">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-[18px] text-primary">assignment_turned_in</span>
+<span class="font-label-sm text-label-sm">Logbook signatures must be current</span>
+</div>
+<button class="px-2.5 py-1 rounded-full bg-primary/10 text-primary text-label-sm font-label-sm font-semibold hover:bg-primary/20 transition-colors">
+          Verify Log
+        </button>
+</div>
+</article>
+<!-- Feed Card 3: Opportunity -->
+<article class="feed-item bg-surface-container-lowest rounded-xl p-space-md shadow-sm space-y-2.5 transition-all hover:bg-surface-bright" data-category="university">
+<div class="flex items-start justify-between gap-2">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm font-semibold">
+            Opportunity
+          </span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">
+            05 Aug 2026
+          </span>
+</div>
+<span class="material-symbols-outlined text-tertiary text-[18px]">stars</span>
+</div>
+<div class="space-y-1">
+<h4 class="font-title-md text-title-md text-on-surface font-semibold leading-snug">
+          University Career Development: Graduate Trainee Conversion Webinar
+        </h4>
+<div class="flex items-center space-x-1.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-tertiary">hub</span>
+<span>University Alumni &amp; Placement Office</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        Webinar on transitioning attachment roles into full-time employment offers with host companies.
+      </p>
+<div class="pt-1 flex items-center justify-between">
+<div class="flex items-center space-x-1 text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px]">videocam</span>
+<span>Virtual Event (Google Meet)</span>
+</div>
+<button class="inline-flex items-center space-x-1 text-tertiary font-label-md text-label-md hover:underline font-semibold">
+<span>Register RSVP</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</button>
+</div>
+</article>
+<!-- Feed Card 4: Historical / Archival Notice -->
+<article class="feed-item bg-surface-container-lowest rounded-xl p-space-md shadow-sm space-y-2.5 transition-all opacity-85" data-category="host">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center space-x-1.5">
+<span class="inline-flex items-center px-2 py-0.5 rounded-md bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold">
+            Host Organization
+          </span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">
+            28 Jul 2026
+          </span>
+</div>
+<span class="material-symbols-outlined text-outline text-[18px]">archive</span>
+</div>
+<div class="space-y-1">
+<h4 class="font-title-md text-title-md text-on-surface font-semibold leading-snug">
+          Biometric Badge Replacement Window
+        </h4>
+<div class="flex items-center space-x-1.5 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[15px] text-secondary">badge</span>
+<span>HR Facilities Security</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+        Students reporting damaged smart keys or NFC floor tags can obtain reissued passcards at Building 3 Front Desk before Month 2 evaluations.
+      </p>
+</article>
+</section>
+<!-- Visual Interstitial: Student Safety & Academic Honor Policy -->
+<section class="rounded-xl bg-surface-container-low p-space-md flex items-center space-x-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest flex-shrink-0 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[26px]">gavel</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Official Policy Note</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">All posted memoranda carry formal collegiate mandate under Attachment Regulation Code 2026/B.</span>
+</div>
+</section>
+<!-- Notification Preference Shortcut -->
+<section class="pt-2">
+<div class="rounded-xl bg-surface-container-lowest p-space-md shadow-sm flex items-center justify-between gap-3">
+<div class="flex items-center space-x-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed/50 text-secondary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">notifications_active</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface">Push Notification Settings</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Configure announcement push alerts</span>
+</div>
+</div>
+<button aria-label="Manage Push Alerts" class="flex-shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full bg-surface-container-high text-on-surface hover:bg-surface-variant transition-colors" id="open-alert-settings">
+<span class="material-symbols-outlined text-[20px]">tune</span>
+</button>
+</div>
+</section>
+<!-- Interactive Filter Handler Script -->
+<script>
+    (function initAnnouncementFilters() {
+      const chipContainer = document.getElementById('announcement-filter-chips');
+      const pinnedSection = document.getElementById('pinned-notice-section');
+      const feedItems = document.querySelectorAll('.feed-item');
+
+      if (!chipContainer) return;
+
+      chipContainer.addEventListener('click', (e) => {
+        const targetBtn = e.target.closest('button');
+        if (!targetBtn) return;
+
+        // Reset all buttons style
+        const buttons = chipContainer.querySelectorAll('button');
+        buttons.forEach(btn => {
+          btn.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+          btn.classList.add('bg-surface-container-high', 'text-on-surface-variant');
+        });
+
+        // Activate clicked button
+        targetBtn.classList.remove('bg-surface-container-high', 'text-on-surface-variant');
+        targetBtn.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+
+        const filter = targetBtn.getAttribute('data-filter');
+
+        // Apply display logic
+        if (filter === 'all') {
+          pinnedSection.style.display = 'flex';
+          feedItems.forEach(card => card.style.display = 'block');
+        } else if (filter === 'urgent') {
+          pinnedSection.style.display = 'flex';
+          feedItems.forEach(card => card.style.display = 'none');
+        } else if (filter === 'university') {
+          pinnedSection.style.display = 'flex';
+          feedItems.forEach(card => {
+            const cat = card.getAttribute('data-category');
+            card.style.display = (cat === 'university') ? 'block' : 'none';
+          });
+        } else if (filter === 'host') {
+          pinnedSection.style.display = 'none';
+          feedItems.forEach(card => {
+            const cat = card.getAttribute('data-category');
+            card.style.display = (cat === 'host') ? 'block' : 'none';
+          });
+        }
+      });
+    })();
+  </script>
+</div></main><nav class="fixed bottom-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-xl pb-safe shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="[&amp;_.nav-pill]:bg-surface-variant [&amp;_.nav-pill]:text-primary [&amp;_.nav-label]:text-primary [&amp;_.nav-label]:font-semibold [&amp;_.material-symbols-outlined]:[font-variation-settings:'FILL'_1]"><div class="h-20 px-2 flex items-center justify-around"><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="overview-dashboard" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">dashboard</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Home</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="attachment-logbook" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">menu_book</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Logbook</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="evaluations-and-reports" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">assignment_turned_in</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Reports</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="activity-notifications" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200 relative"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-3.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Alerts</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="more-settings" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">apps</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">More</span></a></div><div class="w-full flex justify-center pb-2 pt-1 pointer-events-none"><div class="w-32 h-1 bg-on-surface/20 rounded-full"></div></div></nav></body></html>

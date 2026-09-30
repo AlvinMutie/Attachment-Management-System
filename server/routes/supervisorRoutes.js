@@ -8,6 +8,7 @@ const {
     reviewLogbook,
     getSupervisorAttendance,
     markSupervisorAttendance,
+    scanSupervisorQrAttendance,
     getSupervisorAssessments,
     submitSupervisorAssessment,
     getSupervisorWorkspace
@@ -31,6 +32,7 @@ router.put('/logbooks/:id/review', reviewLogbook);
 // Attendance
 router.get('/attendance', getSupervisorAttendance);
 router.post('/attendance/mark', markSupervisorAttendance);
+router.post('/attendance/scan-qr', scanSupervisorQrAttendance);
 
 // Assessments
 router.get('/assessments', getSupervisorAssessments);

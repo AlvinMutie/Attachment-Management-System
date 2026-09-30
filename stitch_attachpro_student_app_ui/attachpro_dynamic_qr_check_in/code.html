@@ -1,0 +1,245 @@
+<!DOCTYPE html><html class="light" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_stack" name="shell-type"><title>AttachPro</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-variant": "#dae2fd", "primary-fixed-dim": "#b8c4ff", "error-container": "#ffdad6", "inverse-primary": "#b8c4ff", "on-secondary": "#ffffff", "on-secondary-fixed": "#001d31", "secondary-container": "#5bb8fe", "surface": "#faf8ff", "on-tertiary-fixed": "#00201d", "outline": "#757684", "surface-container": "#eaedff", "surface-container-lowest": "#ffffff", "on-primary-container": "#a8b8ff", "surface-dim": "#d2d9f4", "on-error-container": "#93000a", "surface-container-low": "#f2f3ff", "background": "#faf8ff", "error": "#ba1a1a", "primary-fixed": "#dde1ff", "on-secondary-fixed-variant": "#004b73", "on-background": "#131b2e", "tertiary-container": "#00554f", "surface-tint": "#3755c3", "primary-container": "#1e40af", "inverse-surface": "#283044", "on-surface-variant": "#444653", "on-primary": "#ffffff", "on-surface": "#131b2e", "on-error": "#ffffff", "tertiary-fixed": "#9cf2e8", "tertiary": "#003c37", "surface-container-high": "#e2e7ff", "primary": "#00288e", "inverse-on-surface": "#eef0ff", "on-primary-fixed": "#001453", "secondary": "#006398", "on-tertiary": "#ffffff", "surface-bright": "#faf8ff", "tertiary-fixed-dim": "#80d5cb", "on-secondary-container": "#00476e", "on-tertiary-fixed-variant": "#00504a", "secondary-fixed": "#cce5ff", "on-tertiary-container": "#75cac1", "secondary-fixed-dim": "#93ccff", "on-primary-fixed-variant": "#173bab", "surface-container-highest": "#dae2fd", "outline-variant": "#c4c5d5" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-3xl": "2.5rem", "space-xs": "0.5rem", "space-2xl": "2rem", "gutter": "1rem", "space-2xs": "0.25rem", "space-sm": "0.75rem", "space-lg": "1.25rem", "margin": "1.25rem", "space-xl": "1.5rem", "space-md": "1rem" }, "fontFamily": { "label-sm": ["Inter"], "label-md": ["Inter"], "headline-lg": ["Inter"], "display-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "title-md": ["Inter"], "body-lg": ["Inter"], "headline-sm": ["Inter"], "headline-md": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.025em", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-lg": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "title-md": ["16px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "600" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0.005em", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400" }] } } } }</script><style>@layer base { html, body { width: 100%; min-height: 100%; margin: 0; padding: 0; } body { overscroll-behavior-y: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; } .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style><style>body { min-height: max(884px, 100dvh); }</style></head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen relative selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-11 px-5 flex items-center justify-between text-on-surface font-label-md text-label-md select-none"><span class="tracking-tight font-semibold">9:41</span><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[17px] leading-none">signal_cellular_alt</span><span class="material-symbols-outlined text-[17px] leading-none">wifi</span><span class="material-symbols-outlined text-[19px] leading-none rotate-90">battery_full</span></div></div><div class="h-14 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[24px]">close</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-tight">Qr Scanner Verification</h1></div><div class="flex items-center gap-space-xs"><button aria-label="Need Help" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">help_outline</span></button></div></div></header><main class="flex flex-col relative w-full pt-[100px] pb-safe px-margin bg-surface min-h-screen"><div class="flex flex-col w-full pb-8">
+<!-- Live Geofence Proximity Floating Pill -->
+<div class="flex items-center justify-between px-space-md py-space-xs bg-surface-container rounded-full mb-space-md shadow-sm">
+<div class="flex items-center gap-space-xs min-w-0">
+<span class="relative flex h-2.5 w-2.5 shrink-0">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span>
+</span>
+<span class="font-label-md text-label-md text-on-surface truncate">
+        Inside Geofence: <span class="font-semibold text-secondary">Tech Solutions HQ</span>
+</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-secondary shrink-0 ml-1" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+<!-- Context & Verification Header Card -->
+<div class="flex flex-col bg-surface-container-low rounded-xl p-space-md mb-space-md shadow-sm">
+<div class="flex items-start justify-between gap-space-xs">
+<div class="min-w-0">
+<div class="flex items-center gap-1.5 mb-1">
+<span class="material-symbols-outlined text-[16px] text-primary" style="font-variation-settings: 'FILL' 1;">corporate_fare</span>
+<span class="font-label-md text-label-md text-primary uppercase tracking-wide truncate">Industry Attachment</span>
+</div>
+<h2 class="font-title-md text-title-md text-on-surface truncate">Tech Solutions Ltd — Engineering Hub</h2>
+</div>
+<span class="shrink-0 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">Morning IN</span>
+</div>
+<!-- Student Detail Grid -->
+<div class="grid grid-cols-2 gap-space-xs mt-space-sm pt-space-sm bg-surface-container-lowest rounded-lg p-space-sm shadow-sm">
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Student Trainee</span>
+<span class="font-label-lg text-label-lg text-on-surface font-semibold truncate">Alvin Kiprop</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Reg Identifier</span>
+<span class="font-label-lg text-label-lg text-on-surface font-mono font-semibold truncate">SC211/0458/2022</span>
+</div>
+</div>
+</div>
+<!-- Main Dynamic QR Code Enclosure -->
+<div class="relative flex flex-col items-center bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<!-- Corner Targeting Elements -->
+<div class="absolute top-3 left-3 w-4 h-4 rounded-tl bg-transparent" style="box-shadow: -2px -2px 0 0 #00288e;"></div>
+<div class="absolute top-3 right-3 w-4 h-4 rounded-tr bg-transparent" style="box-shadow: 2px -2px 0 0 #00288e;"></div>
+<div class="absolute bottom-3 left-3 w-4 h-4 rounded-bl bg-transparent" style="box-shadow: -2px 2px 0 0 #00288e;"></div>
+<div class="absolute bottom-3 right-3 w-4 h-4 rounded-br bg-transparent" style="box-shadow: 2px 2px 0 0 #00288e;"></div>
+<!-- Live Dynamic QR Graphic Container -->
+<div class="relative w-56 h-56 flex items-center justify-center p-3 rounded-lg bg-surface-container-low mb-space-sm">
+<!-- Pulsing Security Beacon Ring -->
+<div class="absolute inset-0 rounded-lg animate-pulse bg-primary/5 pointer-events-none"></div>
+<!-- Complex Scalable Vector QR Code with Integrated Emblem -->
+<svg class="w-full h-full text-on-surface" fill="currentColor" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<!-- Top-Left Position Detection Marker -->
+<rect fill="currentColor" height="50" rx="4" width="50" x="10" y="10"></rect>
+<rect fill="#ffffff" height="34" rx="2" width="34" x="18" y="18"></rect>
+<rect fill="#00288e" height="20" rx="1" width="20" x="25" y="25"></rect>
+<!-- Top-Right Position Detection Marker -->
+<rect fill="currentColor" height="50" rx="4" width="50" x="140" y="10"></rect>
+<rect fill="#ffffff" height="34" rx="2" width="34" x="148" y="18"></rect>
+<rect fill="#00288e" height="20" rx="1" width="20" x="155" y="25"></rect>
+<!-- Bottom-Left Position Detection Marker -->
+<rect fill="currentColor" height="50" rx="4" width="50" x="10" y="140"></rect>
+<rect fill="#ffffff" height="34" rx="2" width="34" x="18" y="148"></rect>
+<rect fill="#00288e" height="20" rx="1" width="20" x="25" y="155"></rect>
+<!-- Timing Patterns -->
+<rect height="6" rx="1" width="6" x="68" y="22"></rect>
+<rect height="6" rx="1" width="6" x="82" y="22"></rect>
+<rect height="6" rx="1" width="6" x="96" y="22"></rect>
+<rect height="6" rx="1" width="6" x="110" y="22"></rect>
+<rect height="6" rx="1" width="6" x="124" y="22"></rect>
+<rect height="6" rx="1" width="6" x="22" y="68"></rect>
+<rect height="6" rx="1" width="6" x="22" y="82"></rect>
+<rect height="6" rx="1" width="6" x="22" y="96"></rect>
+<rect height="6" rx="1" width="6" x="22" y="110"></rect>
+<rect height="6" rx="1" width="6" x="22" y="124"></rect>
+<!-- Structured Encrypted Data Matrix Blocks -->
+<rect height="8" rx="1" width="8" x="68" y="40"></rect>
+<rect height="8" rx="1" width="8" x="80" y="40"></rect>
+<rect height="8" rx="1" width="8" x="104" y="40"></rect>
+<rect height="8" rx="1" width="16" x="116" y="40"></rect>
+<rect height="8" rx="1" width="14" x="68" y="56"></rect>
+<rect height="8" rx="1" width="8" x="90" y="56"></rect>
+<rect height="14" rx="1" width="8" x="120" y="56"></rect>
+<rect height="16" rx="1" width="8" x="38" y="70"></rect>
+<rect height="8" rx="1" width="8" x="52" y="76"></rect>
+<rect height="8" rx="1" width="8" x="140" y="70"></rect>
+<rect height="8" rx="1" width="16" x="154" y="70"></rect>
+<rect height="8" rx="1" width="8" x="178" y="76"></rect>
+<rect height="8" rx="1" width="8" x="38" y="96"></rect>
+<rect height="8" rx="1" width="10" x="52" y="92"></rect>
+<rect height="8" rx="1" width="14" x="140" y="86"></rect>
+<rect height="16" rx="1" width="8" x="162" y="86"></rect>
+<rect height="12" rx="1" width="8" x="178" y="92"></rect>
+<rect height="8" rx="1" width="12" x="38" y="112"></rect>
+<rect height="14" rx="1" width="8" x="56" y="112"></rect>
+<rect height="8" rx="1" width="8" x="140" y="112"></rect>
+<rect height="16" rx="1" width="8" x="156" y="112"></rect>
+<rect height="8" rx="1" width="14" x="172" y="112"></rect>
+<rect height="14" rx="1" width="8" x="68" y="136"></rect>
+<rect height="8" rx="1" width="14" x="84" y="142"></rect>
+<rect height="8" rx="1" width="8" x="106" y="136"></rect>
+<rect height="8" rx="1" width="10" x="122" y="142"></rect>
+<rect height="8" rx="1" width="16" x="68" y="158"></rect>
+<rect height="8" rx="1" width="8" x="92" y="158"></rect>
+<rect height="8" rx="1" width="14" x="108" y="158"></rect>
+<rect height="8" rx="1" width="8" x="140" y="158"></rect>
+<rect height="18" rx="1" width="8" x="156" y="148"></rect>
+<rect height="8" rx="1" width="14" x="172" y="158"></rect>
+<rect height="14" rx="1" width="8" x="68" y="174"></rect>
+<rect height="8" rx="1" width="16" x="84" y="174"></rect>
+<rect height="14" rx="1" width="8" x="108" y="174"></rect>
+<rect height="8" rx="1" width="8" x="124" y="174"></rect>
+<rect height="8" rx="1" width="16" x="140" y="174"></rect>
+<rect height="14" rx="1" width="8" x="164" y="174"></rect>
+<rect height="8" rx="1" width="8" x="180" y="174"></rect>
+<!-- Center Shield Overlay with AttachPro Anchor -->
+<rect fill="#ffffff" height="52" rx="8" width="52" x="74" y="74"></rect>
+<rect fill="#00288e" height="44" rx="6" width="44" x="78" y="78"></rect>
+<!-- Academic Security Graduation Icon Graphic -->
+<path d="M100 87L86 94L100 101L114 94L100 87ZM90 100.5V107.5C90 110.5 94.5 113 100 113C105.5 113 110 110.5 110 107.5V100.5L100 105.5L90 100.5ZM114 97.5V106H116V97.5H114Z" fill="#ffffff"></path>
+</svg>
+</div>
+<!-- Security Hash Identification -->
+<div class="flex items-center gap-1.5 px-3 py-1 rounded bg-surface-container text-on-surface-variant font-mono font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span class="tracking-wider" id="security-hash">AP-8842-SEC-KEN-2026</span>
+</div>
+<!-- Live Dynamic Countdown Block -->
+<div class="w-full flex flex-col items-center mt-space-md">
+<div class="flex items-center justify-center gap-2 px-space-md py-1.5 rounded-full bg-surface-container-high text-primary font-label-lg text-label-lg shadow-sm">
+<span class="material-symbols-outlined text-[18px] animate-spin" style="animation-duration: 4s;">sync</span>
+<span class="tracking-tight">Expires in <span class="font-bold font-mono" id="countdown-timer">01:29</span></span>
+</div>
+<!-- Animated Progress Indicator Line -->
+<div class="w-48 h-1.5 bg-surface-container rounded-full mt-2.5 overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-1000 ease-linear" id="progress-bar" style="width: 29.6667%;"></div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-center mt-space-xs max-w-[280px]">
+        Code auto-refreshes every 5 minutes to prevent remote proxy check-ins.
+      </p>
+</div>
+</div>
+<!-- Operational Protocol Steps -->
+<div class="flex flex-col bg-surface-container-low rounded-xl p-space-md mt-space-md shadow-sm">
+<div class="flex items-center justify-between mb-space-sm">
+<h3 class="font-label-lg text-label-lg text-on-surface font-semibold">Verification Protocol</h3>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">Stage 1 of 3</span>
+</div>
+<div class="space-y-space-sm">
+<!-- Step 1 -->
+<div class="flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-sm text-label-sm shrink-0 mt-0.5">
+          1
+        </div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface">Present this token to Industry Supervisor</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Assigned Mentor: Eng. John Kamau</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm shrink-0 mt-0.5">
+          2
+        </div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface">Supervisor scans via AttachPro Scanner</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Confirms physical workstation presence</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex items-start gap-space-sm">
+<div class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center font-label-sm text-label-sm shrink-0 mt-0.5">
+          3
+        </div>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface">Immediate University Registry Sync</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Cryptographically signed &amp; stored in academic log</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Actions -->
+<div class="flex flex-col gap-space-xs mt-space-md">
+<!-- Refresh Button -->
+<button class="w-full h-12 flex items-center justify-center gap-2 rounded-full bg-surface-container-high text-primary hover:bg-surface-variant transition-colors font-label-lg text-label-lg active:scale-[0.99]" id="refresh-btn" type="button">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+<span>Refresh QR Now</span>
+</button>
+<!-- Alternative Fallback Button -->
+<button class="w-full h-11 flex items-center justify-center gap-1.5 rounded-full text-secondary hover:bg-surface-container transition-colors font-label-md text-label-md" type="button">
+<span class="material-symbols-outlined text-[18px]">dialpad</span>
+<span>Having trouble scanning? Manual Supervisor PIN</span>
+</button>
+</div>
+</div>
+<script>
+  (function initDynamicQR() {
+    let totalSeconds = 272; // 04:32 remaining
+    const maxSeconds = 300; // 5 min interval
+    const timerElem = document.getElementById('countdown-timer');
+    const progressElem = document.getElementById('progress-bar');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const hashElem = document.getElementById('security-hash');
+
+    function updateDisplay() {
+      const mins = Math.floor(totalSeconds / 60);
+      const secs = totalSeconds % 60;
+      if (timerElem) {
+        timerElem.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      }
+      if (progressElem) {
+        const percent = Math.max(0, Math.min(100, (totalSeconds / maxSeconds) * 100));
+        progressElem.style.width = `${percent}%`;
+      }
+    }
+
+    const interval = setInterval(() => {
+      if (totalSeconds > 0) {
+        totalSeconds--;
+        updateDisplay();
+      } else {
+        totalSeconds = maxSeconds;
+        regenerateHash();
+        updateDisplay();
+      }
+    }, 1000);
+
+    function regenerateHash() {
+      const randomCode = Math.floor(1000 + Math.random() * 9000);
+      if (hashElem) {
+        hashElem.textContent = `AP-${randomCode}-SEC-KEN-2026`;
+      }
+    }
+
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        totalSeconds = maxSeconds;
+        regenerateHash();
+        updateDisplay();
+      });
+    }
+
+    updateDisplay();
+  })();
+</script></main></body></html>

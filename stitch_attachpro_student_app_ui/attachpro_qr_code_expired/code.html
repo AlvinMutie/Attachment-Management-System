@@ -1,0 +1,122 @@
+<!DOCTYPE html><html class="light" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_stack" name="shell-type"><title>AttachPro</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-variant": "#dae2fd", "primary-fixed-dim": "#b8c4ff", "error-container": "#ffdad6", "inverse-primary": "#b8c4ff", "on-secondary": "#ffffff", "on-secondary-fixed": "#001d31", "secondary-container": "#5bb8fe", "surface": "#faf8ff", "on-tertiary-fixed": "#00201d", "outline": "#757684", "surface-container": "#eaedff", "surface-container-lowest": "#ffffff", "on-primary-container": "#a8b8ff", "surface-dim": "#d2d9f4", "on-error-container": "#93000a", "surface-container-low": "#f2f3ff", "background": "#faf8ff", "error": "#ba1a1a", "primary-fixed": "#dde1ff", "on-secondary-fixed-variant": "#004b73", "on-background": "#131b2e", "tertiary-container": "#00554f", "surface-tint": "#3755c3", "primary-container": "#1e40af", "inverse-surface": "#283044", "on-surface-variant": "#444653", "on-primary": "#ffffff", "on-surface": "#131b2e", "on-error": "#ffffff", "tertiary-fixed": "#9cf2e8", "tertiary": "#003c37", "surface-container-high": "#e2e7ff", "primary": "#00288e", "inverse-on-surface": "#eef0ff", "on-primary-fixed": "#001453", "secondary": "#006398", "on-tertiary": "#ffffff", "surface-bright": "#faf8ff", "tertiary-fixed-dim": "#80d5cb", "on-secondary-container": "#00476e", "on-tertiary-fixed-variant": "#00504a", "secondary-fixed": "#cce5ff", "on-tertiary-container": "#75cac1", "secondary-fixed-dim": "#93ccff", "on-primary-fixed-variant": "#173bab", "surface-container-highest": "#dae2fd", "outline-variant": "#c4c5d5" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-3xl": "2.5rem", "space-xs": "0.5rem", "space-2xl": "2rem", "gutter": "1rem", "space-2xs": "0.25rem", "space-sm": "0.75rem", "space-lg": "1.25rem", "margin": "1.25rem", "space-xl": "1.5rem", "space-md": "1rem" }, "fontFamily": { "label-sm": ["Inter"], "label-md": ["Inter"], "headline-lg": ["Inter"], "display-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "title-md": ["Inter"], "body-lg": ["Inter"], "headline-sm": ["Inter"], "headline-md": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.025em", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-lg": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "title-md": ["16px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "600" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0.005em", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400" }] } } } }</script><style>@layer base { html, body { width: 100%; min-height: 100%; margin: 0; padding: 0; } body { overscroll-behavior-y: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; } .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }</style><style>body { min-height: max(884px, 100dvh); }</style></head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen relative selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-11 px-5 flex items-center justify-between text-on-surface font-label-md text-label-md select-none"><span class="tracking-tight font-semibold">9:41</span><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[17px] leading-none">signal_cellular_alt</span><span class="material-symbols-outlined text-[17px] leading-none">wifi</span><span class="material-symbols-outlined text-[19px] leading-none rotate-90">battery_full</span></div></div><div class="h-14 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Back" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[24px]">close</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-tight">Qr Scanner Verification</h1></div><div class="flex items-center gap-space-xs"><button aria-label="Need Help" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">help_outline</span></button></div></div></header><main class="flex flex-col relative w-full pt-[100px] pb-safe px-margin bg-surface min-h-screen"><div class="flex flex-col w-full pb-8">
+<div class="flex items-center gap-space-xs mb-space-md text-secondary">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span class="font-label-md text-label-md">Back to Attendance</span>
+</div>
+<div class="w-full bg-surface-container-low rounded-xl p-space-md mb-space-md flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md uppercase tracking-wider text-outline">Industrial Attachment Session</span>
+<span class="inline-flex items-center gap-1 bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-outline"></span>
+        Offline Sync Active
+      </span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm pt-space-2xs">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Organization</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold truncate">Tech Solutions Ltd</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Site Supervisor</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold truncate">John Kamau</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Date &amp; Period</span>
+<span class="font-body-md text-body-md text-on-surface truncate">Thu, 14 Aug 2026</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-outline">Required Action</span>
+<span class="font-body-md text-body-md text-on-surface truncate">Daily Check-In</span>
+</div>
+</div>
+</div>
+<div class="w-full bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col items-center relative overflow-hidden mb-space-md">
+<div class="w-full flex items-center justify-between mb-space-sm">
+<span class="font-label-md text-label-md text-outline">Cryptographic Token #8921</span>
+<div class="inline-flex items-center gap-1.5 bg-error-container text-on-error-container px-2.5 py-1 rounded-full font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">error</span>
+<span>00:00 — Expired</span>
+</div>
+</div>
+<div class="relative w-64 h-64 my-space-xs rounded-xl bg-surface-container flex items-center justify-center overflow-hidden">
+<div class="w-56 h-56 p-3 bg-surface-container-lowest rounded-lg opacity-25 filter blur-[1.5px] select-none pointer-events-none">
+<svg class="w-full h-full text-on-surface" fill="currentColor" viewBox="0 0 100 100">
+<path d="M0 0h32v32H0V0zm6 6v20h20V6H6zm4 4h12v12H10V10zM68 0h32v32H68V0zm6 6v20h20V6H74zm4 4h12v12H78V10zM0 68h32v32H0V68zm6 6v20h20V74H6zm4 4h12v12H10V78zM42 6h8v8h-8V6zm12 0h6v8h-6V6zm-12 14h14v6H42v-6zm20 0h6v12h-6V20zm-14 16h6v8h-6v-8zm12 6h8v6h-8v-6zm-20 6h8v6h-8v-6zm16 8h8v14h-8V56zm18-14h10v6H74v-6zm12 12h14v6H86v-6zm-12 12h6v8h-6v-8zm18 0h8v8h-8v-8zm-6 14h14v6H86v-6zm-44-6h6v14h-6V70zm12 0h8v6h-8v-6zm-6 10h14v8H48v-8zm18-6h6v14h-6V74zm14 8h6v18h-6V82z"></path>
+</svg>
+</div>
+<div class="absolute inset-0 bg-inverse-surface/40 backdrop-blur-[2px] flex flex-col items-center justify-center gap-space-2xs text-center p-space-sm">
+<div class="w-12 h-12 rounded-full bg-surface-container-lowest shadow-md flex items-center justify-center text-error mb-1">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">timer_off</span>
+</div>
+<span class="font-headline-sm text-headline-sm font-bold tracking-wider text-surface-container-lowest uppercase drop-shadow-sm">
+          Code Expired
+        </span>
+<span class="font-label-sm text-label-sm text-surface-variant font-medium">
+          Session invalidated automatically
+        </span>
+</div>
+</div>
+<div class="w-full flex items-center justify-center gap-space-xs text-outline mt-space-2xs">
+<span class="material-symbols-outlined text-[16px]">lock_clock</span>
+<span class="font-body-sm text-body-sm">5-minute strict university compliance cycle</span>
+</div>
+</div>
+<div class="w-full bg-surface-container rounded-xl p-space-md mb-space-lg flex gap-space-sm items-start">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[22px]">update_disabled</span>
+</div>
+<div class="flex flex-col">
+<h3 class="font-title-md text-title-md text-on-surface">QR Code Timed Out</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 leading-relaxed">
+        For institutional integrity and security compliance, attendance verification tokens automatically expire every 5 minutes. No attendance was recorded for this session.
+      </p>
+</div>
+</div>
+<div class="flex flex-col gap-space-sm w-full">
+<button class="w-full h-12 rounded-full bg-primary-container text-on-primary flex items-center justify-center gap-space-xs font-label-lg text-label-lg active:scale-[0.99] transition-transform shadow-md hover:bg-primary" id="regen-btn">
+<span class="material-symbols-outlined text-[20px] transition-transform duration-500" id="regen-icon">sync</span>
+<span>Generate New QR Code</span>
+</button>
+<div class="grid grid-cols-2 gap-space-sm pt-space-2xs">
+<button class="h-11 px-space-sm rounded-lg bg-surface-container-low text-primary flex items-center justify-center gap-1.5 font-label-md text-label-md hover:bg-surface-container">
+<span class="material-symbols-outlined text-[18px]">pin</span>
+<span class="truncate">Use Offline PIN</span>
+</button>
+<button class="h-11 px-space-sm rounded-lg bg-surface-container-low text-on-surface-variant flex items-center justify-center gap-1.5 font-label-md text-label-md hover:bg-surface-container">
+<span class="material-symbols-outlined text-[18px]">support_agent</span>
+<span class="truncate">Academic Desk</span>
+</button>
+</div>
+</div>
+<div class="w-full bg-surface-container-lowest rounded-xl p-space-md mt-space-lg shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">person_check</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface leading-tight">Supervisor Present?</span>
+<span class="font-body-sm text-body-sm text-outline">You may present your physical student logbook ID</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+<script>
+  (function() {
+    var btn = document.getElementById('regen-btn');
+    var icon = document.getElementById('regen-icon');
+    if (btn && icon) {
+      btn.addEventListener('click', function() {
+        icon.classList.add('rotate-180');
+        btn.disabled = true;
+        btn.style.opacity = '0.8';
+        setTimeout(function() {
+          icon.classList.remove('rotate-180');
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }, 600);
+      });
+    }
+  })();
+</script></main></body></html>

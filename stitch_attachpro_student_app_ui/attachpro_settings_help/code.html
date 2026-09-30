@@ -1,0 +1,457 @@
+<!DOCTYPE html><html class="light" lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_tab" name="shell-type"><title>AttachPro</title><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-variant": "#dae2fd", "primary-fixed-dim": "#b8c4ff", "error-container": "#ffdad6", "inverse-primary": "#b8c4ff", "on-secondary": "#ffffff", "on-secondary-fixed": "#001d31", "secondary-container": "#5bb8fe", "surface": "#faf8ff", "on-tertiary-fixed": "#00201d", "outline": "#757684", "surface-container": "#eaedff", "surface-container-lowest": "#ffffff", "on-primary-container": "#a8b8ff", "surface-dim": "#d2d9f4", "on-error-container": "#93000a", "surface-container-low": "#f2f3ff", "background": "#faf8ff", "error": "#ba1a1a", "primary-fixed": "#dde1ff", "on-secondary-fixed-variant": "#004b73", "on-background": "#131b2e", "tertiary-container": "#00554f", "surface-tint": "#3755c3", "primary-container": "#1e40af", "inverse-surface": "#283044", "on-surface-variant": "#444653", "on-primary": "#ffffff", "on-surface": "#131b2e", "on-error": "#ffffff", "tertiary-fixed": "#9cf2e8", "tertiary": "#003c37", "surface-container-high": "#e2e7ff", "primary": "#00288e", "inverse-on-surface": "#eef0ff", "on-primary-fixed": "#001453", "secondary": "#006398", "on-tertiary": "#ffffff", "surface-bright": "#faf8ff", "tertiary-fixed-dim": "#80d5cb", "on-secondary-container": "#00476e", "on-tertiary-fixed-variant": "#00504a", "secondary-fixed": "#cce5ff", "on-tertiary-container": "#75cac1", "secondary-fixed-dim": "#93ccff", "on-primary-fixed-variant": "#173bab", "surface-container-highest": "#dae2fd", "outline-variant": "#c4c5d5" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-3xl": "2.5rem", "space-xs": "0.5rem", "space-2xl": "2rem", "gutter": "1rem", "space-2xs": "0.25rem", "space-sm": "0.75rem", "space-lg": "1.25rem", "margin": "1.25rem", "space-xl": "1.5rem", "space-md": "1rem" }, "fontFamily": { "label-sm": ["Inter"], "label-md": ["Inter"], "headline-lg": ["Inter"], "display-lg": ["Inter"], "body-sm": ["Inter"], "label-lg": ["Inter"], "title-md": ["Inter"], "body-lg": ["Inter"], "headline-sm": ["Inter"], "headline-md": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.025em", "fontWeight": "500" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-lg": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "body-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "title-md": ["16px", { "lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "600" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "0.005em", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "26px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400" }] } } } }</script><style>@layer base { html, body { width: 100%; min-height: 100%; margin: 0; padding: 0; } body { overscroll-behavior-y: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; } .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; } body { min-height: max(884px, 100dvh); }</style></head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-screen relative selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-11 px-5 flex items-center justify-between text-on-surface font-label-md text-label-md select-none"><span class="tracking-tight font-semibold">9:41</span><div class="flex items-center gap-2"><span class="material-symbols-outlined text-[17px] leading-none">signal_cellular_alt</span><span class="material-symbols-outlined text-[17px] leading-none">wifi</span><span class="material-symbols-outlined text-[19px] leading-none rotate-90">battery_full</span></div></div><div class="h-14 px-margin flex items-center justify-between"><div class="flex items-center gap-space-xs"><button aria-label="Go back" class="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><div class="flex items-center gap-2"><img alt="AttachPro App Logo" class="h-7 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBo8ewrDsMOvFH0LHOZyyZvxnGSIuphqoWvhUE3QpFFMRf-HYcn5ktC0qCzXwbPz-gh9Tt2ZQ3EJ7D13arB5oGiEO8BmCN-HcMzuB5zKTh9vW4AQpPgulsqVR_ZE8Nnyw_b3GonsRrXtJnx_eTA7NI0Sr5VCf1lU7-Kx_RwPGXrB-XHng2pAfJVI11BrfAE9tIMc5QpjJ0dMPkYfUMmX3VjjSXUfkpWxt26LPeaZd8Uq9O3WqzxuE2fJw"><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-tight truncate">Settings &amp; Help</h1></div></div><div class="flex items-center gap-1"><button aria-label="Help and Verification Info" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">info</span></button><button aria-label="Student Profile" class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmsp-eXvGk_IvFQQLRlG4j_pWsydhpGDDui7SY0T_kTeBJwM21Ykko4zU4l6bFXtJW_0U85Ri_r5AMaNzNYou8WMhe4hYuZPL8X1a298D6tFdJ_LvnMc9cFQLLNwAORBvgdsiFYp7gvoLq4jSStNXJ_8s4gnXoS1ZkxYLkFADIhbrBT6lu2hgE14iw9Iqv28C-aMxFnA1rhostHiDdnx-xi-do0GUXaAIUPxRwI6gwiwGh8jgniWTFNw"></button></div></div></header><main class="flex flex-col relative w-full pt-[100px] pb-[104px] px-margin bg-surface min-h-screen"><div class="flex flex-col w-full pb-8">
+<!-- Interactive Toast Notification Component -->
+<div class="fixed top-16 inset-x-4 z-50 transform -translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center justify-between p-space-sm bg-inverse-surface text-inverse-on-surface rounded-xl shadow-xl" id="toast-banner">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[20px] text-tertiary-fixed" id="toast-icon">check_circle</span>
+<span class="font-body-sm text-body-sm font-medium" id="toast-msg">Preferences saved</span>
+</div>
+<span class="font-label-sm text-label-sm text-inverse-on-surface/70">Just now</span>
+</div>
+<!-- Profile Quick Header Card -->
+<section class="bg-surface-container-low rounded-xl p-space-md mb-space-lg flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="relative">
+<img class="w-14 h-14 rounded-full object-cover shadow-sm" data-alt="Close up professional portrait of a young African university engineering student smiling warmly with campus glass facade and sunlight softly reflecting in background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5IqRHshtBL9KuTJrDU_yXq5xi4vhu7Gh_QfPik2_5NtlDq-rLSY1B6K_umoJGrPcmjBIkVQRivRoXPy3sH6d7BLO8szAv0jlyzbIHYf0xcoUKq6958DybU2Mkq66YeEPQskoxox8Ws8bW1u3LeshsYvYK3qYvYKJz_pEOnwn5sEr0ac47q2AiMeYhi2HSGXikaq2GQg78X889CgU-FbYEQnZqqHdm6RX2XtSihmciEa0gs9uq1HIFuw">
+<div class="absolute bottom-0 right-0 w-4 h-4 bg-tertiary-container rounded-full flex items-center justify-center text-tertiary-fixed">
+<span class="material-symbols-outlined text-[10px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Ezekiel Kiprono</h2>
+<span class="bg-surface-variant text-primary font-label-sm text-label-sm px-2 py-0.5 rounded-full whitespace-nowrap">Active</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">B.Sc. Software Engineering</p>
+<span class="font-label-sm text-label-sm text-secondary font-medium">ID: SC211/0458/2022</span>
+</div>
+</div>
+<button aria-label="Edit Profile" class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-primary active:scale-95 transition-transform">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+</button>
+</section>
+<!-- Quick Health & Sync Banner -->
+<section class="mb-space-lg bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed/40 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">cloud_done</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface leading-tight">Local Cache in Sync</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">7 offline log entries synced</span>
+</div>
+</div>
+<button class="px-space-sm py-1.5 rounded-full bg-surface-container text-primary font-label-md text-label-md active:bg-surface-variant transition-colors flex items-center gap-1" onclick="triggerSync(this)">
+<span class="material-symbols-outlined text-[14px]">sync</span>
+<span>Sync</span>
+</button>
+</section>
+<!-- 1. ACCOUNT & SECURITY SECTION -->
+<section class="mb-space-xl">
+<div class="flex items-center gap-2 px-space-2xs mb-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">security</span>
+<h3 class="font-label-lg text-label-lg text-primary uppercase tracking-wider">Account &amp; Security</h3>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex flex-col">
+<!-- Personal Info -->
+<a class="flex items-center justify-between p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors active:bg-surface-container" href="#">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface">Personal Info &amp; Student ID</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">SC211/0458/2022 • Machakos Tech Campus</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant shrink-0 ml-2">chevron_right</span>
+</a>
+<!-- Change Password -->
+<a class="flex items-center justify-between p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors active:bg-surface-container" href="#">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">lock_reset</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface">Change Password</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Updated 14 days ago</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant shrink-0 ml-2">chevron_right</span>
+</a>
+<!-- Biometric Unlock Toggle -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">fingerprint</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface">Biometric Unlock</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Fingerprint / Face ID for fast log sign-in</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0 ml-2">
+<input checked="" class="sr-only peer" onchange="showToast('Biometric preferences updated')" type="checkbox">
+<div class="w-12 h-7 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Geofence Permissions -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">fmd_good</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface">Dynamic QR Geofence</span>
+<span class="font-body-sm text-body-sm text-secondary font-medium">Always Allow while using app (Active)</span>
+</div>
+</div>
+<span class="bg-surface-container-high text-on-surface font-label-sm text-label-sm px-2.5 py-1 rounded-md shrink-0">Precise</span>
+</div>
+</div>
+</section>
+<!-- 2. NOTIFICATIONS & ALERTS SECTION -->
+<section class="mb-space-xl">
+<div class="flex items-center gap-2 px-space-2xs mb-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">notifications_active</span>
+<h3 class="font-label-lg text-label-lg text-primary uppercase tracking-wider">Notifications &amp; Reminders</h3>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex flex-col">
+<!-- Supervisor Feedback -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">rate_review</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface">Supervisor Feedback Alerts</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Real-time notes from industrial mentor</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0 ml-2">
+<input checked="" class="sr-only peer" onchange="showToast('Supervisor alert updated')" type="checkbox">
+<div class="w-12 h-7 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- Daily Logbook Reminder with Time Chip -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">alarm</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface">Daily Logbook Reminder</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Prompt to log daily tasks</span>
+</div>
+</div>
+<button class="bg-surface-container px-2.5 py-1 rounded-lg text-primary font-label-md text-label-md flex items-center gap-1 shrink-0">
+<span>4:30 PM</span>
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+</button>
+</div>
+<!-- Weekly Report Deadline Alerts -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">event_repeat</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface">Weekly Report Deadlines</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Reminder 24h before Friday 5 PM lock</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0 ml-2">
+<input checked="" class="sr-only peer" onchange="showToast('Weekly deadline alerts toggled')" type="checkbox">
+<div class="w-12 h-7 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+<!-- University Announcements -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">campaign</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface">Faculty Announcements</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Field assessor visit schedules</span>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer shrink-0 ml-2">
+<input checked="" class="sr-only peer" onchange="showToast('Faculty announcements enabled')" type="checkbox">
+<div class="w-12 h-7 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- 3. APPEARANCE & DISPLAY SECTION -->
+<section class="mb-space-xl">
+<div class="flex items-center gap-2 px-space-2xs mb-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">palette</span>
+<h3 class="font-label-lg text-label-lg text-primary uppercase tracking-wider">Appearance &amp; Display</h3>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex flex-col">
+<!-- Theme Selection -->
+<div class="p-space-md bg-surface-container-lowest flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">contrast</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-on-surface">Theme Mode</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">System Default (Light Active)</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">tune</span>
+</div>
+<!-- Theme Pills -->
+<div class="grid grid-cols-3 gap-2 mt-1">
+<button class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-surface-variant text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">light_mode</span>
+<span>Light</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-surface-container-low text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">dark_mode</span>
+<span>Dark</span>
+</button>
+<button class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-surface-container-low text-on-surface-variant font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">devices</span>
+<span>Auto</span>
+</button>
+</div>
+</div>
+<!-- Font Sizing -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-lowest">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">format_size</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface">Font Sizing</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Standard (Inter 14–16px default)</span>
+</div>
+</div>
+<span class="bg-surface-container text-on-surface font-label-sm text-label-sm px-2.5 py-1 rounded-md shrink-0">Aa 100%</span>
+</div>
+</div>
+</section>
+<!-- 4. HELP & SUPPORT / FAQ HUB -->
+<section class="mb-space-xl">
+<div class="flex items-center justify-between px-space-2xs mb-space-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">contact_support</span>
+<h3 class="font-label-lg text-label-lg text-primary uppercase tracking-wider">Help &amp; Support Hub</h3>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">24/7 Portal</span>
+</div>
+<!-- Frequently Asked Questions Accordion Container -->
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex flex-col mb-space-md">
+<div class="p-space-md bg-surface-container-low flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">live_help</span>
+<h4 class="font-title-md text-title-md text-on-surface">Frequently Asked Questions</h4>
+</div>
+<!-- FAQ Item 1 -->
+<details class="group p-space-md bg-surface-container-lowest open:bg-surface-container-low/40 transition-colors">
+<summary class="flex items-center justify-between cursor-pointer list-none">
+<span class="font-body-md text-body-md font-semibold text-on-surface pr-2">What happens if my daily QR code expires?</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<p class="mt-2 font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Daily QR tokens automatically regenerate every 120 seconds for geofence verification. If an old code was scanned or timed out, request a fresh scan from your workplace supervisor’s portal or log the session as an offline attendance with GPS timestamp.
+        </p>
+</details>
+<!-- FAQ Item 2 -->
+<details class="group p-space-md bg-surface-container-lowest open:bg-surface-container-low/40 transition-colors">
+<summary class="flex items-center justify-between cursor-pointer list-none">
+<span class="font-body-md text-body-md font-semibold text-on-surface pr-2">How do I request an excused absence?</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<p class="mt-2 font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Go to <strong class="text-on-surface">Logbook &gt; Request Exemption</strong>. Submit supporting documentation (such as a medical slip or industrial visit voucher) at least 24 hours in advance to alert your academic liaison.
+        </p>
+</details>
+<!-- FAQ Item 3 -->
+<details class="group p-space-md bg-surface-container-lowest open:bg-surface-container-low/40 transition-colors">
+<summary class="flex items-center justify-between cursor-pointer list-none">
+<span class="font-body-md text-body-md font-semibold text-on-surface pr-2">When does the weekly logbook lock?</span>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant transition-transform group-open:rotate-180">expand_more</span>
+</summary>
+<p class="mt-2 font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Every Friday at 11:59 PM local university time. Afterward, entries can only be unlocked with a written petition approved by your department attachment coordinator.
+        </p>
+</details>
+</div>
+<!-- Direct Support Action Cards Grid -->
+<div class="grid grid-cols-1 gap-space-sm">
+<!-- Academic Attachment Desk -->
+<a class="flex items-center justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm hover:bg-surface-container-low transition-colors" href="mailto:attachment-support@university.ac.ke">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">school</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">Contact Academic Liaison Desk</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Faculty supervisors &amp; grading inquiries</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">mail</span>
+</a>
+<!-- Tech Helpdesk & Live Chat -->
+<button class="flex items-center justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm hover:bg-surface-container-low transition-colors text-left" onclick="showToast('Connecting to Technical Support Chat...')">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-surface-variant text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">AttachPro Technical Support</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Live chat • Average reply 3 mins</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-primary">chat_bubble</span>
+</button>
+<!-- Workplace Issue Escalation (Safety/Whistleblower) -->
+<a class="flex items-center justify-between p-space-md bg-surface-container-lowest rounded-xl shadow-sm hover:bg-surface-container-low transition-colors" href="#">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-10 h-10 rounded-full bg-error-container text-on-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">report_problem</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-title-md text-title-md text-on-surface truncate">Report Workplace or Safety Issue</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Confidential escalation to Dean of Students</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">chevron_right</span>
+</a>
+</div>
+</section>
+<!-- 5. LEGAL & SYSTEM INFORMATION -->
+<section class="mb-space-xl">
+<div class="flex items-center gap-2 px-space-2xs mb-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">info</span>
+<h3 class="font-label-lg text-label-lg text-primary uppercase tracking-wider">System &amp; Policies</h3>
+</div>
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm flex flex-col">
+<!-- Policy Handbook -->
+<a class="flex items-center justify-between p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">menu_book</span>
+<span class="font-title-md text-title-md text-on-surface">Industrial Attachment Handbook</span>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="font-label-sm text-label-sm font-medium">v2026.2</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</div>
+</a>
+<!-- Privacy & Code of Ethics -->
+<a class="flex items-center justify-between p-space-md bg-surface-container-lowest hover:bg-surface-container-low transition-colors" href="#">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">policy</span>
+<span class="font-title-md text-title-md text-on-surface">Student Code of Industrial Conduct</span>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">chevron_right</span>
+</a>
+<!-- App Build Version Badge -->
+<div class="flex items-center justify-between p-space-md bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">AttachPro Mobile</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Production Environment • High Security</span>
+</div>
+<div class="text-right">
+<span class="font-label-sm text-label-sm font-bold text-primary bg-surface-variant px-2.5 py-1 rounded-full">v2.4.1 (892)</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. DESTRUCTIVE ACTION (SIGN OUT) -->
+<section class="mt-space-sm mb-space-2xl">
+<button class="w-full h-12 rounded-full bg-surface-container-low text-error hover:bg-error-container hover:text-on-error-container active:scale-[0.99] transition-all flex items-center justify-center gap-2 font-label-lg text-label-lg shadow-sm" onclick="openSignOutDialog()">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+<span>Sign Out of AttachPro</span>
+</button>
+<p class="text-center font-label-sm text-label-sm text-on-surface-variant mt-space-sm">
+      Signed in as <span class="font-semibold text-on-surface">ezekiel.kiprono@students.ac.ke</span>
+</p>
+</section>
+<!-- Confirmation Dialog (Custom Accessible Modal Sheet) -->
+<div class="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-space-md hidden opacity-0 transition-opacity duration-200" id="signout-modal">
+<div class="bg-surface-container-lowest rounded-xl max-w-sm w-full p-space-lg shadow-xl transform scale-95 transition-transform duration-200 flex flex-col gap-space-md" id="signout-card">
+<div class="w-12 h-12 rounded-full bg-error-container text-on-error-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">logout</span>
+</div>
+<div class="flex flex-col gap-1">
+<h4 class="font-headline-sm text-headline-sm text-on-surface">Sign Out of Account?</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Any unsaved draft logbook entries stored on this phone will be safely preserved in local encrypted storage.
+        </p>
+</div>
+<div class="flex items-center gap-space-sm pt-2">
+<button class="flex-1 h-11 rounded-full bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-colors" onclick="closeSignOutDialog()">
+          Cancel
+        </button>
+<button class="flex-1 h-11 rounded-full bg-error text-on-error font-label-md text-label-md hover:opacity-90 active:scale-95 transition-all" onclick="confirmSignOut()">
+          Sign Out
+        </button>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function showToast(message) {
+    const toast = document.getElementById('toast-banner');
+    const msgEl = document.getElementById('toast-msg');
+    if (!toast || !msgEl) return;
+    
+    msgEl.innerText = message;
+    toast.classList.remove('opacity-0', '-translate-y-24', 'pointer-events-none');
+    toast.classList.add('opacity-100', 'translate-y-0');
+
+    setTimeout(() => {
+      toast.classList.add('opacity-0', '-translate-y-24', 'pointer-events-none');
+      toast.classList.remove('opacity-100', 'translate-y-0');
+    }, 2800);
+  }
+
+  function triggerSync(btn) {
+    const icon = btn.querySelector('.material-symbols-outlined');
+    if (icon) icon.classList.add('animate-spin');
+    btn.disabled = true;
+
+    setTimeout(() => {
+      if (icon) icon.classList.remove('animate-spin');
+      btn.disabled = false;
+      showToast('All 7 entries synchronized with university server');
+    }, 1200);
+  }
+
+  function openSignOutDialog() {
+    const modal = document.getElementById('signout-modal');
+    const card = document.getElementById('signout-card');
+    if (!modal || !card) return;
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      modal.classList.remove('opacity-0');
+      card.classList.remove('scale-95');
+      card.classList.add('scale-100');
+    }, 10);
+  }
+
+  function closeSignOutDialog() {
+    const modal = document.getElementById('signout-modal');
+    const card = document.getElementById('signout-card');
+    if (!modal || !card) return;
+    modal.classList.add('opacity-0');
+    card.classList.remove('scale-100');
+    card.classList.add('scale-95');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 200);
+  }
+
+  function confirmSignOut() {
+    closeSignOutDialog();
+    showToast('Signing out...');
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  }
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 bg-surface/95 backdrop-blur-xl pb-safe shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="[&amp;_.nav-pill]:bg-surface-variant [&amp;_.nav-pill]:text-primary [&amp;_.nav-label]:text-primary [&amp;_.nav-label]:font-semibold [&amp;_.material-symbols-outlined]:[font-variation-settings:'FILL'_1]"><div class="h-20 px-2 flex items-center justify-around"><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="overview-dashboard" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">dashboard</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Home</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="attachment-logbook" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">menu_book</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Logbook</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="evaluations-and-reports" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">assignment_turned_in</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Reports</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="activity-notifications" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200 relative"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-3.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">Alerts</span></a><a class="flex flex-col items-center justify-center flex-1 h-full py-1 text-on-surface-variant group" data-path="more-settings" href="#"><div class="nav-pill w-16 h-8 rounded-full flex items-center justify-center transition-all duration-200"><span class="material-symbols-outlined text-[22px]">apps</span></div><span class="nav-label font-label-sm text-label-sm mt-1 transition-colors">More</span></a></div><div class="w-full flex justify-center pb-2 pt-1 pointer-events-none"><div class="w-32 h-1 bg-on-surface/20 rounded-full"></div></div></nav></body></html>
