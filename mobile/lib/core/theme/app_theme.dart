@@ -69,7 +69,7 @@ class AppTheme {
         foregroundColor: AppColors.onSurface,
         elevation: 0,
         centerTitle: false,
-        titleTextStyle: AppTypography.headlineSmall,
+        titleTextStyle: AppTypography.headlineSm,
         iconTheme: const IconThemeData(color: AppColors.onSurface),
       ),
 
@@ -192,7 +192,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppDimensions.radiusXl),
         ),
-        titleTextStyle: AppTypography.headlineSmall,
+        titleTextStyle: AppTypography.headlineSm,
         contentTextStyle: AppTypography.bodyMd,
       ),
 
