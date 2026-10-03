@@ -10,7 +10,6 @@ import 'package:attachpro_student/providers/attendance_provider.dart';
 import 'package:attachpro_student/providers/auth_provider.dart';
 import 'package:attachpro_student/providers/workspace_provider.dart';
 import 'package:attachpro_student/screens/attendance/attendance_screen.dart';
-import 'package:attachpro_student/screens/attendance/dynamic_qr_screen.dart';
 import 'package:attachpro_student/services/attendance_service.dart';
 import 'package:attachpro_student/services/auth_service.dart';
 
@@ -82,7 +81,6 @@ UserModel _testUser() {
 }
 
 List<AttendanceRecord> _sampleAttendanceRecords() {
-  final now = DateTime.now();
   return [
     AttendanceRecord(
       id: 'att_1',
@@ -123,6 +121,16 @@ List<AttendanceRecord> _sampleAttendanceRecords() {
       status: 'excused',
       verificationMethod: 'manual',
       notes: 'Hospital consultation day',
+    ),
+    AttendanceRecord(
+      id: 'att_5',
+      studentId: 'student_1',
+      schoolId: 'school_1',
+      date: '2026-08-05',
+      timestamp: DateTime(2026, 8, 5, 8, 30),
+      status: 'present',
+      verificationMethod: 'qr_scanner',
+      notes: 'Field site inspection',
     ),
   ];
 }
@@ -190,7 +198,7 @@ void main() {
     // Verify Bento Stats
     expect(find.text('ATTENDANCE RATE'), findsOneWidget);
     expect(find.text('On Track'), findsOneWidget);
-    expect(find.text('75.0%'), findsOneWidget); // 3 of 4 = 75%
+    expect(find.text('80.0%'), findsOneWidget); // 4 of 5 = 80%
     expect(find.text('Days Present'), findsOneWidget);
     expect(find.text('Unexcused Absences'), findsOneWidget);
     expect(find.text('Perfect Record'), findsOneWidget);
@@ -204,12 +212,12 @@ void main() {
 
     // Verify Attendance History Section
     expect(find.text('Recent Attendance Logs'), findsOneWidget);
-    expect(find.text('All (4)'), findsOneWidget);
-    expect(find.text('Verified (3)'), findsOneWidget);
+    expect(find.text('All (5)'), findsOneWidget);
+    expect(find.text('Verified (4)'), findsOneWidget);
     expect(find.text('Excused (1)'), findsOneWidget);
 
     // Verify History Log Cards
-    expect(find.text('Hospital consultation day'), findsOneWidget);
+    expect(find.text('Hospital consultation day'), findsWidgets);
     expect(find.text('Scan verified: John Kamau (Supervisor)'), findsOneWidget);
   });
 
@@ -222,8 +230,12 @@ void main() {
       ],
     );
 
-    // Filter by Verified (3)
-    await tester.tap(find.text('Verified (3)'));
+    // Scroll down to filter chips
+    await tester.drag(find.byType(SingleChildScrollView).first, const Offset(0, -300));
+    await tester.pumpAndSettle();
+
+    // Filter by Verified (4)
+    await tester.tap(find.text('Verified (4)'));
     await tester.pumpAndSettle();
 
     expect(find.text('Scan verified: John Kamau (Supervisor)'), findsOneWidget);
@@ -233,14 +245,14 @@ void main() {
     await tester.tap(find.text('Excused (1)'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Hospital consultation day'), findsOneWidget);
+    expect(find.text('Hospital consultation day'), findsWidgets);
     expect(find.text('Scan verified: John Kamau (Supervisor)'), findsNothing);
 
-    // Filter by All (4)
-    await tester.tap(find.text('All (4)'));
+    // Filter by All (5)
+    await tester.tap(find.text('All (5)'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Hospital consultation day'), findsOneWidget);
+    expect(find.text('Hospital consultation day'), findsWidgets);
     expect(find.text('Scan verified: John Kamau (Supervisor)'), findsOneWidget);
   });
 

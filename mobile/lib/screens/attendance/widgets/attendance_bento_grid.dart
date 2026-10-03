@@ -51,12 +51,15 @@ class AttendanceBentoGrid extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(
-                          'ATTENDANCE RATE',
-                          style: AppTypography.labelMd.copyWith(
-                            color: AppColors.onSurfaceVariant,
-                            letterSpacing: 0.8,
-                            fontSize: 11,
+                        Flexible(
+                          child: Text(
+                            'ATTENDANCE RATE',
+                            style: AppTypography.labelMd.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                              letterSpacing: 0.8,
+                              fontSize: 11,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -92,14 +95,17 @@ class AttendanceBentoGrid extends StatelessWidget {
                           style: AppTypography.displayLg.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w700,
-                            fontSize: 28,
+                            fontSize: 24,
                           ),
                         ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '/ 80% req.',
-                          style: AppTypography.bodySm.copyWith(
-                            color: AppColors.onSurfaceVariant,
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            '/ 80% req.',
+                            style: AppTypography.bodySm.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -194,10 +200,13 @@ class AttendanceBentoGrid extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          '/ $totalCount d',
-                          style: AppTypography.bodySm.copyWith(
-                            color: AppColors.onSurfaceVariant,
+                        Flexible(
+                          child: Text(
+                            '/ $totalCount d',
+                            style: AppTypography.bodySm.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -261,10 +270,13 @@ class AttendanceBentoGrid extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          'violations',
-                          style: AppTypography.bodySm.copyWith(
-                            color: AppColors.onSurfaceVariant,
+                        Flexible(
+                          child: Text(
+                            'violations',
+                            style: AppTypography.bodySm.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -282,13 +294,16 @@ class AttendanceBentoGrid extends StatelessWidget {
                               : AppColors.error,
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          unexcusedCount == 0 ? 'Perfect Record' : 'Attention',
-                          style: AppTypography.labelSm.copyWith(
-                            color: unexcusedCount == 0
-                                ? AppColors.tertiary
-                                : AppColors.error,
-                            fontWeight: FontWeight.w600,
+                        Expanded(
+                          child: Text(
+                            unexcusedCount == 0 ? 'Perfect Record' : 'Attention',
+                            style: AppTypography.labelSm.copyWith(
+                              color: unexcusedCount == 0
+                                  ? AppColors.tertiary
+                                  : AppColors.error,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -332,18 +347,24 @@ class AttendanceBentoGrid extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Text(
-                            '$excusedCount Excused Days',
-                            style: AppTypography.titleMd.copyWith(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
+                          Flexible(
+                            child: Text(
+                              '$excusedCount Excused Days',
+                              style: AppTypography.titleMd.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           const Text(' • ', style: TextStyle(color: AppColors.outline)),
-                          Text(
-                            'Approved Medical',
-                            style: AppTypography.labelSm.copyWith(
-                              color: AppColors.onSurfaceVariant,
+                          Flexible(
+                            child: Text(
+                              'Approved Medical',
+                              style: AppTypography.labelSm.copyWith(
+                                color: AppColors.onSurfaceVariant,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],

@@ -79,32 +79,13 @@ class _AttendanceScreenState extends State<AttendanceScreen> {
                 onPressed: () => Navigator.pop(context),
               )
             : null,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: AppColors.primaryContainer,
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: const Icon(
-                Icons.verified_user_rounded,
-                color: AppColors.onPrimary,
-                size: 18,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              'Attendance & Verification',
-              style: AppTypography.headlineSm.copyWith(
-                color: AppColors.onSurface,
-                fontWeight: FontWeight.w700,
-                fontSize: 18,
-              ),
-            ),
-          ],
+        title: Text(
+          'Attendance & Verification',
+          style: AppTypography.titleMd.copyWith(
+            color: AppColors.onSurface,
+            fontWeight: FontWeight.w700,
+          ),
+          overflow: TextOverflow.ellipsis,
         ),
         actions: [
           IconButton(

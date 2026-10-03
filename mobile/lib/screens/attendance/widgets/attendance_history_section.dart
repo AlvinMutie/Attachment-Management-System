@@ -33,14 +33,18 @@ class AttendanceHistorySection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Recent Attendance Logs',
-              style: AppTypography.headlineSm.copyWith(
-                color: AppColors.onSurface,
-                fontWeight: FontWeight.w700,
-                fontSize: 18,
+            Expanded(
+              child: Text(
+                'Recent Attendance Logs',
+                style: AppTypography.headlineSm.copyWith(
+                  color: AppColors.onSurface,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 18,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
+            const SizedBox(width: 8),
             Text(
               'Academic Log',
               style: AppTypography.labelMd.copyWith(
@@ -217,54 +221,63 @@ class _AttendanceLogCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: record.isExcused
-                          ? AppColors.secondaryFixed
-                          : AppColors.surfaceContainer,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '$dayNumber',
-                        style: AppTypography.labelMd.copyWith(
-                          color: record.isExcused
-                              ? AppColors.secondary
-                              : AppColors.primary,
-                          fontWeight: FontWeight.w700,
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: record.isExcused
+                            ? AppColors.secondaryFixed
+                            : AppColors.surfaceContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          '$dayNumber',
+                          style: AppTypography.labelMd.copyWith(
+                            color: record.isExcused
+                                ? AppColors.secondary
+                                : AppColors.primary,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        record.formattedShortDate,
-                        style: AppTypography.titleMd.copyWith(
-                          color: AppColors.onSurface,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 14,
-                        ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            record.formattedShortDate,
+                            style: AppTypography.titleMd.copyWith(
+                              color: AppColors.onSurface,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            record.isExcused
+                                ? (record.notes ?? 'Excused absence approved')
+                                : 'Standard working shift',
+                            style: AppTypography.bodySm.copyWith(
+                              color: AppColors.onSurfaceVariant,
+                              fontSize: 11,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ),
-                      Text(
-                        record.isExcused
-                            ? (record.notes ?? 'Excused absence approved')
-                            : 'Standard working shift',
-                        style: AppTypography.bodySm.copyWith(
-                          color: AppColors.onSurfaceVariant,
-                          fontSize: 11,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               _buildStatusBadge(record),
             ],
           ),
@@ -294,35 +307,42 @@ class _AttendanceLogCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    record.isVerified
-                        ? Icons.verified_rounded
-                        : (record.isExcused
-                            ? Icons.description_outlined
-                            : Icons.cancel_outlined),
-                    size: 15,
-                    color: record.isVerified
-                        ? AppColors.secondary
-                        : (record.isExcused
-                            ? AppColors.secondary
-                            : AppColors.error),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    record.notes != null && record.notes!.isNotEmpty
-                        ? record.notes!
-                        : (record.isVerified
-                            ? 'Verified on-site: Dynamic QR'
-                            : 'Unexcused absence'),
-                    style: AppTypography.bodySm.copyWith(
-                      color: AppColors.onSurfaceVariant,
-                      fontSize: 11,
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(
+                      record.isVerified
+                          ? Icons.verified_rounded
+                          : (record.isExcused
+                              ? Icons.description_outlined
+                              : Icons.cancel_outlined),
+                          size: 15,
+                          color: record.isVerified
+                              ? AppColors.secondary
+                              : (record.isExcused
+                                  ? AppColors.secondary
+                                  : AppColors.error),
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        record.notes != null && record.notes!.isNotEmpty
+                            ? record.notes!
+                            : (record.isVerified
+                                ? 'Verified on-site: Dynamic QR'
+                                : 'Unexcused absence'),
+                        style: AppTypography.bodySm.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                          fontSize: 11,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 6),
               const Icon(
                 Icons.chevron_right_rounded,
                 size: 18,

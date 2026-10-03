@@ -50,7 +50,7 @@ class StudentIdentificationCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Flexible(
+              Expanded(
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
@@ -58,7 +58,6 @@ class StudentIdentificationCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
                   ),
                   child: Row(
-                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
                         width: 8,
@@ -69,22 +68,32 @@ class StudentIdentificationCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          effectiveOrg,
-                          style: AppTypography.labelSm.copyWith(
-                            color: AppColors.onSurface,
-                            fontWeight: FontWeight.w600,
+                      Expanded(
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: effectiveOrg,
+                                style: AppTypography.labelSm.copyWith(
+                                  color: AppColors.onSurface,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const TextSpan(
+                                text: ' • ',
+                                style: TextStyle(color: AppColors.outline),
+                              ),
+                              TextSpan(
+                                text: 'On-site',
+                                style: AppTypography.labelSm.copyWith(
+                                  color: AppColors.secondary,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
                           ),
                           overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const Text(' • ', style: TextStyle(color: AppColors.outline)),
-                      Text(
-                        'On-site',
-                        style: AppTypography.labelSm.copyWith(
-                          color: AppColors.secondary,
-                          fontWeight: FontWeight.w700,
+                          maxLines: 1,
                         ),
                       ),
                     ],

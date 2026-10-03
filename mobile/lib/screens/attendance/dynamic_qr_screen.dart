@@ -18,10 +18,13 @@ class DynamicQrScreen extends StatefulWidget {
 }
 
 class _DynamicQrScreenState extends State<DynamicQrScreen> {
+  AttendanceProvider? _attendanceProvider;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final provider = context.read<AttendanceProvider>();
       provider.generateQrToken();
       provider.startVerificationPolling();
@@ -29,8 +32,14 @@ class _DynamicQrScreenState extends State<DynamicQrScreen> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _attendanceProvider = Provider.of<AttendanceProvider>(context, listen: false);
+  }
+
+  @override
   void dispose() {
-    context.read<AttendanceProvider>().stopVerificationPolling();
+    _attendanceProvider?.stopVerificationPolling();
     super.dispose();
   }
 
@@ -214,13 +223,17 @@ class _DynamicQrScreenState extends State<DynamicQrScreen> {
                           color: AppColors.primary,
                         ),
                         const SizedBox(width: 4),
-                        Text(
-                          'INDUSTRY ATTACHMENT',
-                          style: AppTypography.labelSm.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.8,
-                            fontSize: 11,
+                        Expanded(
+                          child: Text(
+                            'INDUSTRY ATTACHMENT',
+                            style: AppTypography.labelSm.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.8,
+                              fontSize: 11,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
@@ -516,12 +529,17 @@ class _DynamicQrScreenState extends State<DynamicQrScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Security Token #EXP',
-                style: AppTypography.labelSm.copyWith(
-                  color: AppColors.outline,
+              Expanded(
+                child: Text(
+                  'Security Token #EXP',
+                  style: AppTypography.labelSm.copyWith(
+                    color: AppColors.outline,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -700,12 +718,17 @@ class _DynamicQrScreenState extends State<DynamicQrScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Verification Protocol',
-                style: AppTypography.labelLg.copyWith(
-                  fontWeight: FontWeight.w700,
+              Expanded(
+                child: Text(
+                  'Verification Protocol',
+                  style: AppTypography.labelLg.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 8),
               Text(
                 'Stage 1 of 3',
                 style: AppTypography.labelSm.copyWith(
