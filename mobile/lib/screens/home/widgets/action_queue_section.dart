@@ -20,29 +20,49 @@ class ActionQueueSection extends StatelessWidget {
         // Section header
         Row(
           children: [
-            Text("Today's Action Items", style: AppTypography.titleMd),
+            Flexible(
+              flex: 3,
+              child: Text(
+                "Today's Action Items",
+                style: AppTypography.titleMd,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             const SizedBox(width: AppDimensions.spaceXs),
             if (pendingCount > 0)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.errorContainer,
-                  borderRadius:
-                      BorderRadius.circular(AppDimensions.radiusFull),
-                ),
-                child: Text(
-                  '$pendingCount Pending',
-                  style: AppTypography.labelSm.copyWith(
-                    color: AppColors.onErrorContainer,
-                    fontWeight: FontWeight.w600,
+              Flexible(
+                flex: 2,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.errorContainer,
+                    borderRadius:
+                        BorderRadius.circular(AppDimensions.radiusFull),
+                  ),
+                  child: Text(
+                    '$pendingCount Pending',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.labelSm.copyWith(
+                      color: AppColors.onErrorContainer,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
-            const Spacer(),
-            Text(
-              'Priority queue',
-              style: AppTypography.labelSm.copyWith(
-                color: AppColors.onSurfaceVariant,
+            const SizedBox(width: AppDimensions.spaceXs),
+            Expanded(
+              flex: 2,
+              child: Text(
+                'Priority queue',
+                textAlign: TextAlign.end,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.labelSm.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
             ),
           ],

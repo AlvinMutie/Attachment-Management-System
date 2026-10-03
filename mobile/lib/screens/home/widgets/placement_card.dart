@@ -117,6 +117,7 @@ class _OrganizationRow extends StatelessWidget {
             ],
           ),
         ),
+        const SizedBox(width: 4),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
@@ -169,6 +170,8 @@ class _NoOrganizationRow extends StatelessWidget {
               ),
               Text(
                 'Not yet assigned',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppTypography.headlineSm.copyWith(
                   color: AppColors.onSurfaceVariant,
                 ),
@@ -220,19 +223,27 @@ class _DateRangeRow extends StatelessWidget {
           Expanded(
             child: Text(
               '${_formatDateShort(dates.startDate)} — ${_formatDateShort(dates.endDate)}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: AppTypography.bodySm.copyWith(
                 color: AppColors.onSurface,
               ),
             ),
           ),
-          if (weekLabel.isNotEmpty)
-            Text(
-              weekLabel,
-              style: AppTypography.labelSm.copyWith(
-                color: AppColors.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
+          if (weekLabel.isNotEmpty) ...[
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                weekLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.labelSm.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
+          ],
         ],
       ),
     );
@@ -324,6 +335,8 @@ class _SupervisorRow extends StatelessWidget {
                 ),
                 Text(
                   role,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.labelSm.copyWith(
                     color: AppColors.onSurfaceVariant,
                   ),
@@ -366,10 +379,12 @@ class _NoSupervisorsNote extends StatelessWidget {
           const Icon(Icons.people_outline,
               size: 18, color: AppColors.onSurfaceVariant),
           const SizedBox(width: 8),
-          Text(
-            'No supervisors assigned yet',
-            style: AppTypography.bodySm.copyWith(
-              color: AppColors.onSurfaceVariant,
+          Expanded(
+            child: Text(
+              'No supervisors assigned yet',
+              style: AppTypography.bodySm.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           ),
         ],
@@ -385,7 +400,11 @@ class _ActionLink extends StatelessWidget {
       child: TextButton.icon(
         onPressed: null, // Phase 4+
         icon: const Icon(Icons.arrow_forward, size: 16),
-        label: const Text('View Attachment Profile & Letter'),
+        label: const Text(
+          'View Attachment Profile & Letter',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primary,
           textStyle: AppTypography.labelMd.copyWith(fontWeight: FontWeight.w600),

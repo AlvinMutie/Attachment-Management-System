@@ -106,13 +106,15 @@ class DashboardHeader extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 6),
-            Text(
-              hasAttachment
-                  ? 'Day $daysCompleted of your $totalDays-day industrial attachment'
-                  : 'Set up your attachment placement to get started',
-              style: AppTypography.bodyMd.copyWith(
-                color: AppColors.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
+            Expanded(
+              child: Text(
+                hasAttachment
+                    ? 'Day $daysCompleted of your $totalDays-day industrial attachment'
+                    : 'Set up your attachment placement to get started',
+                style: AppTypography.bodyMd.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],

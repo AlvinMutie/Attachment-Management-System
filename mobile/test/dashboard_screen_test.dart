@@ -181,12 +181,12 @@ void main() {
       (tester) async {
     await _pumpDashboard(tester, [_activeWorkspace()]);
 
-    expect(find.textContaining('Jane'), findsWidgets);
+    expect(find.textContaining('Jane', findRichText: true), findsWidgets);
     expect(find.text('Day 32 of your 91-day industrial attachment'), findsOneWidget);
     expect(find.text('35%'), findsOneWidget);
     expect(find.text('59 days left'), findsOneWidget);
     expect(find.text('In Progress'), findsOneWidget);
-    expect(find.text('92%'), findsOneWidget);
+    expect(find.text('92%', findRichText: true), findsOneWidget);
     expect(find.text('Compliant'), findsOneWidget);
 
     await tester.scrollUntilVisible(find.text('Dr. Mary Achieng'), 200);

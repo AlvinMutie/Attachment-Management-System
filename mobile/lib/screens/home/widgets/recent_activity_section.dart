@@ -111,7 +111,14 @@ class RecentActivitySection extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('Recent Activity', style: AppTypography.titleMd),
+            Flexible(
+              child: Text(
+                'Recent Activity',
+                style: AppTypography.titleMd,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
             TextButton(
               onPressed: null,
               style: TextButton.styleFrom(
@@ -185,10 +192,12 @@ class _EmptyActivity extends StatelessWidget {
           const Icon(Icons.history_rounded,
               size: 22, color: AppColors.onSurfaceVariant),
           const SizedBox(width: 12),
-          Text(
-            'No recent activity yet.',
-            style: AppTypography.bodyMd.copyWith(
-              color: AppColors.onSurfaceVariant,
+          Flexible(
+            child: Text(
+              'No recent activity yet.',
+              style: AppTypography.bodyMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           ),
         ],
@@ -238,11 +247,15 @@ class _ActivityRow extends StatelessWidget {
                     Icon(entry.metaIcon,
                         size: 12, color: entry.metaColor),
                     const SizedBox(width: 2),
-                    Text(
-                      entry.meta,
-                      style: AppTypography.labelSm.copyWith(
-                        color: entry.metaColor,
-                        fontWeight: FontWeight.w500,
+                    Flexible(
+                      child: Text(
+                        entry.meta,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.labelSm.copyWith(
+                          color: entry.metaColor,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],

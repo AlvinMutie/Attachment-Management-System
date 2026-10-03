@@ -171,8 +171,11 @@ class _AttachmentProgressCardState extends State<AttachmentProgressCard>
                 child: Text(
                   'Attachment Progress',
                   style: AppTypography.titleMd,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              const SizedBox(width: 4),
               // Status badge
               Container(
                 padding:
@@ -196,6 +199,7 @@ class _AttachmentProgressCardState extends State<AttachmentProgressCard>
                     const SizedBox(width: 4),
                     Text(
                       _statusLabel(),
+                      maxLines: 1,
                       style: AppTypography.labelSm.copyWith(
                         color: _statusTextColor(),
                         fontWeight: FontWeight.w600,
@@ -229,6 +233,8 @@ class _AttachmentProgressCardState extends State<AttachmentProgressCard>
               Expanded(
                 child: Text(
                   'Overall Completion',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTypography.labelMd.copyWith(
                     color: AppColors.onSurfaceVariant,
                   ),
@@ -414,11 +420,20 @@ class _MiniStat extends StatelessWidget {
             children: [
               Icon(icon, size: 14, color: AppColors.primary),
               const SizedBox(width: 2),
-              Text(label, style: AppTypography.labelSm),
+              Flexible(
+                child: Text(
+                  label,
+                  style: AppTypography.labelSm,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 2),
           RichText(
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             text: TextSpan(
               children: [
                 TextSpan(
@@ -435,6 +450,8 @@ class _MiniStat extends StatelessWidget {
           ),
           Text(
             sub,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppTypography.labelSm.copyWith(
               color: subColor,
               fontWeight: FontWeight.w500,

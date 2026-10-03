@@ -134,24 +134,31 @@ class _DashboardAppBar extends StatelessWidget {
                         size: 18, color: AppColors.primary),
                   ),
                   const SizedBox(width: AppDimensions.spaceSm),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'ATTACHPRO',
-                        style: AppTypography.labelSm.copyWith(
-                          color: AppColors.onSurfaceVariant,
-                          letterSpacing: 1.2,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'ATTACHPRO',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTypography.labelSm.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                            letterSpacing: 1.2,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Overview Dashboard',
-                        style: AppTypography.headlineSm.copyWith(height: 1.1),
-                      ),
-                    ],
+                        Text(
+                          'Overview Dashboard',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              AppTypography.headlineSm.copyWith(height: 1.1),
+                        ),
+                      ],
+                    ),
                   ),
-                  const Spacer(),
+                  const SizedBox(width: AppDimensions.spaceXs),
                   // Profile avatar
                   CircleAvatar(
                     radius: 18,
