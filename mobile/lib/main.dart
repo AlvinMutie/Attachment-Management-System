@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'core/constants/app_colors.dart';
 import 'core/theme/app_theme.dart';
 import 'providers/auth_provider.dart';
+import 'providers/logbook_provider.dart';
 import 'providers/workspace_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'navigation/app_shell.dart';
@@ -39,6 +40,7 @@ class AttachProStudentApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WorkspaceProvider()),
+        ChangeNotifierProvider(create: (_) => LogbookProvider()),
       ],
       child: MaterialApp(
         title: 'AttachPro Student',
@@ -51,7 +53,7 @@ class AttachProStudentApp extends StatelessWidget {
 }
 
 /// Reactive authentication gatekeeper.
-/// Rebuilds whenever auth state changes and clears workspace on logout.
+/// Rebuilds whenever auth state changes and clears workspace and logbook on logout.
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
@@ -64,10 +66,11 @@ class _AuthGateState extends State<AuthGate> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
 
-    // Clear workspace cache when user logs out
+    // Clear workspace and logbook cache when user logs out
     if (auth.status == AuthStatus.unauthenticated) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context.read<WorkspaceProvider>().clear();
+        context.read<LogbookProvider>().clear();
       });
     }
 
