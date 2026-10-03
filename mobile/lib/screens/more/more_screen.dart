@@ -4,8 +4,10 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/constants/app_typography.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/reports_provider.dart';
 import '../attendance/attendance_screen.dart';
 import '../attendance/dynamic_qr_screen.dart';
+import '../reports/reports_screen.dart';
 
 /// "More" screen matching Stitch Settings & Help design
 class MoreScreen extends StatelessWidget {
@@ -39,7 +41,17 @@ class MoreScreen extends StatelessWidget {
           _SettingsTile(icon: Icons.business_outlined, label: 'Attachment Details'),
           _SettingsTile(icon: Icons.people_outline, label: 'My Supervisors'),
           _SettingsTile(icon: Icons.task_alt_outlined, label: 'Tasks & Deadlines'),
-          _SettingsTile(icon: Icons.folder_outlined, label: 'Documents'),
+          _SettingsTile(
+            icon: Icons.folder_outlined,
+            label: 'Documents & Accreditation',
+            onTap: () {
+              context.read<ReportsProvider>().setTab('documents');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ReportsScreen()),
+              );
+            },
+          ),
           _SettingsTile(icon: Icons.campaign_outlined, label: 'Announcements'),
 
           const SizedBox(height: 24),

@@ -35,5 +35,6 @@ class ApiConstants {
   static const String logbooks = '/api/student/logbooks';
   static const String attendance = '/api/student/attendance';
   static const String qrToken = '/api/student/attendance/qr-token';
+  static const String assessments = '/api/student/assessments';
   static const String notifications = '/api/notifications';
 }

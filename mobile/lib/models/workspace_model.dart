@@ -325,20 +325,63 @@ class ReadinessResult {
   final bool ready;
   final int score;
   final List<String> blockers;
+  final ReadinessChecklist? checklist;
 
   const ReadinessResult({
     required this.ready,
     required this.score,
     required this.blockers,
+    this.checklist,
   });
+
+  bool get isReady => ready;
 
   factory ReadinessResult.fromJson(Map<String, dynamic> json) {
     return ReadinessResult(
-      ready: json['ready'] == true,
+      ready: json['ready'] == true || json['isReady'] == true,
       score: (json['score'] as num?)?.toInt() ?? 0,
       blockers: ((json['blockers'] as List?) ?? [])
           .map((e) => e.toString())
           .toList(),
+      checklist: json['checklist'] is Map<String, dynamic>
+          ? ReadinessChecklist.fromJson(json['checklist'] as Map<String, dynamic>)
+          : null,
     );
   }
 }
+
+class ReadinessChecklist {
+  final bool placementApproved;
+  final bool industrySupervisorAssigned;
+  final bool universitySupervisorAssigned;
+  final bool attendanceThresholdMet;
+  final bool logbooksSubmittedAndReviewed;
+  final bool supervisionCompleted;
+  final bool industryAssessmentCompleted;
+  final bool universityAssessmentCompleted;
+
+  const ReadinessChecklist({
+    this.placementApproved = false,
+    this.industrySupervisorAssigned = false,
+    this.universitySupervisorAssigned = false,
+    this.attendanceThresholdMet = false,
+    this.logbooksSubmittedAndReviewed = false,
+    this.supervisionCompleted = false,
+    this.industryAssessmentCompleted = false,
+    this.universityAssessmentCompleted = false,
+  });
+
+  factory ReadinessChecklist.fromJson(Map<String, dynamic> json) {
+    return ReadinessChecklist(
+      placementApproved: json['placementApproved'] == true,
+      industrySupervisorAssigned: json['industrySupervisorAssigned'] == true,
+      universitySupervisorAssigned: json['universitySupervisorAssigned'] == true,
+      attendanceThresholdMet: json['attendanceThresholdMet'] == true,
+      logbooksSubmittedAndReviewed: json['logbooksSubmittedAndReviewed'] == true,
+      supervisionCompleted: json['supervisionCompleted'] == true,
+      industryAssessmentCompleted: json['industryAssessmentCompleted'] == true,
+      universityAssessmentCompleted: json['universityAssessmentCompleted'] == true,
+    );
+  }
+}
+
