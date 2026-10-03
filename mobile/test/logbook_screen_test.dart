@@ -272,6 +272,7 @@ void main() {
     ]);
 
     // Tap 'Reviewed (1)' filter
+    await tester.ensureVisible(find.text('Reviewed (1)'));
     await tester.tap(find.text('Reviewed (1)'));
     await tester.pumpAndSettle();
 
@@ -281,6 +282,7 @@ void main() {
     expect(find.text('Unit testing & debugging authentication flow'), findsNothing);
 
     // Tap 'Under Review (1)' filter
+    await tester.ensureVisible(find.text('Under Review (1)'));
     await tester.tap(find.text('Under Review (1)'));
     await tester.pumpAndSettle();
 
@@ -288,6 +290,7 @@ void main() {
     expect(find.text('RESTful API endpoint development with Node.js'), findsOneWidget);
 
     // Tap 'All (5)' filter
+    await tester.ensureVisible(find.text('All (5)'));
     await tester.tap(find.text('All (5)'));
     await tester.pumpAndSettle();
 

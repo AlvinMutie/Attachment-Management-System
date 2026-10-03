@@ -16,8 +16,7 @@ class ApiException extends AppException {
 
 /// Thrown when network connectivity fails or request times out
 class NetworkException extends AppException {
-  const NetworkException([String message = 'Unable to connect to the server. Please check your internet connection.'])
-      : super(message);
+  const NetworkException([super.message = 'Unable to connect to the server. Please check your internet connection.']);
 }
 
 /// Thrown when authentication fails or session has expired (401)

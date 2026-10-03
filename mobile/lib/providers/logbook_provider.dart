@@ -57,14 +57,15 @@ class LogbookProvider extends ChangeNotifier {
     for (final w in _localDrafts.keys) {
       weeks.add(w);
     }
-    if (weeks.isEmpty) {
-      weeks.addAll([1, 2, 3, 4, 5, 6, 7]);
-    } else {
-      final maxWeek = weeks.reduce((a, b) => a > b ? a : b);
-      for (var i = 1; i <= maxWeek + 1; i++) {
-        weeks.add(i);
-      }
+    weeks.add(_selectedWeek);
+
+    // Show window around selected week (e.g. Week 5, 6, 7, 8, 9 matching Stitch)
+    final startWindow = (_selectedWeek - 2).clamp(1, 999);
+    final endWindow = _selectedWeek + 2;
+    for (var i = startWindow; i <= endWindow; i++) {
+      weeks.add(i);
     }
+
     final sorted = weeks.toList()..sort();
     return sorted;
   }

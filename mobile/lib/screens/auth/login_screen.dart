@@ -381,7 +381,7 @@ class _PulsingDotState extends State<_PulsingDot> // ignore: unnecessary_undersc
         children: [
           AnimatedBuilder(
             animation: _controller,
-            builder: (_, __) => Transform.scale(
+            builder: (context, child) => Transform.scale(
               scale: _scaleAnim.value,
               child: Opacity(
                 opacity: _opacityAnim.value,

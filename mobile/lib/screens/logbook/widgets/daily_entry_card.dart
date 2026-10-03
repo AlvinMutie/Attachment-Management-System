@@ -297,6 +297,7 @@ class DailyEntryCard extends StatelessWidget {
 
             // Supervisor feedback box for Approved entries
             if (status == EntryVisualStatus.approved &&
+                parentLogbookStatus.toLowerCase() == 'approved' &&
                 supervisorComment != null &&
                 supervisorComment!.trim().isNotEmpty) ...[
               const SizedBox(height: 8),
