@@ -4,6 +4,8 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/constants/app_typography.dart';
 import '../../providers/auth_provider.dart';
+import '../attendance/attendance_screen.dart';
+import '../attendance/dynamic_qr_screen.dart';
 
 /// "More" screen matching Stitch Settings & Help design
 class MoreScreen extends StatelessWidget {
@@ -45,8 +47,22 @@ class MoreScreen extends StatelessWidget {
           // QR Attendance
           _SectionHeader(label: 'ATTENDANCE'),
           const SizedBox(height: 8),
-          _SettingsTile(icon: Icons.qr_code_scanner_outlined, label: 'QR Attendance Check-In'),
-          _SettingsTile(icon: Icons.history_outlined, label: 'Attendance History'),
+          _SettingsTile(
+            icon: Icons.qr_code_scanner_outlined,
+            label: 'QR Attendance Check-In',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DynamicQrScreen()),
+            ),
+          ),
+          _SettingsTile(
+            icon: Icons.history_outlined,
+            label: 'Attendance History',
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AttendanceScreen()),
+            ),
+          ),
 
           const SizedBox(height: 24),
 
@@ -181,11 +197,13 @@ class _SettingsTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final String? trailing;
+  final VoidCallback? onTap;
 
   const _SettingsTile({
     required this.icon,
     required this.label,
     this.trailing,
+    this.onTap,
   });
 
   @override
@@ -197,7 +215,7 @@ class _SettingsTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
         child: InkWell(
           borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-          onTap: () {},
+          onTap: onTap ?? () {},
           child: Padding(
             padding: const EdgeInsets.symmetric(
                 horizontal: AppDimensions.spaceMd,

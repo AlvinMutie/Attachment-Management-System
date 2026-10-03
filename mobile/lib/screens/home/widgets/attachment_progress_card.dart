@@ -3,6 +3,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../models/workspace_model.dart';
+import '../../attendance/attendance_screen.dart';
 
 /// Attachment Progress Hero Card: progress bar, percentage, mini stats
 class AttachmentProgressCard extends StatefulWidget {
@@ -298,6 +299,10 @@ class _AttachmentProgressCardState extends State<AttachmentProgressCard>
                       : '${widget.attendance.rate}%',
                   sub: _attendanceLabel(widget.attendance),
                   subColor: _attendanceColor(widget.attendance),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AttendanceScreen()),
+                  ),
                 ),
               ),
               const SizedBox(width: AppDimensions.spaceXs),
@@ -396,6 +401,7 @@ class _MiniStat extends StatelessWidget {
   final String value;
   final String sub;
   final Color subColor;
+  final VoidCallback? onTap;
 
   const _MiniStat({
     required this.icon,
@@ -403,16 +409,20 @@ class _MiniStat extends StatelessWidget {
     required this.value,
     required this.sub,
     required this.subColor,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.spaceXs),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
-      ),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+      child: Container(
+        padding: const EdgeInsets.all(AppDimensions.spaceXs),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(AppDimensions.radiusMd),
+        ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -459,6 +469,7 @@ class _MiniStat extends StatelessWidget {
           ),
         ],
       ),
+    ),
     );
   }
 }

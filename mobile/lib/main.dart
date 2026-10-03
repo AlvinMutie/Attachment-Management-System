@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'core/constants/app_colors.dart';
 import 'core/theme/app_theme.dart';
+import 'providers/attendance_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/logbook_provider.dart';
 import 'providers/workspace_provider.dart';
@@ -41,6 +42,7 @@ class AttachProStudentApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WorkspaceProvider()),
         ChangeNotifierProvider(create: (_) => LogbookProvider()),
+        ChangeNotifierProvider(create: (_) => AttendanceProvider()),
       ],
       child: MaterialApp(
         title: 'AttachPro Student',
@@ -66,11 +68,12 @@ class _AuthGateState extends State<AuthGate> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
 
-    // Clear workspace and logbook cache when user logs out
+    // Clear workspace, logbook, and attendance cache when user logs out
     if (auth.status == AuthStatus.unauthenticated) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context.read<WorkspaceProvider>().clear();
         context.read<LogbookProvider>().clear();
+        context.read<AttendanceProvider>().clear();
       });
     }
 
