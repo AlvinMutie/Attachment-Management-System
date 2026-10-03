@@ -18,6 +18,8 @@ class AuthProvider extends ChangeNotifier {
   UserModel? _user;
   String? _errorMessage;
 
+  bool _isDemo = false;
+
   AuthProvider({AuthService? authService})
       : _authService = authService ?? AuthService() {
     checkAuthStatus();
@@ -28,6 +30,27 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get isAuthenticated => _status == AuthStatus.authenticated && _user != null;
   bool get isLoading => _status == AuthStatus.authenticating || _status == AuthStatus.initial;
+  bool get isDemo => _isDemo;
+
+  /// Sets a mock/demo student session for offline exploration and direct 1-click preview
+  void setDemoSession() {
+    _isDemo = true;
+    _user = const UserModel(
+      id: 'demo-student-id',
+      name: 'Alvin Mutie',
+      email: 'student_a@ams.com',
+      role: 'student',
+      schoolId: 'demo-school-id',
+      status: 'active',
+      admissionNumber: 'CT201/0042/22',
+      department: 'Computing & Informatics',
+      institution: 'Kirinyaga University',
+      schoolName: 'Kirinyaga University (School A)',
+    );
+    _status = AuthStatus.authenticated;
+    _errorMessage = null;
+    notifyListeners();
+  }
 
   /// Restores session on app startup by validating stored JWT against /api/auth/me
   Future<void> checkAuthStatus() async {
@@ -120,9 +143,12 @@ class AuthProvider extends ChangeNotifier {
   /// Terminates the current session and clears secure JWT storage
   Future<void> logout() async {
     try {
-      await _authService.logout();
+      if (!_isDemo) {
+        await _authService.logout();
+      }
     } finally {
       _user = null;
+      _isDemo = false;
       _status = AuthStatus.unauthenticated;
       _errorMessage = null;
       notifyListeners();

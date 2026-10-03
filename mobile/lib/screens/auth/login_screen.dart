@@ -5,6 +5,10 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_dimensions.dart';
 import '../../core/constants/app_typography.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/workspace_provider.dart';
+import '../../providers/logbook_provider.dart';
+import '../../providers/attendance_provider.dart';
+import '../../providers/reports_provider.dart';
 import '../../widgets/app_text_field.dart';
 import '../../widgets/app_buttons.dart';
 
@@ -56,23 +60,27 @@ class _LoginScreenState extends State<LoginScreen> {
     final identifier = _identifierController.text.trim();
     final password = _passwordController.text;
 
-    // Client-side validation
-    bool hasError = false;
-    if (identifier.isEmpty) {
-      setState(() => _identifierError = 'Please enter your email or registration number.');
-      hasError = true;
-    }
-    if (password.isEmpty) {
-      setState(() => _passwordError = 'Please enter your password.');
-      hasError = true;
-    } else if (password.length < 6) {
-      setState(() => _passwordError = 'Password must be at least 6 characters.');
-      hasError = true;
-    }
-    if (hasError) return;
-
     final auth = context.read<AuthProvider>();
     auth.clearError();
+
+    // ── Instant 1-Click Demo Entry ──────────────────────────────────────
+    // If fields are empty, sign in directly as Demo Student to explore all pages
+    if (identifier.isEmpty || password.isEmpty) {
+      auth.setDemoSession();
+      context.read<WorkspaceProvider>().loadDemoData();
+      context.read<LogbookProvider>().loadDemoData();
+      context.read<AttendanceProvider>().loadDemoData();
+      context.read<ReportsProvider>().loadDemoData();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Exploring as Alvin Mutie (Demo Student).'),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppColors.primary,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
 
     final success = await auth.login(
       identifier: identifier,
@@ -83,7 +91,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (!success) {
       final errorMsg = auth.errorMessage ?? 'Sign-in failed. Please try again.';
-      // Show API error in snackbar
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMsg),

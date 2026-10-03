@@ -118,6 +118,70 @@ class ReportsProvider extends ChangeNotifier {
     }
   }
 
+  /// Populates realistic demo assessments for offline exploration
+  void loadDemoData() {
+    _assessments = _getDemoAssessments();
+    _errorMessage = null;
+    _isLoading = false;
+    _selectedTab = 'all';
+    notifyListeners();
+  }
+
+  static List<AssessmentRecord> _getDemoAssessments() {
+    final now = DateTime.now();
+    return [
+      AssessmentRecord(
+        id: 'ass-1',
+        studentId: 'demo-student-id',
+        evaluatorId: 'eval-ind-1',
+        schoolId: 'demo-school-id',
+        score: 88,
+        status: 'submitted',
+        evaluatorType: 'industry',
+        type: 'midterm',
+        feedback: 'Demonstrates strong initiative, high code quality, and active engagement during daily standups. Successfully delivered critical mobile module integration.',
+        criteria: {
+          'Technical Competence': 90,
+          'Work Ethic & Punctuality': 95,
+          'Teamwork & Collaboration': 85,
+          'Problem Solving': 82,
+        },
+        createdAt: now.subtract(const Duration(days: 14)),
+        updatedAt: now.subtract(const Duration(days: 14)),
+        evaluator: const AssessmentEvaluator(
+          id: 'eval-ind-1',
+          name: 'Eng. Sarah Jenkins',
+          email: 'sarah.j@safaricom.co.ke',
+          role: 'industry_supervisor',
+        ),
+      ),
+      AssessmentRecord(
+        id: 'ass-2',
+        studentId: 'demo-student-id',
+        evaluatorId: 'eval-uni-1',
+        schoolId: 'demo-school-id',
+        score: 92,
+        status: 'submitted',
+        evaluatorType: 'university',
+        type: 'academic_visit',
+        feedback: 'Logbook records are thorough and up to date. Demonstrated comprehensive understanding of software lifecycle and institutional safety standards.',
+        criteria: {
+          'Academic Rigor': 94,
+          'Logbook Documentation': 90,
+          'Institutional Compliance': 92,
+        },
+        createdAt: now.subtract(const Duration(days: 7)),
+        updatedAt: now.subtract(const Duration(days: 7)),
+        evaluator: const AssessmentEvaluator(
+          id: 'eval-uni-1',
+          name: 'Dr. James Okoth',
+          email: 'unisup_a@ams.com',
+          role: 'university_supervisor',
+        ),
+      ),
+    ];
+  }
+
   /// Clears state on user logout
   void clear() {
     _assessments = [];

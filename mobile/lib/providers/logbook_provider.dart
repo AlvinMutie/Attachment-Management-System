@@ -180,6 +180,71 @@ class LogbookProvider extends ChangeNotifier {
     }
   }
 
+  /// Populates realistic demo logbooks for offline exploration
+  void loadDemoData() {
+    _logbooks = _getDemoLogbooks();
+    _errorMessage = null;
+    _selectedWeek = 6;
+    _isLoading = false;
+    _isFetching = false;
+    notifyListeners();
+  }
+
+  static List<LogbookModel> _getDemoLogbooks() {
+    return [
+      LogbookModel(
+        id: 'log-w5',
+        studentId: 'demo-student-id',
+        weekNumber: 5,
+        startDate: '2026-06-01',
+        endDate: '2026-06-05',
+        status: 'approved',
+        summary: 'Designed responsive dashboard layout and connected JWT authentication endpoints.',
+        supervisorComment: 'Excellent execution on the authentication flows and state management.',
+        dailyEntries: {
+          'monday': {'activity': 'Architecture review with team leads', 'hours': 8.0, 'status': 'approved'},
+          'tuesday': {'activity': 'Implemented JWT token interceptors and secure storage', 'hours': 8.0, 'status': 'approved'},
+          'wednesday': {'activity': 'Built responsive login screen with Stitch styling', 'hours': 8.0, 'status': 'approved'},
+          'thursday': {'activity': 'Integrated role-based routing and auth state', 'hours': 8.0, 'status': 'approved'},
+          'friday': {'activity': 'Completed unit testing for authentication provider', 'hours': 8.0, 'status': 'approved'},
+        },
+      ),
+      LogbookModel(
+        id: 'log-w6',
+        studentId: 'demo-student-id',
+        weekNumber: 6,
+        startDate: '2026-06-08',
+        endDate: '2026-06-12',
+        status: 'rejected',
+        summary: 'Implemented QR attendance verification module and background synchronization.',
+        supervisorComment: 'Please specify the exact cryptographic verification algorithm used for the dynamic QR token and provide test metrics.',
+        dailyEntries: {
+          'monday': {'activity': 'Designed QR token generation lifecycle and timer', 'hours': 8.0, 'status': 'rejected'},
+          'tuesday': {'activity': 'Configured dynamic QR screen with corner target styling', 'hours': 8.0, 'status': 'rejected'},
+          'wednesday': {'activity': 'Tested expiration ticker and auto-regeneration', 'hours': 8.0, 'status': 'rejected'},
+          'thursday': {'activity': 'Implemented verified shift tracker card', 'hours': 8.0, 'status': 'rejected'},
+          'friday': {'activity': 'Wrote 7 comprehensive attendance widget tests', 'hours': 8.0, 'status': 'rejected'},
+        },
+      ),
+      LogbookModel(
+        id: 'log-w7',
+        studentId: 'demo-student-id',
+        weekNumber: 7,
+        startDate: '2026-06-15',
+        endDate: '2026-06-19',
+        status: 'pending',
+        summary: 'Built Reports and Clearance Accreditation module with institutional documents bottom sheet.',
+        dailyEntries: {
+          'monday': {'activity': 'Created assessment data model and report service', 'hours': 8.0, 'status': 'pending'},
+          'tuesday': {'activity': 'Implemented 4-metric assessment bento grid', 'hours': 8.0, 'status': 'pending'},
+          'wednesday': {'activity': 'Built evaluation card with criteria breakdown', 'hours': 8.0, 'status': 'pending'},
+          'thursday': {'activity': 'Created institutional documents section with modal preview', 'hours': 8.0, 'status': 'pending'},
+          'friday': {'activity': 'Passed all 27 Flutter test suite cases', 'hours': 8.0, 'status': 'pending'},
+        },
+      ),
+    ];
+  }
+
   /// Selects a specific week
   void selectWeek(int week) {
     if (_selectedWeek != week) {

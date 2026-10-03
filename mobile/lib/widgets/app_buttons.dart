@@ -65,7 +65,13 @@ class PrimaryButton extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(label),
+                    Flexible(
+                      child: Text(
+                        label,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
                     if (trailingIcon != null) ...[
                       const SizedBox(width: 8),
                       Icon(trailingIcon, size: 20),
@@ -117,7 +123,7 @@ class SecondaryButton extends StatelessWidget {
             ),
             shape: const StadiumBorder(),
             textStyle: AppTypography.labelLg,
-            padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spaceLg),
+            padding: const EdgeInsets.symmetric(horizontal: AppDimensions.spaceMd),
           ),
           child: isLoading
               ? const SizedBox(
@@ -136,7 +142,13 @@ class SecondaryButton extends StatelessWidget {
                       Icon(leadingIcon, size: 20),
                       const SizedBox(width: 8),
                     ],
-                    Text(label),
+                    Flexible(
+                      child: Text(
+                        label,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
                     if (trailingIcon != null) ...[
                       const SizedBox(width: 8),
                       Icon(trailingIcon, size: 20),

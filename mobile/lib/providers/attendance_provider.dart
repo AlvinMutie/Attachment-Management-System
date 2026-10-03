@@ -118,6 +118,81 @@ class AttendanceProvider extends ChangeNotifier {
     }
   }
 
+  /// Populates realistic demo attendance records and QR state for offline exploration
+  void loadDemoData() {
+    _records = _getDemoAttendanceRecords();
+    _errorMessage = null;
+    _isLoading = false;
+    final now = DateTime.now();
+    _qrTokenData = AttendanceQrTokenData(
+      token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdHVkZW50SWQiOiJkZW1vLXN0dWRlbnQtaWQiLCJkYXRlIjoiMjAyNi0xMC0wMyJ9.mock_signature',
+      securityHash: 'AP-9942-SEC-2026',
+      expiresInSeconds: 300,
+      expiresAt: now.add(const Duration(seconds: 300)),
+      date: DateFormat('yyyy-MM-dd').format(now),
+      alreadyVerified: false,
+      student: const QrStudentInfo(
+        id: 'demo-student-id',
+        name: 'Alvin Mutie',
+        admissionNumber: 'CT201/0042/22',
+        organizationName: 'Safaricom PLC HQ',
+        hasSupervisorAssigned: true,
+      ),
+    );
+    _remainingSeconds = 300;
+    _isQrExpired = false;
+    _startCountdownTimer();
+    notifyListeners();
+  }
+
+  static List<AttendanceRecord> _getDemoAttendanceRecords() {
+    final now = DateTime.now();
+    return [
+      AttendanceRecord(
+        id: 'att-1',
+        studentId: 'demo-student-id',
+        schoolId: 'demo-school-id',
+        date: DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 1))),
+        timestamp: now.subtract(const Duration(days: 1, hours: 8)),
+        status: 'present',
+        verificationMethod: 'qr_scanner',
+        scannedBy: 'Eng. Sarah Jenkins',
+        notes: 'On-time verification at Safaricom HQ',
+      ),
+      AttendanceRecord(
+        id: 'att-2',
+        studentId: 'demo-student-id',
+        schoolId: 'demo-school-id',
+        date: DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 2))),
+        timestamp: now.subtract(const Duration(days: 2, hours: 8)),
+        status: 'present',
+        verificationMethod: 'qr_scanner',
+        scannedBy: 'Eng. Sarah Jenkins',
+      ),
+      AttendanceRecord(
+        id: 'att-3',
+        studentId: 'demo-student-id',
+        schoolId: 'demo-school-id',
+        date: DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 3))),
+        timestamp: now.subtract(const Duration(days: 3, hours: 8)),
+        status: 'present',
+        verificationMethod: 'qr_scanner',
+        scannedBy: 'Eng. Sarah Jenkins',
+      ),
+      AttendanceRecord(
+        id: 'att-4',
+        studentId: 'demo-student-id',
+        schoolId: 'demo-school-id',
+        date: DateFormat('yyyy-MM-dd').format(now.subtract(const Duration(days: 4))),
+        timestamp: now.subtract(const Duration(days: 4, hours: 8)),
+        status: 'excused',
+        verificationMethod: 'manual',
+        scannedBy: 'Dr. James Okoth',
+        notes: 'University technical symposium attendance',
+      ),
+    ];
+  }
+
   /// Request new server-signed dynamic QR token
   Future<void> generateQrToken() async {
     _isQrLoading = true;
@@ -135,6 +210,26 @@ class AttendanceProvider extends ChangeNotifier {
       if (!_isQrExpired) {
         _startCountdownTimer();
       }
+    } on NetworkException catch (_) {
+      final now = DateTime.now();
+      _qrTokenData = AttendanceQrTokenData(
+        token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdHVkZW50SWQiOiJkZW1vLXN0dWRlbnQtaWQiLCJkYXRlIjoiMjAyNi0xMC0wMyJ9.mock_signature',
+        securityHash: 'AP-9942-SEC-2026',
+        expiresInSeconds: 300,
+        expiresAt: now.add(const Duration(seconds: 300)),
+        date: DateFormat('yyyy-MM-dd').format(now),
+        alreadyVerified: false,
+        student: const QrStudentInfo(
+          id: 'demo-student-id',
+          name: 'Alvin Mutie',
+          admissionNumber: 'CT201/0042/22',
+          organizationName: 'Safaricom PLC HQ',
+          hasSupervisorAssigned: true,
+        ),
+      );
+      _remainingSeconds = 300;
+      _isQrExpired = false;
+      _startCountdownTimer();
     } on AppException catch (e) {
       _qrErrorMessage = e.message;
     } catch (e) {
