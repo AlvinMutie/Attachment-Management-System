@@ -5,17 +5,20 @@ import '../../core/constants/app_dimensions.dart';
 import '../../core/constants/app_typography.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/reports_provider.dart';
+import '../../providers/workspace_provider.dart';
 import '../attendance/attendance_screen.dart';
 import '../attendance/dynamic_qr_screen.dart';
 import '../reports/reports_screen.dart';
+import 'widgets/more_sheets.dart';
 
-/// "More" screen matching Stitch Settings & Help design
+/// "More" screen matching Stitch Settings & Help design with full interactive sheets
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().user;
+    final workspace = context.watch<WorkspaceProvider>().workspace;
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -31,16 +34,35 @@ class MoreScreen extends StatelessWidget {
         ),
         children: [
           // Profile card
-          _ProfileCard(user: user),
+          _ProfileCard(
+            user: user,
+            onTap: () => showProfileSheet(context, user, workspace),
+          ),
           const SizedBox(height: 24),
 
           // Quick links section
           _SectionHeader(label: 'QUICK LINKS'),
           const SizedBox(height: 8),
-          _SettingsTile(icon: Icons.person_outline, label: 'My Profile'),
-          _SettingsTile(icon: Icons.business_outlined, label: 'Attachment Details'),
-          _SettingsTile(icon: Icons.people_outline, label: 'My Supervisors'),
-          _SettingsTile(icon: Icons.task_alt_outlined, label: 'Tasks & Deadlines'),
+          _SettingsTile(
+            icon: Icons.person_outline,
+            label: 'My Profile',
+            onTap: () => showProfileSheet(context, user, workspace),
+          ),
+          _SettingsTile(
+            icon: Icons.business_outlined,
+            label: 'Attachment Details',
+            onTap: () => showAttachmentDetailsSheet(context, workspace),
+          ),
+          _SettingsTile(
+            icon: Icons.people_outline,
+            label: 'My Supervisors',
+            onTap: () => showSupervisorsSheet(context, workspace),
+          ),
+          _SettingsTile(
+            icon: Icons.task_alt_outlined,
+            label: 'Tasks & Deadlines',
+            onTap: () => showTasksAndDeadlinesSheet(context, workspace),
+          ),
           _SettingsTile(
             icon: Icons.folder_outlined,
             label: 'Documents & Accreditation',
@@ -52,7 +74,11 @@ class MoreScreen extends StatelessWidget {
               );
             },
           ),
-          _SettingsTile(icon: Icons.campaign_outlined, label: 'Announcements'),
+          _SettingsTile(
+            icon: Icons.campaign_outlined,
+            label: 'Announcements',
+            onTap: () => showAnnouncementsSheet(context),
+          ),
 
           const SizedBox(height: 24),
 
@@ -81,16 +107,33 @@ class MoreScreen extends StatelessWidget {
           // Support section
           _SectionHeader(label: 'SUPPORT & HELP'),
           const SizedBox(height: 8),
-          _SettingsTile(icon: Icons.support_agent_outlined, label: 'AttachPro Technical Support'),
-          _SettingsTile(icon: Icons.report_problem_outlined, label: 'Report Workplace or Safety Issue'),
+          _SettingsTile(
+            icon: Icons.support_agent_outlined,
+            label: 'AttachPro Technical Support',
+            onTap: () => showSupportSheet(context),
+          ),
+          _SettingsTile(
+            icon: Icons.report_problem_outlined,
+            label: 'Report Workplace or Safety Issue',
+            onTap: () => showSafetyIssueSheet(context),
+          ),
 
           const SizedBox(height: 24),
 
           // Legal section
           _SectionHeader(label: 'SYSTEM & POLICIES'),
           const SizedBox(height: 8),
-          _SettingsTile(icon: Icons.menu_book_outlined, label: 'Industrial Attachment Handbook', trailing: 'v2026.2'),
-          _SettingsTile(icon: Icons.policy_outlined, label: 'Student Code of Industrial Conduct'),
+          _SettingsTile(
+            icon: Icons.menu_book_outlined,
+            label: 'Industrial Attachment Handbook',
+            trailing: 'v2026.2',
+            onTap: () => showHandbookSheet(context),
+          ),
+          _SettingsTile(
+            icon: Icons.policy_outlined,
+            label: 'Student Code of Industrial Conduct',
+            onTap: () => showCodeOfConductSheet(context),
+          ),
           _AppVersionTile(),
 
           const SizedBox(height: 24),
@@ -118,7 +161,9 @@ class MoreScreen extends StatelessWidget {
 
 class _ProfileCard extends StatelessWidget {
   final dynamic user;
-  const _ProfileCard({required this.user});
+  final VoidCallback? onTap;
+
+  const _ProfileCard({required this.user, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -127,54 +172,54 @@ class _ProfileCard extends StatelessWidget {
     final admissionNumber = user?.admissionNumber ?? '';
     final institution = user?.institution ?? user?.schoolName ?? '';
 
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.spaceMd),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+    return Material(
+      color: AppColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+      elevation: 0.5,
+      child: InkWell(
         borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(8),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppDimensions.spaceMd),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: AppColors.primaryContainer,
+                child: Text(
+                  name.isNotEmpty ? name[0].toUpperCase() : 'S',
+                  style: AppTypography.headlineSm
+                      .copyWith(color: AppColors.onPrimary),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name, style: AppTypography.titleMd),
+                    if (admissionNumber.isNotEmpty)
+                      Text(admissionNumber,
+                          style: AppTypography.labelMd.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600)),
+                    if (email.isNotEmpty)
+                      Text(email,
+                          style: AppTypography.bodySm,
+                          overflow: TextOverflow.ellipsis),
+                    if (institution.isNotEmpty)
+                      Text(institution,
+                          style: AppTypography.bodySm
+                              .copyWith(color: AppColors.secondary),
+                          overflow: TextOverflow.ellipsis),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.chevron_right, size: 20, color: AppColors.onSurfaceVariant),
+            ],
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: AppColors.primaryContainer,
-            child: Text(
-              name.isNotEmpty ? name[0].toUpperCase() : 'S',
-              style: AppTypography.headlineSm
-                  .copyWith(color: AppColors.onPrimary),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, style: AppTypography.titleMd),
-                if (admissionNumber.isNotEmpty)
-                  Text(admissionNumber,
-                      style: AppTypography.labelMd.copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600)),
-                if (email.isNotEmpty)
-                  Text(email,
-                      style: AppTypography.bodySm,
-                      overflow: TextOverflow.ellipsis),
-                if (institution.isNotEmpty)
-                  Text(institution,
-                      style: AppTypography.bodySm
-                          .copyWith(color: AppColors.secondary),
-                      overflow: TextOverflow.ellipsis),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
