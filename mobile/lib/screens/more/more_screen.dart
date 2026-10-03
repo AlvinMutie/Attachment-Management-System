@@ -269,16 +269,23 @@ class _AppVersionTile extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('AttachPro Mobile',
-                  style: AppTypography.labelMd
-                      .copyWith(fontWeight: FontWeight.w600)),
-              Text('Production Environment • High Security',
-                  style: AppTypography.bodySm),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('AttachPro Mobile',
+                    style: AppTypography.labelMd
+                        .copyWith(fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
+                Text('Production Environment • High Security',
+                    style: AppTypography.bodySm,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis),
+              ],
+            ),
           ),
+          const SizedBox(width: AppDimensions.spaceSm),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(

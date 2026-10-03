@@ -15,52 +15,60 @@ class PlacementCard extends StatelessWidget {
     required this.dates,
   });
 
+  void _showDetailsSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => _PlacementDetailsSheet(student: student, dates: dates),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppDimensions.spaceMd),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+    return Material(
+      color: AppColors.surfaceContainerLowest,
+      borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+      elevation: 1,
+      shadowColor: Colors.black.withAlpha(10),
+      child: InkWell(
+        onTap: () => _showDetailsSheet(context),
         borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(10),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+        child: Padding(
+          padding: const EdgeInsets.all(AppDimensions.spaceMd),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Organization row
+              student.hasOrganization
+                  ? _OrganizationRow(student: student)
+                  : _NoOrganizationRow(),
+
+              const SizedBox(height: AppDimensions.spaceSm),
+
+              // Date range row
+              if (dates.hasDateRange) _DateRangeRow(dates: dates),
+
+              // Supervisors
+              if (student.hasIndustrySupervisor || student.hasUniversitySupervisor)
+                Padding(
+                  padding: const EdgeInsets.only(top: AppDimensions.spaceXs),
+                  child: _SupervisorsPanel(student: student),
+                ),
+
+              if (!student.hasIndustrySupervisor && !student.hasUniversitySupervisor)
+                Padding(
+                  padding:
+                      const EdgeInsets.only(top: AppDimensions.spaceSm),
+                  child: _NoSupervisorsNote(),
+                ),
+
+              // Action link
+              const SizedBox(height: AppDimensions.spaceXs),
+              _ActionLink(onTap: () => _showDetailsSheet(context)),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Organization row
-          student.hasOrganization
-              ? _OrganizationRow(student: student)
-              : _NoOrganizationRow(),
-
-          const SizedBox(height: AppDimensions.spaceSm),
-
-          // Date range row
-          if (dates.hasDateRange) _DateRangeRow(dates: dates),
-
-          // Supervisors
-          if (student.hasIndustrySupervisor || student.hasUniversitySupervisor)
-            Padding(
-              padding: const EdgeInsets.only(top: AppDimensions.spaceXs),
-              child: _SupervisorsPanel(student: student),
-            ),
-
-          if (!student.hasIndustrySupervisor && !student.hasUniversitySupervisor)
-            Padding(
-              padding:
-                  const EdgeInsets.only(top: AppDimensions.spaceSm),
-              child: _NoSupervisorsNote(),
-            ),
-
-          // Action link
-          const SizedBox(height: AppDimensions.spaceXs),
-          _ActionLink(),
-        ],
+        ),
       ),
     );
   }
@@ -394,14 +402,17 @@ class _NoSupervisorsNote extends StatelessWidget {
 }
 
 class _ActionLink extends StatelessWidget {
+  final VoidCallback? onTap;
+  const _ActionLink({this.onTap});
+
   @override
   Widget build(BuildContext context) {
     return Center(
       child: TextButton.icon(
-        onPressed: null, // Phase 4+
-        icon: const Icon(Icons.arrow_forward, size: 16),
+        onPressed: onTap,
+        icon: const Icon(Icons.info_outline_rounded, size: 16),
         label: const Text(
-          'View Attachment Profile & Letter',
+          'View Placement Details & Contacts',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -410,6 +421,215 @@ class _ActionLink extends StatelessWidget {
           textStyle: AppTypography.labelMd.copyWith(fontWeight: FontWeight.w600),
           padding: const EdgeInsets.symmetric(vertical: 4),
         ),
+      ),
+    );
+  }
+}
+
+class _PlacementDetailsSheet extends StatelessWidget {
+  final StudentProfile student;
+  final DateMetrics dates;
+
+  const _PlacementDetailsSheet({
+    required this.student,
+    required this.dates,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppDimensions.spaceLg),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Grab handle
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.outlineVariant,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Title
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.business_rounded, color: AppColors.onPrimary, size: 22),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Attachment Profile', style: AppTypography.headlineSm),
+                        Text(
+                          student.organizationName ?? 'Host Organization',
+                          style: AppTypography.bodySm.copyWith(color: AppColors.onSurfaceVariant),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+
+              // Organization Details Card
+              Container(
+                padding: const EdgeInsets.all(AppDimensions.spaceMd),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerLowest,
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+                  border: Border.all(color: AppColors.outlineVariant.withAlpha(80)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('HOST ORGANIZATION', style: AppTypography.labelSm.copyWith(color: AppColors.primary, letterSpacing: 0.8)),
+                    const SizedBox(height: 8),
+                    _detailRow(Icons.apartment_rounded, 'Company', student.organizationName ?? 'Not specified'),
+                    if (student.department != null) ...[
+                      const Divider(height: 16),
+                      _detailRow(Icons.account_tree_outlined, 'Department', student.department!),
+                    ],
+                    if (student.organizationAddress != null) ...[
+                      const Divider(height: 16),
+                      _detailRow(Icons.location_on_outlined, 'Location', student.organizationAddress!),
+                    ],
+                    if (student.contactPerson != null) ...[
+                      const Divider(height: 16),
+                      _detailRow(Icons.person_pin_circle_outlined, 'Contact Person', student.contactPerson!),
+                    ],
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Supervisors Card
+              Container(
+                padding: const EdgeInsets.all(AppDimensions.spaceMd),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerLowest,
+                  borderRadius: BorderRadius.circular(AppDimensions.radiusLg),
+                  border: Border.all(color: AppColors.outlineVariant.withAlpha(80)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('ASSIGNED SUPERVISORS', style: AppTypography.labelSm.copyWith(color: AppColors.primary, letterSpacing: 0.8)),
+                    const SizedBox(height: 12),
+                    if (student.industrySupervisor != null)
+                      _supervisorContactCard(
+                        name: student.industrySupervisor!.name,
+                        email: student.industrySupervisor!.email,
+                        role: 'Industry Mentor / Supervisor',
+                        icon: Icons.factory_outlined,
+                        color: AppColors.secondary,
+                      ),
+                    if (student.industrySupervisor != null && student.universitySupervisor != null)
+                      const SizedBox(height: 12),
+                    if (student.universitySupervisor != null)
+                      _supervisorContactCard(
+                        name: student.universitySupervisor!.name,
+                        email: student.universitySupervisor!.email,
+                        role: 'Academic Liaison / Faculty Supervisor',
+                        icon: Icons.school_outlined,
+                        color: AppColors.primary,
+                      ),
+                    if (student.industrySupervisor == null && student.universitySupervisor == null)
+                      Text('No supervisors currently assigned to your record.', style: AppTypography.bodySm),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _detailRow(IconData icon, String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: AppColors.onSurfaceVariant),
+        const SizedBox(width: 8),
+        Text('$label: ', style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant)),
+        Expanded(
+          child: Text(
+            value,
+            style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.w600),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _supervisorContactCard({
+    required String name,
+    String? email,
+    required String role,
+    required IconData icon,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(AppDimensions.spaceSm),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 20,
+            backgroundColor: color.withAlpha(30),
+            child: Icon(icon, size: 20, color: color),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: AppTypography.labelLg.copyWith(fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(role, style: AppTypography.labelSm.copyWith(color: AppColors.onSurfaceVariant), maxLines: 1, overflow: TextOverflow.ellipsis),
+                if (email != null && email.isNotEmpty)
+                  Text(email, style: AppTypography.bodySm.copyWith(color: color), maxLines: 1, overflow: TextOverflow.ellipsis),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
