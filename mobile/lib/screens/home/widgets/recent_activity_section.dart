@@ -20,6 +20,29 @@ class RecentActivitySection extends StatelessWidget {
   List<_ActivityEntry> _buildEntries() {
     final entries = <_ActivityEntry>[];
 
+    // Deadlines from backend calculateDeadlines()
+    for (final d in deadlines) {
+      if (d.status == 'COMPLETED') continue;
+      final overdue = d.isOverdue;
+      final days = d.daysRemaining;
+      entries.add(_ActivityEntry(
+        icon: overdue ? Icons.event_busy_outlined : Icons.event_outlined,
+        iconBg: overdue ? AppColors.errorContainer : AppColors.primaryFixed,
+        iconFg: overdue ? AppColors.onErrorContainer : AppColors.onPrimaryFixed,
+        title: d.title,
+        subtitle: days == null
+            ? 'Upcoming deadline'
+            : overdue
+                ? 'Overdue by ${days.abs()} day${days.abs() == 1 ? '' : 's'}'
+                : days == 0
+                    ? 'Due today'
+                    : 'Due in $days day${days == 1 ? '' : 's'}',
+        meta: overdue ? 'Overdue' : (d.status == 'DUE_SOON' ? 'Due Soon' : 'Upcoming'),
+        metaColor: overdue ? AppColors.error : AppColors.primary,
+        metaIcon: overdue ? Icons.error_outline : Icons.schedule_rounded,
+      ));
+    }
+
     // Synthesize activity from real data
     if (logbooks.approved > 0) {
       entries.add(_ActivityEntry(

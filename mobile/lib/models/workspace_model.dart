@@ -293,22 +293,30 @@ class ActionItem {
 class DeadlineItem {
   final String id;
   final String title;
-  final String? dueDate;
-  final String? status;
+  final String? targetDate;
+  final int? daysRemaining;
+  final String? status; // UPCOMING | DUE_TODAY | DUE_SOON | OVERDUE | COMPLETED
+  final String? category; // PLACEMENT | ASSESSMENT
 
   const DeadlineItem({
     required this.id,
     required this.title,
-    this.dueDate,
+    this.targetDate,
+    this.daysRemaining,
     this.status,
+    this.category,
   });
+
+  bool get isOverdue => status == 'OVERDUE';
 
   factory DeadlineItem.fromJson(Map<String, dynamic> json) {
     return DeadlineItem(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
-      dueDate: json['dueDate']?.toString(),
+      targetDate: json['targetDate']?.toString(),
+      daysRemaining: (json['daysRemaining'] as num?)?.toInt(),
       status: json['status']?.toString(),
+      category: json['category']?.toString(),
     );
   }
 }

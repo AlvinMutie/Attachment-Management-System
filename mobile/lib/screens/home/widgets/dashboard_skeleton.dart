@@ -37,7 +37,7 @@ class _DashboardSkeletonState extends State<DashboardSkeleton>
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: _shimmer,
-      builder: (_, __) {
+      builder: (_, _) {
         final alpha = (_shimmer.value * 255).toInt();
         return ListView(
           padding: const EdgeInsets.symmetric(

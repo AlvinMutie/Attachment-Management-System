@@ -229,6 +229,7 @@ class _DashboardContent extends StatelessWidget {
                   dates: dates,
                   logbooks: logbooks,
                   assessments: assessments,
+                  attendance: attendance,
                   placementStatus: student.placementStatus,
                 ),
 

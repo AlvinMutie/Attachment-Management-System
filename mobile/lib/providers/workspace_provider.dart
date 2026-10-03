@@ -64,6 +64,7 @@ class WorkspaceProvider extends ChangeNotifier {
 
   /// Clears cached data (e.g., on logout)
   void clear() {
+    if (_status == WorkspaceStatus.initial && _workspace == null) return;
     _workspace = null;
     _status = WorkspaceStatus.initial;
     _errorMessage = null;

@@ -9,6 +9,7 @@ class AttachmentProgressCard extends StatefulWidget {
   final DateMetrics dates;
   final LogbooksSummary logbooks;
   final AssessmentsSummary assessments;
+  final AttendanceStats attendance;
   final String? placementStatus;
 
   const AttachmentProgressCard({
@@ -16,6 +17,7 @@ class AttachmentProgressCard extends StatefulWidget {
     required this.dates,
     required this.logbooks,
     required this.assessments,
+    required this.attendance,
     this.placementStatus,
   });
 
@@ -112,6 +114,19 @@ class _AttachmentProgressCardState extends State<AttachmentProgressCard>
       default:
         return AppColors.outline;
     }
+  }
+
+  String _attendanceLabel(AttendanceStats a) {
+    if (a.hasNoRecords) return 'No records';
+    if (a.isCritical) return 'Critical';
+    if (a.isAtRisk) return 'At Risk';
+    return 'Compliant';
+  }
+
+  Color _attendanceColor(AttendanceStats a) {
+    if (a.hasNoRecords) return AppColors.outline;
+    if (a.isCritical || a.isAtRisk) return AppColors.error;
+    return AppColors.secondary;
   }
 
   @override
@@ -236,7 +251,7 @@ class _AttachmentProgressCardState extends State<AttachmentProgressCard>
           hasData
               ? AnimatedBuilder(
                   animation: _progressAnim,
-                  builder: (_, __) => _ProgressTrack(
+                  builder: (_, _) => _ProgressTrack(
                     fraction: _progressAnim.value,
                   ),
                 )
@@ -247,7 +262,7 @@ class _AttachmentProgressCardState extends State<AttachmentProgressCard>
           // Caption
           Text(
             hasData
-                ? '$completed of $total days logged & verified by academic liaison'
+                ? '$completed of $total days elapsed in your attachment period'
                 : 'Placement dates not yet configured.',
             style: AppTypography.bodySm,
           ),
@@ -270,12 +285,13 @@ class _AttachmentProgressCardState extends State<AttachmentProgressCard>
               const SizedBox(width: AppDimensions.spaceXs),
               Expanded(
                 child: _MiniStat(
-                  icon: Icons.assessment_outlined,
-                  label: 'Reports',
-                  value:
-                      '${widget.logbooks.approved}/${widget.logbooks.total}',
-                  sub: 'Approved',
-                  subColor: AppColors.secondary,
+                  icon: Icons.how_to_reg_outlined,
+                  label: 'Attendance',
+                  value: widget.attendance.hasNoRecords
+                      ? '--'
+                      : '${widget.attendance.rate}%',
+                  sub: _attendanceLabel(widget.attendance),
+                  subColor: _attendanceColor(widget.attendance),
                 ),
               ),
               const SizedBox(width: AppDimensions.spaceXs),

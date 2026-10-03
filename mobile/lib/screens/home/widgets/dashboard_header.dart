@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_dimensions.dart';
 import '../../../core/constants/app_typography.dart';
-import '../../../models/workspace_model.dart';
 
 /// Header section: greeting, today's date chip, and attachment day indicator
 class DashboardHeader extends StatelessWidget {
